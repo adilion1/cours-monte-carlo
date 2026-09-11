@@ -804,10 +804,12 @@
 
     const card = html("div", "lp-sigcard");
     const head = html("div", "lp-sig-head");
+    /* Ligne d'en-tete en francais courant : ni sigle, ni notation. Le detail
+       technique (K, payoff) reste en bas de carte, ou il est a sa place. */
     head.appendChild(html("p", "lp-sig-title",
-      "15 trajectoires simulées · S₀ = " + num(S0, 2) + " · T = 1 an"));
+      "15 trajectoires · un an · départ " + num(S0, 2)));
     const count = html("div", "lp-sig-count");
-    const nOut = html("span", "n", "N = 100");
+    const nOut = html("span", "n", "N = " + num(10000, 0));
     const priceOut = html("span", "price", num(refBS, 2));
     const ciOut = html("span", "ci", "± 0,00");
     const refOut = html("span", "ref", "Black-Scholes " + num(refBS, 2));
@@ -891,8 +893,12 @@
     /* --- le compteur qui monte --- */
     const checkpoints = [];
     (function build() {
+      /* Le compteur part de N = 10 000, pas de N = 100 : le premier nombre
+         affiche est deja proche du prix Black-Scholes, avec sa marge. On ne
+         montre donc plus le bruit des petits echantillons, mais le
+         resserrement de l'intervalle jusqu'a N = 100 000. */
       const targets = [];
-      for (let k = 0; k <= 59; k++) targets.push(Math.round(Math.pow(10, 2 + (3 * k) / 59)));
+      for (let k = 0; k <= 59; k++) targets.push(Math.round(Math.pow(10, 4 + k / 59)));
       const gauss = normals(mulberry32(7718));
       const drift = (r - (sigma * sigma) / 2) * T;
       const vol = sigma * Math.sqrt(T);

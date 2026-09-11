@@ -16,6 +16,14 @@
   --lp-accent: var(--orange-text);
   --lp-gutter: clamp(20px, 5vw, 64px);
   --lp-max: 1240px;
+  /* Corps du titre du hero, nomme pour pouvoir servir deux fois : le titre
+     lui-meme, et le decalage qui aligne la carte sur ses capitales. */
+  --lp-title-fs: clamp(34px, 4.4vw, 64px);
+  /* Ruban signature : ocre profond, texte papier. Les deux valeurs sont
+     figees (pas de jeton de theme) pour que la bande soit identique en clair
+     et en sombre ; rapport mesure 5,78:1. */
+  --lp-ribbon-bg: #a44705;
+  --lp-ribbon-ink: #fbfaf7;
   --lp-radius: 14px;
   --lp-lift: 0 10px 26px rgba(20, 33, 61, 0.09);
   background: var(--paper);
