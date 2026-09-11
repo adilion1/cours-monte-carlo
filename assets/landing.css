@@ -344,7 +344,7 @@ a.lp-chrow:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: clamp(36px, 3.4vw, 44px);
+  width: clamp(32px, 3.1vw, 44px);
   background: var(--lp-ribbon-bg);
   color: var(--lp-ribbon-ink);
   overflow: hidden;
@@ -380,10 +380,12 @@ a.lp-chrow:hover {
   padding-bottom: clamp(36px, 5vw, 70px);
 }
 
-/* Grands ecrans : le blanc entre la barre et le titre passe de 118 a 63 px.
-   40 px sous une barre de 78 px laissent le titre respirer sans y coller. */
+/* Grands ecrans : le blanc entre la barre et les capitales du titre passe de
+   118 a 57 px. 44 px de retrait sous une barre de 78 px laissent le titre
+   respirer sans y coller. Le seuil 1240 px est celui de `--lp-max` : c'est a
+   partir de la que la page cesse de s'elargir et que le vide se voyait. */
 @media (min-width: 1240px) {
-  .lp-hero-in { padding-top: 40px; }
+  .lp-hero-in { padding-top: 44px; }
 }
 
 .lp-hero-copy { min-width: 0; }
@@ -467,12 +469,16 @@ a.lp-chrow:hover {
 
 /* Le graphique signature */
 
-/* 22 px : la marge haute du titre. 0,187 x le corps : la distance entre le
-   haut de la boite de la premiere ligne et le haut de ses capitales. La somme
-   pose le bord haut de la carte exactement sur le « A » d'« Apprendre ». */
-.lp-hero-fig {
+/* 0,187 x le corps du titre : la distance mesuree entre le haut de la boite de
+   la premiere ligne et le haut de ses capitales (Fraunces, interligne 1,06).
+   Les deux colonnes partant du meme bord haut, cette seule marge pose le bord
+   superieur de la carte exactement sur le « A » d'« Apprendre », a toutes les
+   largeurs, puisqu'elle suit le corps du titre.
+   (`.landing-page figure { margin: 0 }` l'emporterait : on remonte la
+   specificite.) */
+.landing-page .lp-hero-fig {
   min-width: 0;
-  margin-top: calc(22px + 0.187 * var(--lp-title-fs));
+  margin-top: calc(0.187 * var(--lp-title-fs));
 }
 
 .lp-sigcard {
@@ -1775,7 +1781,7 @@ a.lp-chrow:hover { background: var(--lp-soft); }
      fait 560 x 320, donc 420 px de large valent exactement 240 px de haut.
      (Le SVG porte un style inline `max-height: none` : c'est la largeur du
      conteneur qui doit plafonner, pas la hauteur du dessin.) */
-  .lp-hero-fig { order: 2; margin-top: 0; }
+  .landing-page .lp-hero-fig { order: 2; margin-top: 0; }
   .lp-sig-plot { max-width: 420px; margin-inline: auto; }
   /* Le dos de livre cede la place : la signature repasse a l'horizontale,
      sur une ligne, juste au-dessus du titre. */
