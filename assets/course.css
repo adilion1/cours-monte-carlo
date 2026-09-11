@@ -1301,6 +1301,110 @@ html:has(.lesson-page) { scroll-padding-top: 148px; }
 .nav-resume span { color: var(--muted); font-family: var(--mono); font-size: 11px; }
 
 /* ------------------------------------------------------------------ *
+ * M. Le TP dans Colab (passe 8)
+ * ------------------------------------------------------------------ *
+ * Meme famille que les cartes du chapitre : cadre fin, rayon 14 px, fond
+ * `--paper-deep`. Le bouton principal est plein `--ink` et son texte prend
+ * `--paper` : le contraste tient dans les deux themes, sans seconde regle.
+ * L'anneau de focus est celui de tout le site (`:focus-visible`, plus bas). */
+
+.tp-colab {
+  max-width: var(--measure);
+  /* Sur la page d'un chapitre, la carte s'intercale entre l'en-tete et « La
+     carte des unites » : elle reprend a sa charge les 54 px que `.page-head`
+     posait sous lui, sans quoi le titre de section viendrait la toucher. */
+  margin: 0 0 54px;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper-deep);
+}
+
+.tp-colab-label {
+  margin: 0 0 13px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.tp-colab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 14px;
+}
+
+.tp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.tp-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.tp-btn.is-primary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.tp-btn.is-primary:hover {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: var(--paper);
+}
+
+.tp-arrow { font-size: 12px; line-height: 1; }
+
+.tp-colab-note {
+  margin: 13px 0 0;
+  max-width: var(--measure);
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+
+/* La meme carte, posee dans le fil d'une unite, juste avant la mise en place
+   manuelle du cours : un seul bouton, donc pas de rangee d'actions. */
+.tp-colab-inline { margin: 28px 0 26px; }
+
+/* Le petit lien de l'encadre lateral, sous la note de fil rouge. */
+.margin-tp {
+  margin: 18px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.margin-tp a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.margin-tp a:hover { color: var(--blue); border-color: var(--blue); }
+
+@media (max-width: 640px) {
+  .tp-colab { padding: 17px 16px; }
+  .tp-btn { width: 100%; justify-content: center; }
+}
+
+/* ------------------------------------------------------------------ *
  * N. Finitions communes (chargees apres styles.css et landing.css)
  * ------------------------------------------------------------------ */
 
@@ -1405,6 +1509,7 @@ html:has(.lesson-page) { scroll-padding-top: 148px; }
   .unit-end-actions,
   .unit-end-back,
   .hero-actions,
+  .tp-btn,
   .chapter-progress,
   .cb-prog,
   .pred-card,
