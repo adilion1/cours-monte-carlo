@@ -324,23 +324,87 @@ a.lp-chrow:hover {
  * 2. Hero
  * ------------------------------------------------------------------ */
 
-.lp-hero { border-bottom: 1px solid var(--lp-rule); }
+/* `position: relative` : c'est le repere du ruban signature, qui doit toucher
+   le bord gauche de la fenetre et courir sur toute la hauteur du hero. */
+.lp-hero {
+  position: relative;
+  border-bottom: 1px solid var(--lp-rule);
+}
 
+/* Le ruban signature : un dos de livre. Bande pleine, ni ombre, ni degrade,
+   ni animation. `z-index: 1` la place au-dessus du fond du hero et sous la
+   barre collante (z-index 30) ; sa largeur (44 px au maximum) reste toujours
+   en deca de la gouttiere, donc elle ne mord jamais sur le texte. */
+.lp-ribbon {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(36px, 3.4vw, 44px);
+  background: var(--lp-ribbon-bg);
+  color: var(--lp-ribbon-ink);
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Lu de bas en haut : `vertical-rl` couche le texte, la rotation le retourne. */
+.lp-ribbon span {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--display);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Passe 9 : les deux colonnes sont calees en haut, plus centrees chacune de
+   son cote. Le haut de la carte tombait 57 px au-dessus des capitales du
+   titre ; desormais les deux partent du meme bord haut, et la carte redescend
+   d'exactement la distance qui separe le haut de la boite du titre du haut de
+   ses capitales (0,187 x le corps, mesure sur Fraunces). */
 .lp-hero-in {
   display: grid;
   grid-template-columns: 55fr 45fr;
   gap: clamp(28px, 4vw, 62px);
-  align-items: center;
-  min-height: min(80vh, 760px);
-  padding-block: clamp(36px, 5vw, 70px);
+  align-items: start;
+  min-height: min(72vh, 640px);
+  padding-top: clamp(36px, 5vw, 70px);
+  padding-bottom: clamp(36px, 5vw, 70px);
+}
+
+/* Grands ecrans : le blanc entre la barre et le titre passe de 118 a 63 px.
+   40 px sous une barre de 78 px laissent le titre respirer sans y coller. */
+@media (min-width: 1240px) {
+  .lp-hero-in { padding-top: 40px; }
 }
 
 .lp-hero-copy { min-width: 0; }
 
+/* La signature a l'horizontale : elle ne sert que sous 980 px, quand le ruban
+   vertical disparait. */
+.lp-sigline {
+  display: none;
+  color: var(--lp-accent);
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
 .lp-title {
   margin-top: 22px;
   font-family: var(--display);
-  font-size: clamp(34px, 4.4vw, 64px);
+  font-size: var(--lp-title-fs);
   font-weight: 400;
   line-height: 1.06;
   letter-spacing: -0.03em;
@@ -395,7 +459,7 @@ a.lp-chrow:hover {
 /* `.landing-page p { margin: 0 }` l'emporterait sur `.lp-credit` :
    on remonte la specificite pour obtenir les 8 px sous les boutons. */
 .landing-page p.lp-credit {
-  margin-top: 8px;
+  margin-top: 16px;
   color: var(--muted);
   font-size: 13px;
   line-height: 1.6;
@@ -403,7 +467,13 @@ a.lp-chrow:hover {
 
 /* Le graphique signature */
 
-.lp-hero-fig { min-width: 0; }
+/* 22 px : la marge haute du titre. 0,187 x le corps : la distance entre le
+   haut de la boite de la premiere ligne et le haut de ses capitales. La somme
+   pose le bord haut de la carte exactement sur le « A » d'« Apprendre ». */
+.lp-hero-fig {
+  min-width: 0;
+  margin-top: calc(22px + 0.187 * var(--lp-title-fs));
+}
 
 .lp-sigcard {
   position: relative;
@@ -421,25 +491,32 @@ a.lp-chrow:hover {
   margin-bottom: 10px;
 }
 
+/* Passe 9 : l'en-tete de la carte n'est plus une etiquette de console. Inter,
+   bas de casse, aucune capitale forcee : une phrase, pas une notation. */
 .lp-sig-head .lp-sig-title {
   flex: 1 1 auto;
   min-width: 0;
   color: var(--muted);
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  letter-spacing: 0;
   line-height: 1.5;
+  font-variant-numeric: tabular-nums;
 }
 
 .lp-sig-count { flex: 0 0 auto; text-align: right; white-space: nowrap; }
 
+/* Les trois lignes de chiffres passent en Inter a chasse fixe : elles se
+   lisent comme un resultat, plus comme une sortie de terminal. Seules les deux
+   lignes du bas de la carte (K, payoff) restent en mono : ce sont des
+   formules. */
 .lp-sig-count .n {
   display: block;
   color: var(--ink);
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.03em;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Le compteur est le chiffre le plus lu de la page : Fraunces, >= 40 px
@@ -460,18 +537,21 @@ a.lp-chrow:hover {
   display: block;
   margin-top: 3px;
   color: var(--muted);
-  font-family: var(--mono);
-  font-size: 11px;
+  font-family: var(--sans);
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
+/* Le repere : l'ocre ne bouge pas, c'est lui qui dit « voila la bonne
+   reponse ». Inter comme les deux lignes au-dessus. */
 .lp-sig-count .ref {
   display: block;
   margin-top: 4px;
   color: var(--lp-accent);
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.04em;
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .lp-sig-plot { width: 100%; }
@@ -1580,6 +1660,19 @@ a.lp-chrow:hover { background: var(--lp-soft); }
   line-height: 1.6;
 }
 
+/* Rappel de la signature sous le mot-marque : une ligne, petites capitales
+   espacees, la meme grisaille que le reste du pied de page. */
+.landing-page .lp-foot-brand p.lp-footsig {
+  max-width: none;
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .lp-foot-nav { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 
 .lp-foot-nav b {
@@ -1682,8 +1775,13 @@ a.lp-chrow:hover { background: var(--lp-soft); }
      fait 560 x 320, donc 420 px de large valent exactement 240 px de haut.
      (Le SVG porte un style inline `max-height: none` : c'est la largeur du
      conteneur qui doit plafonner, pas la hauteur du dessin.) */
-  .lp-hero-fig { order: 2; }
+  .lp-hero-fig { order: 2; margin-top: 0; }
   .lp-sig-plot { max-width: 420px; margin-inline: auto; }
+  /* Le dos de livre cede la place : la signature repasse a l'horizontale,
+     sur une ligne, juste au-dessus du titre. */
+  .lp-ribbon { display: none; }
+  .lp-sigline { display: block; }
+  .lp-sigline + .lp-title { margin-top: 12px; }
   .lp-foot-in { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .lp-foot-brand { grid-column: 1 / -1; }
   .lp-promise { max-width: 46ch; }
