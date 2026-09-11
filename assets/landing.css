@@ -1739,3 +1739,7 @@ a.lp-chrow:hover { background: var(--lp-soft); }
   .lp-note:hover .lp-note-link i,
   .landing-page a.lp-end-link:hover i { transform: none; }
 }
+
+/* Passe 6 : note unique sous la frise de la méthode (remplace l'argumentaire). */
+.lp-method-note { max-width: 62ch; margin: 34px auto 0; text-align: center; font-style: italic; font-size: 17px; line-height: 1.6; color: var(--muted); }
+@media (max-width: 720px) { .lp-method-note { font-size: 15px; margin-top: 26px; } }
