@@ -1644,3 +1644,10 @@ html:has(.lesson-page) { scroll-padding-top: 148px; }
     color: #333 !important;
   }
 }
+
+/* Logo de l'institution en mode sombre : le PNG est en bleu nuit sur fond
+   transparent ; on l'inverse et on l'eclaircit pour qu'il reste lisible. */
+:root[data-theme="dark"] [data-logo-slot] img { filter: grayscale(1) invert(1) brightness(1.35); opacity: 0.85; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) [data-logo-slot] img { filter: grayscale(1) invert(1) brightness(1.35); opacity: 0.85; }
+}
