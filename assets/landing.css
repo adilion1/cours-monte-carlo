@@ -1284,6 +1284,15 @@ a.lp-chrow:hover {
   background: var(--lp-accent);
 }
 
+/* Sous 720 px, deux colonnes donnent des lignes de six mots : une seule. */
+@media (max-width: 720px) {
+  .landing-page p.lp-method-lead { text-align: left; }
+  .landing-page ul.lp-method-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
+
 /* ------------------------------------------------------------------ *
  * 8. Le parcours (chronologie)
  * ------------------------------------------------------------------ */
