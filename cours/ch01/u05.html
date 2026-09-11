@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Une option, c'est d'abord un besoin qu'on dessine · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Le dessin du besoin suffit à donner point mort, parité et bornes, sans aucun modèle du futur.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch01/u05.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Le dessin du besoin suffit à donner point mort, parité et bornes, sans aucun modèle du futur.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch01/u05.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Le dessin du besoin suffit à donner point mort, parité et bornes, sans aucun modèle du futur.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script defer src="../../assets/data/fil_rouge.js"></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch01" data-unit="u05" data-unit-title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-ch-title="Les objets de la finance qu&#x27;on peut observer" data-unit-url="cours/ch01/u05.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 01 · Les objets de la finance qu&#x27;on…</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine">Unité 5/5 · Une option, c&#x27;est d&#x27;abord un…</span></nav>
+      <span class="cb-short">Ch. 01 · 5/5</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch01" data-progress-units="u01,u02,u03,u04,u05" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/5 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Un prix n&#x27;est pas un rendement"><b>01</b><span>Un prix n&#x27;est pas un rendement</span></a><a href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs"><b>02</b><span>La volatilité mesure l&#x27;écart au centre</span></a><a href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner"><b>03</b><span>Diversifier, ce n&#x27;est pas moyenner</span></a><a href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui"><b>04</b><span>Un euro demain ne vaut…</span></a><a href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" aria-current="page"><b>05</b><span>Une option, c&#x27;est d&#x27;abord un…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Les objets de la finance qu&#x27;on peut observer">Chapitre 01 · Les objets de la finance qu&#x27;on peut observer</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05" aria-current="page"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open is-here" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 01 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#1-la-question">1. La question</a></li>
+        <li><a href="#2-on-essaie-dabord">2. On essaie d&#x27;abord</a></li>
+        <li><a href="#3-trois-scenarios-deux-flux">3. Trois scénarios, deux flux</a></li>
+        <li><a href="#4-le-tableau-a-huit-cases">4. Le tableau à huit cases</a></li>
+        <li><a href="#5-payoff-nest-pas-profit-et-le-point-mort-nest-pas-formule-prime">5. Payoff n&#x27;est pas profit, et le point mort n&#x27;est pas K + prime</a></li>
+        <li><a href="#6-deux-resultats-sans-modele-obtenus-en-comparant-des-tableaux">6. Deux résultats sans modèle, obtenus en comparant des tableaux</a></li>
+        <li><a href="#7-le-levier-chiffre">7. Le levier, chiffré</a></li>
+        <li><a href="#8-retour-a-votre-dessin">8. Retour à votre dessin</a></li>
+        <li><a href="#9-verifiez-vous">9. Vérifiez-vous</a></li>
+        <li><a href="#10-ce-que-vous-savez-faire-maintenant">10. Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 25 min<br>Travail complet 80 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 5 sur 5</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05" aria-current="page"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#1-la-question">1. La question</a><a href="#2-on-essaie-dabord">2. On essaie d&#x27;abord</a><a href="#3-trois-scenarios-deux-flux">3. Trois scénarios, deux flux</a><a href="#4-le-tableau-a-huit-cases">4. Le tableau à huit cases</a><a href="#5-payoff-nest-pas-profit-et-le-point-mort-nest-pas-formule-prime">5. Payoff n&#x27;est pas profit, et le point mort n&#x27;est pas K + prime</a><a href="#6-deux-resultats-sans-modele-obtenus-en-comparant-des-tableaux">6. Deux résultats sans modèle, obtenus en comparant des tableaux</a><a href="#7-le-levier-chiffre">7. Le levier, chiffré</a><a href="#8-retour-a-votre-dessin">8. Retour à votre dessin</a><a href="#9-verifiez-vous">9. Vérifiez-vous</a><a href="#10-ce-que-vous-savez-faire-maintenant">10. Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 01</a><span aria-hidden="true">/</span><span>Unité 05</span></nav>
+        <p class="lesson-kicker">Les objets de la finance qu'on peut observer</p>
+        <h1>Une option, c’est d’abord un besoin qu’on dessine</h1>
+        <p class="lesson-question">Le dessin du besoin suffit à donner point mort, parité et bornes, sans aucun modèle du futur.</p>
+        <div class="lesson-meta"><span>Lecture guidée 25 min</span><span>Travail complet 80 min</span><span>Une idée</span><span>Unité 05 sur 05</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><p><strong>Durée : 25 min</strong> · <strong>Prérequis : u04</strong> (actualisation, capitalisation), <strong>u01</strong> (prix et rendement), <strong>ch00 u05</strong> (fonctions, <code>assert</code>), <strong>ch00 u06</strong> (<code>np.maximum</code>).</p>
+<aside class="callout callout-idee">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8.5v7M8.5 12h7"/></svg>L'idée unique</p>
+<p><strong>L'idée unique de cette unité.</strong> Une option est le dessin d'un besoin (recevoir quelque chose seulement dans certains cas) et ce dessin suffit à en déduire un point mort, une relation de prix et des bornes, <strong>sans aucun modèle du futur</strong>.</p>
+</aside>
+<hr /></section>
+<section class="lesson-section reveal" id="1-la-question" data-section><span class="section-number">01</span><h2 id="1-la-question">1. La question</h2>
+<p>Vous gérez 100 000 € indexés sur le S&amp;P 500, qui cote <strong>7 718,60</strong>. Vous voulez garder la hausse, mais <strong>ne pas perdre plus de 10 %</strong> sur un an. <em>(Le portefeuille du cours a six lignes ; cette unité raisonne comme s'il suivait exactement l'indice, le couvrir ligne à ligne est le sujet du ch08.)</em></p>
+<p><strong>Prenez une feuille. En abscisse, le niveau du S&amp;P 500 dans un an, de 5 000 à 10 000 ; en ordonnée, ce que vous voudriez recevoir en euros, en plus de votre portefeuille.</strong> Un point pour commencer : à 6 000, vous avez perdu 22 % et vouliez vous arrêter à −10 %, donc combien faut-il vous verser ? Recommencez à 7 000, 8 000, 9 000, et reliez. Ne cherchez pas le nom du produit ; la réponse est au §8.</p>
+<aside class="pred-card" data-pred="ch01.u05" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch01-u05">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch01-u05" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="2-on-essaie-dabord" data-section><span class="section-number">02</span><h2 id="2-on-essaie-dabord">2. On essaie d’abord</h2>
+<p>Gardez votre dessin et écrivez une seconde réponse : <em>je paie 546,28 le droit d'acheter une unité de S&amp;P 500 à 7 718,60 dans un an. À partir de quel niveau est-ce que je gagne ?</em></p>
+</section>
+<section class="lesson-section reveal" id="3-trois-scenarios-deux-flux" data-section><span class="section-number">03</span><h2 id="3-trois-scenarios-deux-flux">3. Trois scénarios, deux flux</h2>
+<p>Un contrat, trois cas. Il donne le <strong>droit d'acheter</strong> une unité de S&amp;P 500 à 7 718,60 dans un an (le droit, pas l'obligation) et coûte <strong>546,28</strong> aujourd'hui.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Dans un an, le S&amp;P 500 vaut</th>
+<th>6 800</th>
+<th>7 718,60</th>
+<th>8 500</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>J'exerce mon droit ?</td>
+<td>non</td>
+<td>indifférent</td>
+<td><strong>oui</strong></td>
+</tr>
+<tr>
+<td>Ce que le contrat me verse</td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+<td><strong>781,40</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>À 6 800, acheter à 7 718,60 serait absurde : on n'exerce pas, le contrat verse 0. À 8 500, on achète 8 500 pour 7 718,60 : il verse la différence, <strong>781,40</strong>.</p>
+<p>Deux flux, deux dates : <strong>−546,28 aujourd'hui</strong>, <strong>+781,40 ou rien dans un an</strong>. Le vocabulaire :</p>
+<ul>
+<li>le <strong>sous-jacent</strong>, l'actif sur lequel porte le contrat, ici le S&amp;P 500 ;</li>
+<li>l'<strong>échéance</strong> <span class="math">T</span>, la date où le droit s'éteint, ici <span class="math">T = 1</span> an ;</li>
+<li>le <strong>prix d'exercice</strong> <span class="math">K</span>, le prix fixé d'avance, ici 7 718,60 ;</li>
+<li>la <strong>prime</strong>, ce que l'acheteur paie aujourd'hui, ici 546,28 ;</li>
+<li>un <strong>call</strong>, le droit d'acheter à <span class="math">K</span> ; un <strong>put</strong>, celui de vendre à <span class="math">K</span> ;</li>
+<li>la <strong>position longue</strong>, celle de l'acheteur ; la <strong>courte</strong>, celle du vendeur, aux flux opposés.</li>
+</ul>
+<blockquote>
+<p><strong>D'où vient 546,28 ?</strong> C'est la <strong>prime de référence du cours</strong>, une donnée comme <span class="math">S_0</span> ou <span class="math">r</span>. Ce chapitre n'a pas les outils pour l'expliquer et ne fera pas semblant : le chapitre 3 dira d'où elle vient.</p>
+<p><strong>Formule : le payoff d'un call.</strong>
+<span class="math math-display">h(S_T) = \max(S_T - K,\ 0)</span>
+<strong><span class="math">S_T</span></strong> : prix du sous-jacent à l'échéance · <strong><span class="math">K</span></strong> : prix d'exercice · <strong><span class="math">h</span></strong> : le <em>payoff</em>, ce que le contrat verse à l'échéance, <strong>sans tenir compte de ce qu'il a coûté</strong>. En numpy : <code>np.maximum(S - K, 0)</code>, la fonction fournie <code>payoff_call(S, K)</code>. Payoff du put : <span class="math">\max(K - S_T,\ 0)</span>.</p>
+</blockquote>
+</section>
+<section class="lesson-section reveal" id="4-le-tableau-a-huit-cases" data-section><span class="section-number">04</span><h2 id="4-le-tableau-a-huit-cases">4. Le tableau à huit cases</h2>
+<p>Quatre positions, trois scénarios. D'abord les <strong>payoffs</strong> :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Position</th>
+<th><span class="math">S_T = 6\,800</span></th>
+<th><span class="math">S_T = 7\,718{,}60</span></th>
+<th><span class="math">S_T = 8\,500</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>call <strong>long</strong></td>
+<td>0</td>
+<td>0</td>
+<td><strong>+781,40</strong></td>
+</tr>
+<tr>
+<td>call <strong>court</strong></td>
+<td>0</td>
+<td>0</td>
+<td>−781,40</td>
+</tr>
+<tr>
+<td>put <strong>long</strong></td>
+<td><strong>+918,60</strong></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>put <strong>court</strong></td>
+<td>−918,60</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><strong>somme des quatre</strong></td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>La dernière ligne est le contrôle le plus utile : <strong>la somme des quatre payoffs est nulle dans chaque colonne</strong>. Ce qu'un acheteur reçoit, un vendeur le verse ; le contrat ne crée rien.</p>
+</section>
+<section class="lesson-section reveal" id="5-payoff-nest-pas-profit-et-le-point-mort-nest-pas-formule-prime" data-section><span class="section-number">05</span><h2 id="5-payoff-nest-pas-profit-et-le-point-mort-nest-pas-formule-prime">5. Payoff n’est pas profit, et le point mort n’est pas <span class="math">K</span> + prime</h2>
+<p>Le payoff ignore la prime, le <strong>profit</strong> non. La prime est payée <strong>aujourd'hui</strong>, le payoff reçu <strong>dans un an</strong> : u04 dit comment comparer deux dates. Prime capitalisée : <span class="math">546{,}28 \times e^{0{,}0375} = \mathbf{567{,}15}</span>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Position</th>
+<th><span class="math">S_T = 6\,800</span></th>
+<th><span class="math">S_T = 7\,718{,}60</span></th>
+<th><span class="math">S_T = 8\,500</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>profit du call long</td>
+<td>−567,15</td>
+<td>−567,15</td>
+<td><strong>+214,25</strong></td>
+</tr>
+<tr>
+<td>profit du put long</td>
+<td>+646,39</td>
+<td>−272,21</td>
+<td>−272,21</td>
+</tr>
+</tbody>
+</table></div>
+<p>Le <strong>point mort</strong>, le niveau où le profit devient positif, vaut donc <span class="math">K + 567{,}15 = \mathbf{8\,285{,}75}</span>, soit <strong>7,35 % au-dessus du cours</strong>. Le calcul spontané, <span class="math">K + 546{,}28 = 8\,264{,}88</span>, se trompe de <strong>20,87 points</strong> : il oublie que la prime aurait pu être placée un an. Point mort du put long : <span class="math">K - 272{,}21 = \mathbf{7\,446{,}39}</span>.</p>
+<aside class="callout callout-piege">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4.5M12 17.4v.2"/></svg>Piège classique</p>
+<p><strong>Piège classique : la prime n'entre pas dans la décision d'exercice.</strong> À <span class="math">S_T = 7\,900</span>, le call long verse <span class="math">\max(7\,900 - 7\,718{,}60, 0) = \mathbf{181{,}40}</span> et l'opération perd <strong>385,75</strong>. Faut-il exercer ? <strong>Oui</strong> : à l'échéance le choix est entre 181,40 et 0, la prime est déjà payée. Y renoncer coûte 181,40 de plus. La faute mélange deux questions : <em>ai-je gagné ?</em> (non) et <em>que faire maintenant ?</em> (exercer).</p>
+</aside>
+<figure class="unit-figure fig-wide"><img src="figures/fig06_payoff_puis_profit.png" alt="Deux panneaux à la même échelle verticale. (a) Le payoff du call long : plat à zéro, puis une droite qui monte depuis le coude en K = 7 718,60 ; jamais négatif. (b) Le profit : la même courbe, descendue de 567,15 ; elle coupe l&#x27;axe au point mort 8 285,75, et le palier de gauche est la perte maximale de l&#x27;acheteur." width="2197" height="874" loading="lazy"><figcaption>Deux panneaux à la même échelle verticale. (a) Le payoff du call long : plat à zéro, puis une droite qui monte depuis le coude en K = 7 718,60 ; jamais négatif. (b) Le profit : la même courbe, descendue de 567,15 ; elle coupe l&#x27;axe au point mort 8 285,75, et le palier de gauche est la perte maximale de l&#x27;acheteur.</figcaption></figure>
+</section>
+<section class="lesson-section reveal" id="6-deux-resultats-sans-modele-obtenus-en-comparant-des-tableaux" data-section><span class="section-number">06</span><h2 id="6-deux-resultats-sans-modele-obtenus-en-comparant-des-tableaux">6. Deux résultats sans modèle, obtenus en comparant des tableaux</h2>
+<p><strong>Un.</strong> Le put de mêmes <span class="math">K</span> et <span class="math">T</span> est affiché à <strong>262,19</strong>. Alors <span class="math">C - P = \mathbf{284{,}0876}</span> et <span class="math">S_0 - K e^{-rT} = \mathbf{284{,}0876}</span> : le même nombre, à la quatrième décimale.</p>
+<p>Cela se voit sans calcul : « acheter le call et vendre le put » verse <span class="math">S_T - K</span> dans <strong>tous</strong> les scénarios (vérifiez-le au §4), et « détenir une unité d'indice en devant <span class="math">K</span> à l'échéance » aussi. <strong>Deux paquets de flux identiques partout ne peuvent pas avoir deux prix</strong> : sinon on achèterait le moins cher, vendrait l'autre, et empocherait la différence sans rien devoir. C'est l'<strong>absence d'opportunité d'arbitrage</strong> (AOA), d'où la <strong>parité call-put</strong> :</p>
+<div class="math math-display">C - P = S_0 - K e^{-rT}.</div>
+<p><strong>Deux.</strong> Le même raisonnement encadre les deux prix sans rien supposer : <span class="math">\max(S_0 - Ke^{-rT},\ 0) \le C \le S_0</span>, soit <strong>284,09 ≤ 546,28 ≤ 7 718,60</strong> (un droit d'acheter ne vaut pas plus que ce qu'il permet d'acheter), et <span class="math">\max(Ke^{-rT} - S_0,\ 0) \le P \le Ke^{-rT}</span>, soit <strong>0 ≤ 262,19 ≤ 7 434,51</strong>.</p>
+<aside class="callout callout-demo">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18.5 8 11l4 4 3-5 6 8.5Z"/><circle cx="7" cy="5.5" r="2"/></svg>Démo interactive</p>
+<p><strong>Démo interactive</strong> : <em>Le constructeur de payoff.</em> Quatre cases (call long/court, put long/court), curseurs <span class="math">K</span>, prime, <span class="math">S_T</span> ; trace la somme des payoffs cochés et le tableau correspondant. On voit : « call long + put court » redessine la droite du sous-jacent, soit la parité, dessinée avant d'être écrite.</p>
+</aside><div class="demo" data-demo="ch01-u05"></div>
+</section>
+<section class="lesson-section reveal" id="7-le-levier-chiffre" data-section><span class="section-number">07</span><h2 id="7-le-levier-chiffre">7. Le levier, chiffré</h2>
+<p>Mise de 10 000 € : sur l'indice elle achète <strong>1,2956</strong> unité, sur le call <strong>18,306</strong> contrats. À <span class="math">S_T = 7\,000</span>, cela fait <strong>−9,3 %</strong> contre <strong>−100 %</strong> ; à 8 500, <strong>+10,1 %</strong> contre <strong>+43,0 %</strong> ; à 9 000, <strong>+16,6 %</strong> contre <strong>+134,6 %</strong>. <em>(Ces pourcentages ne capitalisent pas la mise, convention du levier : d'où la courbe rouge qui coupe le zéro en 8 264,88, non au point mort 8 285,75.)</em></p>
+<figure class="unit-figure"><img src="figures/fig07_levier.png" alt="Les mêmes rendements sur toute la plage de S_T, et non plus sur trois scénarios. Ce qu&#x27;il faut voir : la droite bleue de l&#x27;indice est douce, la courbe rouge du call brisée au prix d&#x27;exercice ; à droite sa pente est quatorze fois plus raide, à gauche elle s&#x27;écrase sur un plancher à −100 %." width="1557" height="914" loading="lazy"><figcaption>Les mêmes rendements sur toute la plage de S_T, et non plus sur trois scénarios. Ce qu&#x27;il faut voir : la droite bleue de l&#x27;indice est douce, la courbe rouge du call brisée au prix d&#x27;exercice ; à droite sa pente est quatorze fois plus raide, à gauche elle s&#x27;écrase sur un plancher à −100 %.</figcaption></figure>
+<p>C'est là que se corrige l'idée reçue « une option, c'est un pari ». Côté acheteur, la perte est <strong>bornée à la prime</strong>, ce que ne garantit pas une <strong>vente à découvert</strong>, c'est-à-dire vendre un titre qu'on ne détient pas : si le cours monte, la perte n'a aucun plafond. Un contrat peut réduire un risque autant qu'en prendre.</p>
+</section>
+<section class="lesson-section reveal" id="8-retour-a-votre-dessin" data-section><span class="section-number">08</span><h2 id="8-retour-a-votre-dessin">8. Retour à votre dessin</h2>
+<p>Ce que vous avez dessiné au §1 (rien tant que le marché tient, de quoi combler le trou s'il tombe sous 90 %) est un <strong>put</strong> de prix d'exercice <span class="math">0{,}90 \times 7\,718{,}60 = 6\,946{,}74</span>, affiché à <strong>61,67 par unité d'indice</strong>, soit <strong>0,80 % de <span class="math">S_0</span></strong>. Couvrir 100 000 € demande 12,956 unités, soit <strong>799 €</strong> pour ne pas perdre plus de 10 % en un an : une prime d'assurance, au coût connu d'avance.</p>
+<p>Trois mots pour finir. La <strong>valeur intrinsèque</strong> est ce que l'option rapporterait si l'échéance était aujourd'hui : <span class="math">\max(7\,718{,}60 - 7\,718{,}60, 0) = 0</span>. La <strong>valeur temps</strong> est tout le reste : <strong>546,28</strong>, la totalité. L'option est <strong>à la monnaie</strong> quand <span class="math">S = K</span>, <strong>dans la monnaie</strong> si l'exercer maintenant rapporterait quelque chose, <strong>en dehors</strong> sinon.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> sys; sys.path.<span class="name">insert</span>(<span class="number">0</span>, <span class="string">&quot;..&quot;</span>)
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> mcdp_utils <span class="keyword">import</span> payoff_call, payoff_put
+
+S0 = K = <span class="number">7718.60</span>
+r, T, prime_call, prime_put = <span class="number">0.0375</span>, <span class="number">1.0</span>, <span class="number">546.2794</span>, <span class="number">262.1918</span>
+scenarios = np.<span class="name">array</span>([<span class="number">6800.0</span>, <span class="number">7718.60</span>, <span class="number">8500.0</span>])
+
+huit_cases = [<span class="name">payoff_call</span>(scenarios, K), -<span class="name">payoff_call</span>(scenarios, K),
+              <span class="name">payoff_put</span>(scenarios, K), -<span class="name">payoff_put</span>(scenarios, K)]
+<span class="keyword">assert</span> np.<span class="name">allclose</span>(<span class="name">sum</span>(huit_cases), <span class="number">0.0</span>)               <span class="comment"># somme nulle par colonne</span>
+point_mort = K + prime_call * np.<span class="name">exp</span>(r * T)            <span class="comment"># 8285.75</span>
+<span class="keyword">assert</span> <span class="name">abs</span>((prime_call - prime_put) - (S0 - K * np.<span class="name">exp</span>(-r * T))) &lt; <span class="number">1e-3</span>
+<span class="name">print</span>(<span class="name">round</span>(point_mort, <span class="number">2</span>), <span class="name">round</span>(<span class="name">payoff_put</span>(<span class="number">6800.0</span>, K), <span class="number">2</span>))    <span class="comment"># -&gt; 8285.75 918.6</span>
+</code></pre></div>
+<p><code>payoff_call(scenarios, K)</code> traite les trois scénarios d'un coup : la vectorisation de ch00 u06. <code>huit_cases</code> range les quatre positions, le signe moins fabriquant les courtes ; <code>np.allclose</code> vérifie que leur somme est nulle, et le second <code>assert</code> est la parité, en test relançable.</p>
+</section>
+<section class="lesson-section reveal" id="9-verifiez-vous" data-section><span class="section-number">09</span><h2 id="9-verifiez-vous">9. Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch01.u05" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<ol>
+<li><strong>(★)</strong> <span class="math">K = 7\,718{,}60</span>, prime 546,28, <span class="math">S_T = 8\,000</span>. Payoff ? Profit ? Exerce-t-on ?</li>
+<li><strong>(★★★)</strong> On vous propose le put à <strong>200</strong> au lieu de 262,19, les autres prix inchangés. Que faites-vous ? <em>(Indice : la parité impose <span class="math">C - P = 284{,}09</span>, ici 346,28. Le paquet trop cher se vend, l'autre s'achète ; emprunter <span class="math">Ke^{-rT}</span>, c'est devoir exactement <span class="math">K</span> dans un an.)</em></li>
+<li><strong>(★★, retour sur u04)</strong> Pourquoi le point mort est-il 8 285,75 et non 8 264,88 ?</li>
+<li><strong>(★, retour sur ch00 u06)</strong> Écrivez en une ligne le payoff d'un put sur un tableau <code>S</code> de prix d'échéance.</li>
+</ol>
+<details class="check"><summary>Réponses</summary><div>
+
+1. Payoff <span class="math">= \max(8\,000 - 7\,718{,}60, 0) = \mathbf{281{,}40}</span>. Profit <span class="math">= 281{,}40 - 567{,}15 = \mathbf{-285{,}75}</span>. **On exerce quand même** : à l'échéance, le choix est entre 281,40 et 0.
+2. La parité est violée : <span class="math">C - P</span> vaudrait 346,28 au lieu de 284,09. On **achète le put** (−200), **vend le call** (+546,28), **achète l'indice** (−7 718,60) et **emprunte** <span class="math">Ke^{-rT} = 7\,434{,}51</span> : bilan **+62,19 €** aujourd'hui, et à l'échéance les flux s'annulent quel que soit <span class="math">S_T</span>, soit un gain sans mise ni risque, que l'AOA interdit.
+3. La prime est payée **aujourd'hui**, le payoff reçu **dans un an** : ramenés à la même date, <span class="math">546{,}28 \times e^{0{,}0375} = 567{,}15</span>, d'où 20,87 points d'écart.
+4. `np.maximum(K - S, 0)`, ou, à l'identique, `payoff_put(S, K)`.
+
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="10-ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">10</span><h2 id="10-ce-que-vous-savez-faire-maintenant">10. Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Remplir un tableau de payoff à huit cases, le contrôler par la somme nulle par colonne, en déduire le profit.</li>
+<li>Calculer un point mort avec la prime capitalisée, et dire pourquoi elle n'entre pas dans la décision d'exercice.</li>
+<li>Vérifier parité et bornes, du call comme du put, <strong>sans aucun modèle</strong>.</li>
+</ul>
+<p><strong>Chapitre suivant.</strong> Tout ce chapitre s'est passé sans un seul énoncé sur les chances que quelque chose arrive, et un nombre y a pourtant été <strong>posé</strong> sans explication : la prime de 546,28. Aucun objet observable ne la produit ; pour la fabriquer, il faut mesurer ce qui n'est pas encore arrivé. C'est le chapitre 2 : le hasard comme outil de calcul.</p>
+<hr />
+<p><strong>Sources.</strong> S. Lovo, <em>Financial Markets, 4: Options</em>, HEC Paris, 2021, <a class="url-plain" href="https://people.hec.edu/lovo/wp-content/uploads/sites/28/2021/11/FM21_4_optionsSL.pdf">https://people.hec.edu/lovo/wp-content/uploads/sites/28/2021/11/FM21_4_optionsSL.pdf</a> : <strong>licence non déclarée : structure imitée, chiffres refaits</strong> · A. W. Lo, MIT OCW 15.401, 2008, <em>lecture 10</em>, <a class="url-plain" href="https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/c40ecc0cc0dce0fbf2d229bc4027c43b_MIT15_401F08_lec10.pdf">https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/c40ecc0cc0dce0fbf2d229bc4027c43b_MIT15_401F08_lec10.pdf</a>, CC BY-NC-SA 4.0 · Cboe, <em>Debunking Options Myths</em>, 2024, <a class="url-plain" href="https://www.cboe.com/insights/posts/debunking-options-myths/">https://www.cboe.com/insights/posts/debunking-options-myths/</a> : <strong>juge et partie</strong>.</p></section>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui"><small>Unité précédente</small><strong>04 · Un euro demain ne vaut…</strong></a><div class="unit-nav-card next is-locked" title="Le hasard comme outil"><small>Chapitre suivant</small><strong>02 · Le hasard comme outil</strong><small>Disponible après la séance 2</small></div></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 01</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 01 · unité 05<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

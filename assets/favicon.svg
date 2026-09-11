@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Adil">
+  <title>Adil</title>
+  <!-- La marque du site : les deux lignes brisées du mot-marque, redessinées à
+       l'échelle de l'icône. Les tracés sont ceux de BRANDMARK (viewBox 0 0 30),
+       multipliés par 1,9333 et décalés de 3 : même geste, même croisement.
+       Épaisseurs portées à 5,5 et 4,5 unités (1,4 et 1,1 px à 16 px) : à cette
+       taille, les 1,15 unité de la barre du haut disparaîtraient. Le halo encre
+       posé sous la ligne ocre (8 unités, soit 1,75 de part et d'autre) creuse un
+       vide là où les deux se croisent, sinon elles se confondent en un seul pâté
+       dans l'onglet. Testé à 16, 32 et 64 px. -->
+  <rect width="64" height="64" rx="12" fill="#14213D"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8.8 51.3 22.33 14.6 33.93 43.6 45.53 22.33 55.2 51.3"
+          stroke="#FBFAF7" stroke-width="5.5"/>
+    <path d="M10.73 47.47 22.33 37.8 33.93 43.6 45.53 28.13 55.2 30.07"
+          stroke="#14213D" stroke-width="8"/>
+    <path d="M10.73 47.47 22.33 37.8 33.93 43.6 45.53 28.13 55.2 30.07"
+          stroke="#D95F02" stroke-width="4.5"/>
+  </g>
+</svg>

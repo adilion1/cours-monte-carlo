@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Six lignes suffisent pour voir seize ans de marché · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Exécuter une cellule, c’est faire faire un travail à une machine et en regarder le résultat ; comprendre les six lignes n’est pas nécessaire pour cela.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u01.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Six lignes suffisent pour voir seize ans de marché · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Exécuter une cellule, c’est faire faire un travail à une machine et en regarder le résultat ; comprendre les six lignes n’est pas nécessaire pour cela.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u01.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Six lignes suffisent pour voir seize ans de marché · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Exécuter une cellule, c’est faire faire un travail à une machine et en regarder le résultat ; comprendre les six lignes n’est pas nécessaire pour cela.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script defer src="../../assets/data/fil_rouge.js"></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch00" data-unit="u01" data-unit-title="Six lignes suffisent pour voir seize ans de marché" data-ch-title="Outils : Python de zéro, sans rien installer" data-unit-url="cours/ch00/u01.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 00 · Outils</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Six lignes suffisent pour voir seize ans de marché">Unité 1/8 · Six lignes suffisent pour voir…</span></nav>
+      <span class="cb-short">Ch. 00 · 1/8</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch00" data-progress-units="u01,u02,u03,u04,u05,u06,u07,u08" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/8 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" aria-current="page"><b>01</b><span>Six lignes suffisent pour voir…</span></a><a href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque"><b>02</b><span>Un nom retient un résultat…</span></a><a href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom"><b>03</b><span>Une liste range des prix dans l&#x27;ordre</span></a><a href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes"><b>04</b><span>Une boucle parcourt</span></a><a href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu"><b>05</b><span>Une fonction nomme un calcul</span></a><a href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une"><b>06</b><span>Un tableau numpy remplace la boucle</span></a><a href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours"><b>07</b><span>Votre machine devient l&#x27;ordinateur du cours</span></a><a href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours"><b>08</b><span>Huit fiches d&#x27;une page suffisent…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Outils : Python de zéro, sans rien installer">Chapitre 00 · Outils : Python de zéro…</a></p>
+      <ul class="ol-units"><li><a class="ol-unit is-current" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01" aria-current="page"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open is-here" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 00 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#la-question">La question</a></li>
+        <li><a href="#on-essaie-dabord">On essaie d&#x27;abord</a></li>
+        <li><a href="#lidee">L&#x27;idée</a></li>
+        <li><a href="#le-piege-un-message-rouge-est-une-phrase-pas-un-degat">Le piège : un message rouge est une phrase, pas un dégât</a></li>
+        <li><a href="#verifiez-vous">Vérifiez-vous</a></li>
+        <li><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 15 min<br>Travail complet 50 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 1 sur 8</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit is-current" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01" aria-current="page"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#la-question">La question</a><a href="#on-essaie-dabord">On essaie d&#x27;abord</a><a href="#lidee">L&#x27;idée</a><a href="#le-piege-un-message-rouge-est-une-phrase-pas-un-degat">Le piège : un message rouge est une phrase, pas un dégât</a><a href="#verifiez-vous">Vérifiez-vous</a><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 00</a><span aria-hidden="true">/</span><span>Unité 01</span></nav>
+        <p class="lesson-kicker">Outils : Python de zéro, sans rien installer</p>
+        <h1>Six lignes suffisent pour voir seize ans de marché</h1>
+        <p class="lesson-question">Exécuter une cellule, c'est faire faire un travail à une machine et en regarder le résultat ; comprendre les six lignes n'est pas nécessaire pour cela.</p>
+        <div class="lesson-meta"><span>Lecture guidée 15 min</span><span>Travail complet 50 min</span><span>Une idée</span><span>Unité 01 sur 08</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><blockquote>
+<p><strong>Durée</strong> 15 min · <strong>Prérequis</strong> aucun, c'est la première unité du cours · <strong>Idée unique</strong> : exécuter une cellule, c'est faire faire un travail à une machine et en regarder le résultat ; comprendre les six lignes n'est pas nécessaire pour cela.</p>
+</blockquote></section>
+<section class="lesson-section reveal" id="la-question" data-section><span class="section-number">01</span><h2 id="la-question">La question</h2>
+<p>Le 5 janvier 2010, l'indice S&amp;P 500 (un nombre qui résume la valeur boursière de cinq cents grandes sociétés américaines cotées, chacune comptant à proportion de sa taille) a terminé la journée à <strong>1 136,52</strong>. Le 4 septembre 2026, il a terminé à <strong>7 718,60</strong>. Entre les deux, <strong>4 151 séances</strong> : 4 151 journées où la bourse a ouvert, coté, puis fermé, chacune laissant un <em>cours de clôture</em>, c'est-à-dire le dernier prix traité avant la fermeture.</p>
+<p>Ces deux nombres ne disent rien du chemin. La montée a-t-elle été régulière ? Où se voit le décrochage de mars 2020 ? Et 2022, réputée mauvaise année, se remarque-t-elle vraiment ? Un tableau de 4 151 lignes ne répond pas à ces questions : personne ne lit 4 151 nombres. Une courbe y répond en une seconde.</p>
+<p>La question de cette unité n'est donc pas financière, elle est pratique : <strong>combien de temps faut-il pour faire apparaître cette courbe quand on n'a jamais écrit une ligne de code et qu'on n'a rien installé sur sa machine ?</strong></p>
+<aside class="pred-card" data-pred="ch00.u01" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch00-u01">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch00-u01" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="on-essaie-dabord" data-section><span class="section-number">02</span><h2 id="on-essaie-dabord">On essaie d’abord</h2>
+<p>Deux réponses à écrire avant de lire la suite, sur papier ou dans une case de texte du document que vous allez ouvrir.</p>
+<ol>
+<li>Combien de <strong>minutes</strong> vous semblent nécessaires pour obtenir cette courbe, en partant de rien ?</li>
+<li>De 1 136,52 à 7 718,60, le niveau de l'indice a-t-il été multiplié par <strong>3</strong>, par <strong>7</strong> ou par <strong>15</strong> ?</li>
+</ol>
+<p>La seconde réponse tombe tout de suite : 7 718,60 ÷ 1 136,52 = <strong>6,79</strong>. Beaucoup de lecteurs répondent 15, parce que la courbe qu'ils ont en tête est celle des trois dernières années, la plus raide. Gardez votre estimation de la question 1 sous les yeux : nous la confronterons à la fin.</p>
+</section>
+<section class="lesson-section reveal" id="lidee" data-section><span class="section-number">03</span><h2 id="lidee">L’idée</h2>
+<h3 id="trois-objets-a-nommer-avant-de-toucher-au-clavier">Trois objets à nommer avant de toucher au clavier</h3>
+<p>Ouvrez <strong><code>colab.research.google.com</code></strong> et mettez en place le notebook du chapitre en suivant les six gestes décrits dans <code>chapitre.md</code>, § « Zéro installation » : importer le notebook, puis téléverser <code>mcdp_utils.py</code> et le dossier <code>data</code> contenant les deux fichiers <code>.csv</code>. Trois minutes, une seule fois par session. <strong>Colab</strong> est un service qui vous prête, dans votre navigateur, une machine déjà équipée de Python : rien à installer, rien à configurer, et rien que vous puissiez casser sur votre propre ordinateur.</p>
+<p>Ce que vous avez sous les yeux s'appelle un <strong>notebook</strong> : un document qui alterne des blocs de texte et des blocs de code. Un bloc s'appelle une <strong>cellule</strong>. À gauche de chaque cellule de code, un bouton en forme de triangle : <strong>exécuter</strong> cette cellule, c'est demander à la machine de faire ce qui y est écrit. Le raccourci clavier est <code>Maj+Entrée</code>, et c'est le seul geste à mémoriser aujourd'hui. Ce que la machine renvoie s'affiche juste en dessous : c'est la <strong>sortie</strong>.</p>
+<h3 id="trois-fichiers-deposes-a-cote-de-vous">Trois fichiers déposés à côté de vous</h3>
+<p>La machine que Colab vous prête est vide au démarrage. Les trois gestes du § « Zéro installation » y déposent exactement trois choses : le <strong>module du cours</strong> <code>mcdp_utils.py</code>, et les deux fichiers de <strong>données</strong> dans un dossier <code>data</code>. Vous pouvez les voir à tout moment dans le panneau « Fichiers », l'icône en forme de dossier dans la barre de gauche.</p>
+<p>Vérifiez avant d'aller plus loin. Cliquez dans la cellule suivante et faites <code>Maj+Entrée</code> :</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> os
+<span class="name">print</span>(os.path.<span class="name">exists</span>(<span class="string">&quot;mcdp_utils.py&quot;</span>), os.<span class="name">listdir</span>(<span class="string">&quot;data&quot;</span>))
+<span class="comment"># True [&#x27;prices.csv&#x27;, &#x27;returns_daily.csv&#x27;]</span>
+</code></pre></div>
+<p>Si vous lisez <code>True</code> puis les deux noms de fichiers, tout est en place. Si vous lisez <code>False</code>, le module n'a pas été téléversé ; si vous obtenez <code>FileNotFoundError: 'data'</code>, c'est le dossier qui manque ou dont le nom n'est pas écrit en minuscules. Reprenez les six gestes de <code>chapitre.md</code>, ils prennent trois minutes.</p>
+<h3 id="les-six-lignes">Les six lignes</h3>
+<p>Copiez ceci dans la cellule suivante et faites <code>Maj+Entrée</code>.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+<span class="keyword">from</span> mcdp_utils <span class="keyword">import</span> charger_fil_rouge
+fil = <span class="name">charger_fil_rouge</span>()
+fig, ax = plt.<span class="name">subplots</span>()
+ax.<span class="name">plot</span>(fil[<span class="string">&quot;dates&quot;</span>], fil[<span class="string">&quot;prix&quot;</span>][<span class="string">&quot;SP500&quot;</span>])
+</code></pre></div>
+<figure class="unit-figure"><img src="figures/fig_ch00_u01_courbe_sp500.png" alt="Les 4 151 cours de clôture du S&amp;P 500, du 5 janvier 2010 au 4 septembre 2026. Ce qu&#x27;il faut voir : le chemin, pas les extrémités, c&#x27;est-à-dire la pente régulière jusqu&#x27;en 2020, le décrochage vertical de mars 2020 rattrapé en quelques mois, le creux de 2022 qui met deux ans à être effacé, et la raideur de 2024-2026. Les deux nombres annotés sont ceux de la question ; tout le reste est ce qu&#x27;ils ne disaient pas." width="1361" height="834" loading="lazy"><figcaption>Les 4 151 cours de clôture du S&amp;P 500, du 5 janvier 2010 au 4 septembre 2026. Ce qu&#x27;il faut voir : le chemin, pas les extrémités, c&#x27;est-à-dire la pente régulière jusqu&#x27;en 2020, le décrochage vertical de mars 2020 rattrapé en quelques mois, le creux de 2022 qui met deux ans à être effacé, et la raideur de 2024-2026. Les deux nombres annotés sont ceux de la question ; tout le reste est ce qu&#x27;ils ne disaient pas.</figcaption></figure>
+<p>Seize ans de marché sont à l'écran. Vous n'avez rien installé, rien compris, et la figure est juste.</p>
+<h3 id="maintenant-une-phrase-par-ligne">Maintenant, une phrase par ligne</h3>
+<p>C'est l'ordre qui compte : la courbe d'abord, l'explication ensuite.</p>
+<ul>
+<li><code>import numpy as np</code> : une <strong>bibliothèque</strong> est une boîte à outils écrite par d'autres et livrée avec Python. <code>import</code> l'ouvre ; <code>as np</code> lui donne un surnom court, parce qu'on va l'écrire des centaines de fois. <code>numpy</code> est la bibliothèque de calcul sur des suites de nombres (unité u06).</li>
+<li><code>import matplotlib.pyplot as plt</code> : même geste, pour la bibliothèque de dessin. Son surnom d'usage est <code>plt</code>.</li>
+<li><code>from mcdp_utils import charger_fil_rouge</code> : cette fois on ne prend pas toute la boîte, mais <strong>un seul outil</strong> dans la boîte du cours, celle que la cellule 0 a téléchargée.</li>
+<li><code>fil = charger_fil_rouge()</code> : les parenthèses signifient « fais-le maintenant ». L'outil va chercher les données du cours et rend un objet, que le signe <code>=</code> range sous le nom <code>fil</code>. Ce signe est le sujet entier de l'unité suivante.</li>
+<li><code>fig, ax = plt.subplots()</code> : fabrique une <strong>figure</strong> vide (<code>fig</code>, la feuille) et son <strong>axe</strong> (<code>ax</code>, la zone où l'on a le droit de dessiner). Cette ligne ne dessine rien : elle prépare.</li>
+<li><code>ax.plot(fil["dates"], fil["prix"]["SP500"])</code> : dessine. Les deux valeurs écrites entre les parenthèses s'appellent les <strong>arguments</strong> : ce qu'on donne à l'outil pour qu'il travaille (u05 y reviendra). Ici, dans l'ordre, ce qui va en <strong>abscisse</strong> (l'axe horizontal, les dates) et ce qui va en <strong>ordonnée</strong> (l'axe vertical, les clôtures du S&amp;P 500).</li>
+</ul>
+<p>Retenez la répartition des rôles (<code>plt.subplots()</code> <strong>fabrique</strong>, <code>ax.plot</code> <strong>dessine</strong>) et rien d'autre. Le vocabulaire des crochets <code>[...]</code> vient en u03.</p>
+<h3 id="deux-gestes-qui-font-gagner-du-temps">Deux gestes qui font gagner du temps</h3>
+<p>Tapez <code>charger_fil</code> puis la touche <code>Tab</code> : Colab complète le nom. Tapez <code>charger_fil_rouge?</code> (avec le point d'interrogation) et exécutez : la documentation de l'outil s'affiche, y compris la liste de ce qu'il rend. Vous n'avez donc jamais à retenir un nom en entier ni à deviner ce qu'une fonction renvoie.</p>
+<h3 id="changer-un-mot-changer-dactif">Changer un mot, changer d’actif</h3>
+<p>Remplacez <code>"SP500"</code> par <code>"GLD"</code> (un fonds adossé à l'or) et réexécutez la cellule. La même ligne de code produit une autre courbe, qui termine à <strong>406,77</strong>. Le fichier contient huit <strong>actifs</strong>, huit séries de prix qu'on suit jour après jour : des indices, des actions et des fonds. Une nuance qui compte : une action ou un fonds s'achète et se revend, un <strong>indice</strong> se suit seulement, car c'est un nombre, pas un titre ; le fonds SPY du fichier est justement celui qui réplique le S&amp;P 500 et qui, lui, s'achète. Les six du portefeuille qui servira de fil rouge à tout le cours sont SP500, CAC40, AAPL, LVMH, GLD, TLT.</p>
+<aside class="callout callout-note">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.7v.2"/></svg>À essayer vous-même</p>
+<p><strong>À essayer vous-même, en changeant un mot.</strong> Relancez la cellule des six lignes avec <code>"TTE"</code>, puis avec <code>"CAC40"</code>. Les niveaux vont de <strong>76,10</strong> (TTE) à <strong>8 278,77</strong> (CAC 40) : mises sur le même axe, ces courbes seraient incomparables, l'une écraserait l'autre au ras de l'abscisse. C'est le premier réflexe de lecture d'un graphique de marché : regarder l'échelle avant la forme.</p>
+</aside>
+</section>
+<section class="lesson-section reveal" id="le-piege-un-message-rouge-est-une-phrase-pas-un-degat" data-section><span class="section-number">04</span><h2 id="le-piege-un-message-rouge-est-une-phrase-pas-un-degat">Le piège : un message rouge est une phrase, pas un dégât</h2>
+<p>La croyance la plus coûteuse du débutant est qu'une erreur <strong>abîme quelque chose</strong>. Provoquons-en une exprès. Écrivez <code>plott</code> au lieu de <code>plot</code> :</p>
+<div class="code-block" data-lang="python"><pre><code>fig, ax = plt.<span class="name">subplots</span>()
+ax.<span class="name">plott</span>(fil[<span class="string">&quot;dates&quot;</span>], fil[<span class="string">&quot;prix&quot;</span>][<span class="string">&quot;SP500&quot;</span>])
+</code></pre></div>
+<p>La machine répond, en rouge :</p>
+<div class="code-block" data-lang="text"><pre><code>AttributeError: &#x27;Axes&#x27; object has no attribute &#x27;plott&#x27;. Did you mean: &#x27;plot&#x27;?
+</code></pre></div>
+<p>Un <strong><code>AttributeError</code></strong> signale un outil demandé à un objet qui ne le possède pas. Lisez la phrase : elle nomme l'objet (<code>Axes</code>), le geste manquant (<code>plott</code>) et propose la correction. Réécrivez la bonne ligne, réexécutez : la figure sort. Puis vérifiez que rien n'a été perdu au passage.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="name">print</span>(<span class="name">len</span>(fil[<span class="string">&quot;dates&quot;</span>]))   <span class="comment"># 4151</span>
+</code></pre></div>
+<p>Les 4 151 dates sont toujours là. Rien n'a été effacé, ni sur la machine prêtée, ni dans le fichier de données, ni dans votre ordinateur. Une cellule qui échoue <strong>s'interrompt</strong> ; tout ce qui a été fait avant elle reste en mémoire. Un message rouge est une phrase qui vous dit ce que la machine n'a pas su faire : c'est le seul moyen qu'elle a de vous parler.</p>
+</section>
+<section class="lesson-section reveal" id="verifiez-vous" data-section><span class="section-number">05</span><h2 id="verifiez-vous">Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch00.u01" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<p><strong>(a)</strong> Dans les six lignes, laquelle fabrique la figure et laquelle y dessine ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+`fig, ax = plt.subplots()` fabrique la feuille et sa zone dessinable ; `ax.plot(...)` y trace la courbe. Séparer les deux gestes est la façon d'écrire du cours : on saura ainsi mettre deux courbes dans la même zone, ou deux zones sur la même feuille.
+</div></details>
+
+<p><strong>(b) (rétrospective)</strong> Vous avez exécuté la cellule de contrôle des trois fichiers sans y réfléchir. À quoi servait-elle, et que se passe-t-il si ces fichiers manquent ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Elle vérifie que le module du cours et les deux fichiers de données sont bien présents dans la machine prêtée par Colab. S'ils ne le sont pas, la ligne `from mcdp_utils import charger_fil_rouge` échoue sur un `ModuleNotFoundError` : la boîte à outils n'est pas là. Et si vous refermez l'onglet une journée, la machine est rendue avec ses fichiers : il faut les téléverser de nouveau.
+</div></details>
+
+<p><strong>(c) (rétrospective)</strong> Vous exécutez trois fois de suite la cellule des six lignes. Que voyez-vous ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Trois figures identiques, l'une sous l'autre. Rien ne se cumule et rien ne se dégrade : chaque exécution refabrique une feuille neuve avec `plt.subplots()` puis y dessine. Réexécuter une cellule est sans danger, et c'est le geste de base du travail en notebook.
+</div></details>
+
+<p><strong>(d)</strong> Demain, vous rouvrez l'onglet Colab : les six lignes sont toujours écrites, mais plus aucune figure ne s'affiche et <code>fil</code> semble inconnu. Pourquoi, et que faites-vous ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+La machine prêtée a été rendue entre-temps : le texte du notebook est conservé, la mémoire de la machine non. On réexécute tout depuis la cellule 0, dans l'ordre. Ce point revient en u04, sous le nom de *noyau*.
+</div></details>
+
+<p><strong>(e)</strong> Votre estimation de la question 1 était-elle plus haute ou plus basse que le temps réellement écoulé ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+La plupart des lecteurs annoncent des heures, ou une installation préalable. Il a fallu deux cellules et un raccourci clavier. Ce décalage est le seul objet de cette unité : la barrière d'entrée que vous imaginiez n'est pas là où vous la pensiez.
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">06</span><h2 id="ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Ouvrir un notebook, reconnaître une cellule, l'exécuter par <code>Maj+Entrée</code> et lire sa sortie.</li>
+<li>Produire une figure à partir des données du cours, et en changer l'actif en changeant un mot.</li>
+<li>Lire un message d'erreur comme une phrase, corriger, réexécuter, sans rien avoir abîmé.</li>
+</ul>
+<p><strong>Unité suivante.</strong> La courbe est à l'écran, mais rien n'est gardé : impossible de calculer avec. L'unité u02 apprend à retenir un résultat sous un nom, et à réparer les quatre messages d'erreur qui bloquent la plupart des débutants.</p></section><div class="demo" data-demo="ch00-u01"></div>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue et continuer" data-mark-next="u02.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue et continuer</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="index.html"><small>Début du chapitre</small><strong>Carte du chapitre 00</strong></a><a class="unit-nav-card next" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque"><small>Unité suivante</small><strong>02 · Un nom retient un résultat…</strong></a></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 00</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 00 · unité 01<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

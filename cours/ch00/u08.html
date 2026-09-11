@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Huit fiches d'une page suffisent pour les probabilités du cours · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Le cours n’utilise que huit notions de probabilité, chacune tenant en une page avec une mini-expérience de cinq lignes.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u08.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Huit fiches d&#x27;une page suffisent pour les probabilités du cours · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Le cours n’utilise que huit notions de probabilité, chacune tenant en une page avec une mini-expérience de cinq lignes.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u08.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Huit fiches d&#x27;une page suffisent pour les probabilités du cours · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Le cours n’utilise que huit notions de probabilité, chacune tenant en une page avec une mini-expérience de cinq lignes.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch00" data-unit="u08" data-unit-title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-ch-title="Outils : Python de zéro, sans rien installer" data-unit-url="cours/ch00/u08.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 00 · Outils</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours">Unité 8/8 · Huit fiches d&#x27;une page suffisent…</span></nav>
+      <span class="cb-short">Ch. 00 · 8/8</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch00" data-progress-units="u01,u02,u03,u04,u05,u06,u07,u08" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/8 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Six lignes suffisent pour voir seize ans de marché"><b>01</b><span>Six lignes suffisent pour voir…</span></a><a href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque"><b>02</b><span>Un nom retient un résultat…</span></a><a href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom"><b>03</b><span>Une liste range des prix dans l&#x27;ordre</span></a><a href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes"><b>04</b><span>Une boucle parcourt</span></a><a href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu"><b>05</b><span>Une fonction nomme un calcul</span></a><a href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une"><b>06</b><span>Un tableau numpy remplace la boucle</span></a><a href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours"><b>07</b><span>Votre machine devient l&#x27;ordinateur du cours</span></a><a href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" aria-current="page"><b>08</b><span>Huit fiches d&#x27;une page suffisent…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Outils : Python de zéro, sans rien installer">Chapitre 00 · Outils : Python de zéro…</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08" aria-current="page"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open is-here" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 00 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#la-question">La question</a></li>
+        <li><a href="#on-essaie-dabord">On essaie d&#x27;abord</a></li>
+        <li><a href="#lidee-les-huit-fiches">L&#x27;idée : les huit fiches</a></li>
+        <li><a href="#le-piege-la-moyenne-se-stabilise-nest-pas-la-moyenne-est-exacte">Le piège : « la moyenne se stabilise » n&#x27;est pas « la moyenne est exacte »</a></li>
+        <li><a href="#verifiez-vous">Vérifiez-vous</a></li>
+        <li><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 45 min<br>Travail complet 45 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 8 sur 8</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08" aria-current="page"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#la-question">La question</a><a href="#on-essaie-dabord">On essaie d&#x27;abord</a><a href="#lidee-les-huit-fiches">L&#x27;idée : les huit fiches</a><a href="#le-piege-la-moyenne-se-stabilise-nest-pas-la-moyenne-est-exacte">Le piège : « la moyenne se stabilise » n&#x27;est pas « la moyenne est exacte »</a><a href="#verifiez-vous">Vérifiez-vous</a><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 00</a><span aria-hidden="true">/</span><span>Unité 08</span></nav>
+        <p class="lesson-kicker">Outils : Python de zéro, sans rien installer</p>
+        <h1>Huit fiches d’une page suffisent pour les probabilités du cours</h1>
+        <p class="lesson-question">Le cours n'utilise que huit notions de probabilité, chacune tenant en une page avec une mini-expérience de cinq lignes.</p>
+        <div class="lesson-meta"><span>Lecture guidée 45 min</span><span>Travail complet 45 min</span><span>Une idée</span><span>Unité 08 sur 08</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><aside class="callout callout-rapide">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 13.5h6L11 22l9-11.5h-6Z"/></svg>Voie rapide</p>
+<p><strong>Filet facultatif</strong> : à lire seulement quand une unité vous y renvoie. Rien n'est <strong>défini en premier</strong> ici : chaque notion a son unité propre (ch02 u01, u03 et u05 ; ch03 u04 ; ch04 u01), et c'est celle-là qui fait foi. Cette page est un aide-mémoire, pas une étape du parcours.</p>
+<p><strong>Durée</strong> ≈ 45 min en tout, une fiche à la fois, à la demande · <strong>Prérequis</strong> u01 à u06 · <strong>Idée unique</strong> : ce cours n'utilise que huit notions de probabilité, et chacune tient en une page avec une expérience de cinq lignes.</p>
+<p><strong>Les fiches emploient quelques outils numpy hors des quinze primitives d'u06</strong> : <code>np.arange</code>, <code>np.corrcoef</code>, <code>np.var</code>, <code>np.median</code>, <code>np.round</code>, <code>np.abs</code>, <code>.astype</code>, <code>rng.random</code>, <code>rng.poisson</code>, et un tableau à <strong>deux axes</strong> avec <code>mean(axis=1)</code> en fiche 7. Ils sont ici dans du code <strong>fourni</strong>, pour lire un résultat : rien à mémoriser. <code>rng.random</code> et <code>rng.poisson</code> deviennent exigibles au ch02, les autres jamais.</p>
+</aside></section>
+<section class="lesson-section reveal" id="la-question" data-section><span class="section-number">01</span><h2 id="la-question">La question</h2>
+<p>Un étudiant qui n'a pas fait de probabilités depuis trois ans ouvre le ch02 et lit « espérance », « quantile », « écart-type de la moyenne » : trois mots, et l'impression qu'il faudrait reprendre un semestre avant d'avoir le droit de continuer.</p>
+<p>C'est faux : <strong>huit notions</strong>, pas une de plus, et le cours n'en demande jamais la démonstration, seulement l'usage. Chaque fiche donne une définition, un chiffre du fil rouge, cinq lignes à exécuter, et l'unité qui la reprend pour de bon.</p>
+<aside class="pred-card" data-pred="ch00.u08" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch00-u08">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch00-u08" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="on-essaie-dabord" data-section><span class="section-number">02</span><h2 id="on-essaie-dabord">On essaie d’abord</h2>
+<p>Une question avant de lire : <strong>139 séances sur 4 151 sont passées sous le seuil de −2 %, soit 3,35 % (u06). Si vous tirez au sort 10 000 séances dans ce paquet, la proportion que vous obtiendrez sera-t-elle 3,35 % ?</strong></p>
+<p>Non : vous obtiendrez <strong>2,94 %</strong> avec le tirage de cette page. Ni 3,35 %, ni un nombre au hasard : un nombre <em>proche</em>, dont l'écart se prévoit. La théorie qui suit sert à dire de combien.</p>
+</section>
+<section class="lesson-section reveal" id="lidee-les-huit-fiches" data-section><span class="section-number">03</span><h2 id="lidee-les-huit-fiches">L’idée : les huit fiches</h2>
+<p>Préambule commun, à exécuter une fois ; il applique la règle des graines d'u06.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> mcdp_utils <span class="keyword">import</span> charger_fil_rouge
+fil = <span class="name">charger_fil_rouge</span>()
+sp = fil[<span class="string">&quot;rendements_log&quot;</span>][<span class="string">&quot;SP500&quot;</span>]      <span class="comment"># 4 151 variations quotidiennes</span>
+SEED = <span class="number">42</span>
+rng = np.random.<span class="name">default_rng</span>(SEED)
+f1, f2, f3, f4, f5, f6, f7, f8 = rng.<span class="name">spawn</span>(<span class="number">8</span>)
+</code></pre></div>
+<h3 id="fiche-1-variable-aleatoire">Fiche 1 : Variable aléatoire</h3>
+<p><strong>Définition.</strong> Une variable aléatoire est un nombre qui dépend du scénario tiré : tant que le scénario n'est pas tiré, elle n'a pas de valeur, seulement un ensemble de valeurs possibles.</p>
+<div class="code-block" data-lang="python"><pre><code>scenarios = f1.<span class="name">choice</span>(sp, size=<span class="number">100_000</span>, replace=<span class="keyword">True</span>)
+<span class="name">print</span>(scenarios.shape)                       <span class="comment"># (100000,)</span>
+<span class="name">print</span>(np.<span class="name">round</span>(scenarios[:<span class="number">3</span>] * <span class="number">100</span>, <span class="number">3</span>))      <span class="comment"># [-0.574  0.791 -0.072]</span>
+<span class="name">print</span>(<span class="name">round</span>(scenarios.<span class="name">min</span>() * <span class="number">100</span>, <span class="number">2</span>), <span class="name">round</span>(scenarios.<span class="name">max</span>() * <span class="number">100</span>, <span class="number">2</span>))   <span class="comment"># -12.77 9.09</span>
+</code></pre></div>
+<p>En Python, une variable aléatoire simulée <strong>est un tableau numpy</strong> : une case par scénario, l'objet d'u06. C'est pourquoi ce chapitre a passé une unité sur les tableaux avant la première probabilité.</p>
+<p><strong>Intuition financière.</strong> Ce tableau de 100 000 valeurs, c'est « la séance de demain » vue de ce soir : autant de futurs possibles, un par case. <strong>Renvoi : ch02 u01.</strong></p>
+<h3 id="fiche-2-esperance">Fiche 2 : Espérance</h3>
+<p><strong>Définition.</strong> L'espérance d'une variable aléatoire est la moyenne de ses valeurs possibles, pondérée par leurs chances d'apparaître ; ce n'est ni la valeur la plus fréquente, ni celle du milieu.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="name">print</span>(<span class="name">round</span>(scenarios.<span class="name">mean</span>() * <span class="number">100</span>, <span class="number">4</span>), <span class="name">round</span>(sp.<span class="name">mean</span>() * <span class="number">100</span>, <span class="number">4</span>))   <span class="comment"># 0.049 0.0462</span>
+gains = np.<span class="name">maximum</span>(scenarios, <span class="number">0.0</span>)
+<span class="name">print</span>(<span class="name">round</span>(gains.<span class="name">mean</span>() * <span class="number">100</span>, <span class="number">4</span>), <span class="name">round</span>(<span class="name">max</span>(scenarios.<span class="name">mean</span>(), <span class="number">0.0</span>) * <span class="number">100</span>, <span class="number">4</span>))   <span class="comment"># 0.3857 0.049</span>
+</code></pre></div>
+<p>La deuxième ligne est la mise en garde de la fiche : la <strong>moyenne des gains</strong> (0,3857 %) n'est pas le <strong>gain de la moyenne</strong> (0,049 %). Dès que le calcul appliqué aux valeurs n'est pas une simple droite (ici <code>np.maximum</code>, le <code>max</code> d'u05), moyenner d'abord donne une autre réponse, et c'est la mauvaise.</p>
+<p><strong>Intuition financière.</strong> Un gain moyen n'est pas un gain possible : une chance sur mille de gagner mille euros a la même espérance qu'un euro certain, et ce n'est pas le même contrat. <strong>Renvoi : ch02 u03.</strong></p>
+<h3 id="fiche-3-variance-et-ecart-type">Fiche 3 : Variance et écart-type</h3>
+<p><strong>Définition.</strong> La variance est la moyenne des carrés des écarts au centre ; l'écart-type en est la racine carrée, et il se lit dans la même unité que les données.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="name">print</span>(<span class="name">round</span>(sp.<span class="name">std</span>(ddof=<span class="number">1</span>) * <span class="number">100</span>, <span class="number">4</span>), <span class="name">round</span>(sp.<span class="name">std</span>() * <span class="number">100</span>, <span class="number">4</span>))   <span class="comment"># 1.0903 1.0901</span>
+<span class="name">print</span>(<span class="name">round</span>(<span class="name">float</span>(np.<span class="name">var</span>(sp, ddof=<span class="number">1</span>)), <span class="number">8</span>))                        <span class="comment"># 0.00011887</span>
+<span class="name">print</span>(<span class="name">round</span>(sp.<span class="name">std</span>(ddof=<span class="number">1</span>) * np.<span class="name">sqrt</span>(<span class="number">252</span>), <span class="number">4</span>))                    <span class="comment"># 0.1731</span>
+</code></pre></div>
+<p>Trois faits. L'écart-type se lit en pourcentage par séance (<strong>1,0903 %</strong>), la variance non, car elle est en « pourcentage au carré ». <code>ddof=1</code> divise par <span class="math">n-1</span>, <code>ddof=0</code> par <span class="math">n</span> : le piège d'u06. Et pour des tirages <strong>indépendants</strong>, ce sont les <strong>variances</strong> qui s'additionnent, jamais les écarts-types, d'où la racine de 252 de la troisième ligne, expliquée en <strong>ch01 u02</strong>.</p>
+<p><strong>Intuition financière.</strong> L'écart-type est la mesure de risque la plus utilisée du métier, et la plus critiquable : il traite une hausse de 3 % et une baisse de 3 % de la même façon. <strong>Renvoi : ch01 u02, ch02 u02.</strong></p>
+<h3 id="fiche-4-covariance-et-correlation">Fiche 4 : Covariance et corrélation</h3>
+<p><strong>Définition.</strong> La covariance mesure si deux séries s'écartent de leur centre <strong>en même temps</strong> ; la corrélation est la même information ramenée entre −1 et +1, donc lisible.</p>
+<div class="code-block" data-lang="python"><pre><code>tlt = fil[<span class="string">&quot;rendements_log&quot;</span>][<span class="string">&quot;TLT&quot;</span>]
+melange = <span class="number">0.5</span> * sp + <span class="number">0.5</span> * tlt
+<span class="name">print</span>(<span class="name">round</span>(<span class="name">float</span>(np.<span class="name">corrcoef</span>(sp, tlt)[<span class="number">0</span>, <span class="number">1</span>]), <span class="number">3</span>))       <span class="comment"># -0.29</span>
+<span class="name">print</span>(<span class="name">round</span>(melange.<span class="name">std</span>(ddof=<span class="number">1</span>) * np.<span class="name">sqrt</span>(<span class="number">252</span>), <span class="number">4</span>),
+      <span class="name">round</span>(<span class="number">0.5</span> * (sp.<span class="name">std</span>(ddof=<span class="number">1</span>) + tlt.<span class="name">std</span>(ddof=<span class="number">1</span>)) * np.<span class="name">sqrt</span>(<span class="number">252</span>), <span class="number">4</span>))   <span class="comment"># 0.0966 0.1614</span>
+</code></pre></div>
+<p>Le S&amp;P 500 et les obligations d'État américaines à long terme bougent <strong>en sens contraire</strong> (−0,29). Conséquence chiffrée : un mélange à parts égales, rééquilibré chaque jour, affiche <strong>0,0966</strong> là où la moyenne des deux séries prises séparément donnerait 0,1614. <strong>Quatre dixièmes de moins</strong> (−40,1 %), sans rien retirer aux moyennes de la fiche 2, qui s'additionnent sans se soucier de la corrélation.</p>
+<p><strong>Intuition financière.</strong> C'est la diversification, le seul repas gratuit du métier. Attention : corrélation nulle n'est pas indépendance. <strong>Renvoi : ch01 u03.</strong></p>
+<h3 id="fiche-5-les-cinq-familles-utiles-par-leur-role">Fiche 5 : Les cinq familles utiles, par leur rôle</h3>
+<p><strong>Définition.</strong> Une famille de tirages se reconnaît à ce qu'elle produit, pas à sa formule.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="name">print</span>(<span class="name">round</span>(<span class="name">float</span>((f5.<span class="name">random</span>(<span class="number">100_000</span>) &lt; <span class="number">0.0335</span>).<span class="name">mean</span>()), <span class="number">4</span>))   <span class="comment"># 0.0333  -- oui/non</span>
+<span class="name">print</span>(np.<span class="name">round</span>(f5.<span class="name">random</span>(<span class="number">3</span>), <span class="number">4</span>))                               <span class="comment"># [0.0551 0.2688 0.2365]</span>
+<span class="name">print</span>(np.<span class="name">round</span>(f5.<span class="name">standard_normal</span>(<span class="number">3</span>), <span class="number">4</span>))                      <span class="comment"># [0.9001 1.3638 0.6446]</span>
+positifs = np.<span class="name">exp</span>(f5.<span class="name">standard_normal</span>(<span class="number">100_000</span>))
+<span class="name">print</span>(<span class="name">round</span>(<span class="name">float</span>(positifs.<span class="name">min</span>()), <span class="number">4</span>), <span class="name">round</span>(<span class="name">float</span>(np.<span class="name">median</span>(positifs)), <span class="number">3</span>),
+      <span class="name">round</span>(<span class="name">float</span>(positifs.<span class="name">mean</span>()), <span class="number">3</span>))                        <span class="comment"># 0.0106 1.001 1.654</span>
+</code></pre></div>
+<p>Cinq rôles. <strong>Bernoulli</strong> : un oui/non, ici « la séance est-elle passée sous −2 % ? ». <strong>Uniforme</strong> : la matière première, un nombre entre 0 et 1, dont tout le reste se déduit. <strong>Normale</strong> : la cloche symétrique, centrée, qui décrit bien une somme de petits effets. <strong>Log-normale</strong> : l'exponentielle d'une normale, toujours <strong>positive</strong>, penchée à droite, sa moyenne (1,654) au-dessus de sa <strong>médiane</strong> (1,001), la valeur qui coupe la série en deux ; c'est elle qui empêche un prix simulé de devenir négatif. <strong>Poisson</strong> : un compte d'événements (<code>f5.poisson(2.0, 100_000).mean()</code> rend <strong>1,997</strong> pour un réglage à 2).</p>
+<p><strong>Intuition financière.</strong> Un prix se modélise par une log-normale, un défaut par un oui/non, un nombre de sinistres par un compte. <strong>Renvoi : ch02 u05, ch03 u04.</strong></p>
+<h3 id="fiche-6-loi-des-grands-nombres">Fiche 6 : Loi des grands nombres</h3>
+<p><strong>Définition.</strong> Quand on répète des tirages indépendants de même nature, leur moyenne se rapproche de la vraie moyenne, sans jamais promettre de l'atteindre.</p>
+<div class="code-block" data-lang="python"><pre><code>indicatrice = (scenarios &lt; -<span class="number">0.02</span>).<span class="name">astype</span>(float)
+courante = np.<span class="name">cumsum</span>(indicatrice) / np.<span class="name">arange</span>(<span class="number">1</span>, indicatrice.size + <span class="number">1</span>)
+<span class="name">print</span>(<span class="name">round</span>(<span class="name">float</span>(courante[<span class="number">99</span>]) * <span class="number">100</span>, <span class="number">2</span>), <span class="name">round</span>(<span class="name">float</span>(courante[<span class="number">9_999</span>]) * <span class="number">100</span>, <span class="number">2</span>),
+      <span class="name">round</span>(<span class="name">float</span>(courante[-<span class="number">1</span>]) * <span class="number">100</span>, <span class="number">2</span>), <span class="name">round</span>(<span class="name">float</span>((sp &lt; -<span class="number">0.02</span>).<span class="name">mean</span>()) * <span class="number">100</span>, <span class="number">4</span>))
+<span class="comment"># 6.0  2.94  3.28  3.3486</span>
+</code></pre></div>
+<p>À 100 tirages : 6,0 %. À 10 000 : 2,94 %. À 100 000 : 3,28 %, contre une vraie valeur de 3,3486 %. La suite se range dans un entonnoir qui se referme, <strong>sans jamais se poser dessus</strong>.</p>
+<p><strong>Intuition financière.</strong> C'est le permis de conduire du cours : il autorise à remplacer un calcul exact par une moyenne de tirages. Il ne dit rien de la vitesse ; c'est la fiche suivante. <strong>Renvoi : ch02 u01, ch02 u04.</strong></p>
+<h3 id="fiche-7-theoreme-central-limite-et-la-marge-derreur">Fiche 7 : Théorème central limite, et la marge d’erreur</h3>
+<p><strong>Définition.</strong> La moyenne d'un grand nombre de tirages se répartit en cloche autour de la vraie valeur, quelle que soit la forme des tirages de départ, et sa dispersion vaut l'écart-type des tirages divisé par <span class="math">\sqrt{n}</span>.</p>
+<div class="code-block" data-lang="python"><pre><code>groupes = f7.<span class="name">choice</span>(sp, size=(<span class="number">2_000</span>, <span class="number">30</span>), replace=<span class="keyword">True</span>)
+moyennes = groupes.<span class="name">mean</span>(axis=<span class="number">1</span>)
+<span class="name">print</span>(<span class="name">round</span>(<span class="name">float</span>(moyennes.<span class="name">std</span>(ddof=<span class="number">1</span>)) * <span class="number">100</span>, <span class="number">4</span>),
+      <span class="name">round</span>(sp.<span class="name">std</span>(ddof=<span class="number">1</span>) / np.<span class="name">sqrt</span>(<span class="number">30</span>) * <span class="number">100</span>, <span class="number">4</span>))            <span class="comment"># 0.1993 0.1991</span>
+demi = <span class="number">1.96</span> * sp.<span class="name">std</span>(ddof=<span class="number">1</span>) / np.<span class="name">sqrt</span>(<span class="number">30</span>)
+<span class="name">print</span>(<span class="name">round</span>(<span class="name">float</span>(np.<span class="name">mean</span>(np.<span class="name">abs</span>(moyennes - sp.<span class="name">mean</span>()) &lt;= demi)), <span class="number">4</span>))   <span class="comment"># 0.9505</span>
+</code></pre></div>
+<p><code>size=(2_000, 30)</code> fabrique une <strong>grille</strong> à deux axes (deux mille lignes de trente cases) et <code>mean(axis=1)</code> moyenne <strong>chaque ligne</strong>, ce qui donne deux mille moyennes de trente séances. La dispersion <strong>mesurée</strong> de ces deux mille moyennes est 0,1993 % ; la dispersion <strong>prévue</strong> par la division par <span class="math">\sqrt{30}</span> est 0,1991 %. Et 95,05 % des groupes tombent dans la fourchette « ± 1,96 fois cette dispersion », annoncée pour 95 %.</p>
+<p><strong>Intuition financière.</strong> Deux conséquences économiques, pas théoriques : diviser la marge d'erreur par deux coûte <strong>quatre fois</strong> plus de tirages, et gagner une décimale en coûte cent fois plus.</p>
+<figure class="unit-figure fig-wide"><img src="figures/fig_ch00_u08_lgn_tcl.png" alt="Deux panneaux. À gauche : la fréquence des séances sous −2 %, recalculée après chaque nouveau tirage, avec la vraie valeur 3,35 % en rouge ; ce qu&#x27;il faut voir, c&#x27;est qu&#x27;elle entre dans un entonnoir et y reste, sans jamais se coller à la ligne rouge. À droite : les 2 000 moyennes de 30 séances forment une cloche presque parfaite, alors que les séances prises une par une, elles, ne ressemblent pas du tout à une cloche." width="2077" height="832" loading="lazy"><figcaption>Deux panneaux. À gauche : la fréquence des séances sous −2 %, recalculée après chaque nouveau tirage, avec la vraie valeur 3,35 % en rouge ; ce qu&#x27;il faut voir, c&#x27;est qu&#x27;elle entre dans un entonnoir et y reste, sans jamais se coller à la ligne rouge. À droite : les 2 000 moyennes de 30 séances forment une cloche presque parfaite, alors que les séances prises une par une, elles, ne ressemblent pas du tout à une cloche.</figcaption></figure>
+<p><strong>Renvoi : ch02 u02, ch04 u01.</strong></p>
+<h3 id="fiche-8-quantile-et-moyenne-conditionnelle">Fiche 8 : Quantile et moyenne conditionnelle</h3>
+<p><strong>Définition.</strong> Le quantile à 1 % est la valeur en dessous de laquelle tombe 1 % des observations ; la moyenne conditionnelle est la moyenne calculée <strong>sur ce 1 % seulement</strong>.</p>
+<div class="code-block" data-lang="python"><pre><code>seuil = np.<span class="name">percentile</span>(sp, <span class="number">1.0</span>)
+<span class="name">print</span>(<span class="name">round</span>(<span class="name">float</span>(seuil) * <span class="number">100</span>, <span class="number">3</span>), <span class="name">int</span>((sp &lt;= seuil).<span class="name">sum</span>()))   <span class="comment"># -3.157 42</span>
+<span class="name">print</span>(<span class="name">round</span>(<span class="name">float</span>(sp[sp &lt;= seuil].<span class="name">mean</span>()) * <span class="number">100</span>, <span class="number">3</span>))            <span class="comment"># -4.519</span>
+</code></pre></div>
+<p>Deux nombres qui ne disent pas la même chose. Le quantile répond à « à partir de quelle perte suis-je dans le pire centième ? », <strong>−3,157 %</strong>, où tombent 42 séances sur 4 151. La moyenne conditionnelle répond à « et quand j'y suis, combien je perds en moyenne ? », <strong>−4,519 %</strong>, nettement pire.</p>
+<p><strong>Intuition financière.</strong> Le premier chiffre est le seuil réglementaire dont vivent les salles de marché ; le second est celui qui décrit ce qui se passe quand on le dépasse. <strong>Renvoi : ch02 u05, ch05 u04.</strong></p>
+</section>
+<section class="lesson-section reveal" id="le-piege-la-moyenne-se-stabilise-nest-pas-la-moyenne-est-exacte" data-section><span class="section-number">04</span><h2 id="le-piege-la-moyenne-se-stabilise-nest-pas-la-moyenne-est-exacte">Le piège : « la moyenne se stabilise » n’est pas « la moyenne est exacte »</h2>
+<p>La fiche 6 montre une suite qui se range ; jamais une suite qui arrive. À 100 000 tirages, la fréquence obtenue est 3,28 % pour une vraie valeur de 3,3486 % : l'écart de 0,07 point ne disparaîtra pas en attendant, il diminuera comme <span class="math">1/\sqrt{n}</span>, donc lentement.</p>
+<p>La faute qui en découle est de publier un nombre issu de tirages <strong>sans sa marge d'erreur</strong> : ce n'est pas un résultat, c'est une opinion appuyée sur une graine. Le ch04 en fait un chapitre.</p>
+</section>
+<section class="lesson-section reveal" id="verifiez-vous" data-section><span class="section-number">05</span><h2 id="verifiez-vous">Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch00.u08" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<p><strong>(a)</strong> L'espérance d'un gain est-elle un gain possible ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Non, pas nécessairement. Un jeu qui rapporte 0 ou 100 avec les mêmes chances a une espérance de 50, valeur qui n'apparaît jamais. D'où le regard croisé sur la fiche 3 (dispersion) et la fiche 8 (quantile) : trois nombres, trois questions sur le même tableau.
+</div></details>
+
+<p><strong>(b)</strong> Quelle fiche le ch04 exige-t-il ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+La **fiche 7**. Le ch04 porte tout entier sur la marge d'erreur d'une moyenne de tirages : d'où elle vient, comment on la mesure, combien de tirages il faut pour l'amener sous une valeur fixée. La fiche 6 en est le prérequis silencieux : sans convergence, rien à mesurer.
+</div></details>
+
+<p><strong>(c) (rétrospective)</strong> Les 4 151 variations quotidiennes de la fiche 1 ne forment pas une cloche : elles ont une pointe centrale très haute et une queue gauche longue (figure d'u06). Comment la fiche 7 peut-elle malgré tout produire une cloche ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Parce que la cloche de la fiche 7 ne décrit **pas les séances** : elle décrit les **moyennes de trente séances**. C'est la partie contre-intuitive du théorème central limite : la forme de départ n'a presque aucune importance, seul compte le fait de moyenner.
+</div></details>
+
+<p><strong>(d) (rétrospective)</strong> En u06, vous avez proscrit <code>default_rng(SEED + i)</code> au profit de <code>rng.spawn(k)</code>. Le préambule de cette page crée huit enfants d'un coup. Pourquoi huit, et pas un générateur par fiche créé au fil de l'eau ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Pour que chaque fiche soit **reproductible indépendamment de l'ordre de lecture**. Avec un seul générateur consommé fiche après fiche, sauter la fiche 3 changerait tous les chiffres des fiches 4 à 8. Avec huit enfants nommés, `f5` produit la même chose qu'on ait lu ou non les fiches précédentes.
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">06</span><h2 id="ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Nommer les huit notions de probabilité dont ce cours a besoin, et reconnaître laquelle une unité vous demande.</li>
+<li>Distinguer les trois questions que l'on pose au même tableau de tirages : sa moyenne (fiche 2), sa dispersion (fiche 3), son pire centième (fiche 8).</li>
+<li>Savoir qu'une moyenne de tirages se publie <strong>avec sa marge d'erreur</strong>, et d'où cette marge vient (fiche 7).</li>
+</ul>
+<p><strong>Unité suivante.</strong> Aucune : cette page est un filet, pas une étape. Revenez à l'unité qui vous y a envoyé, ou, si vous êtes arrivé ici par curiosité, au <strong>ch01</strong>, qui n'a besoin d'aucune de ces huit fiches.</p></section>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue et continuer" data-mark-next="../ch01/index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue et continuer</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours"><small>Unité précédente</small><strong>07 · Votre machine devient l&#x27;ordinateur du cours</strong></a><a class="unit-nav-card next" href="../ch01/index.html" title="Les objets de la finance qu&#x27;on peut observer"><small>Chapitre suivant</small><strong>01 · Les objets de la finance qu&#x27;on peut observer</strong></a></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 00</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 00 · unité 08<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

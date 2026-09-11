@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TD du chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Travaux dirigés du chapitre 00 · Outils : Python de zéro, sans rien installer · Je n’ai jamais programmé. Comment faire apparaître, puis calculer, les chiffres d’un…">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch00/td.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="TD du chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Travaux dirigés du chapitre 00 · Outils : Python de zéro, sans rien installer · Je n’ai jamais programmé. Comment faire apparaître, puis calculer, les chiffres d’un…">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch00/td.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TD du chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Travaux dirigés du chapitre 00 · Outils : Python de zéro, sans rien installer · Je n’ai jamais programmé. Comment faire apparaître, puis calculer, les chiffres d’un…">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 00 · Outils</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Travaux dirigés">Travaux dirigés</span></nav>
+      <span class="cb-short">Ch. 00 · 8 unités</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch00" data-progress-units="u01,u02,u03,u04,u05,u06,u07,u08" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/8 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Six lignes suffisent pour voir seize ans de marché"><b>01</b><span>Six lignes suffisent pour voir…</span></a><a href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque"><b>02</b><span>Un nom retient un résultat…</span></a><a href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom"><b>03</b><span>Une liste range des prix dans l&#x27;ordre</span></a><a href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes"><b>04</b><span>Une boucle parcourt</span></a><a href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu"><b>05</b><span>Une fonction nomme un calcul</span></a><a href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une"><b>06</b><span>Un tableau numpy remplace la boucle</span></a><a href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours"><b>07</b><span>Votre machine devient l&#x27;ordinateur du cours</span></a><a href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours"><b>08</b><span>Huit fiches d&#x27;une page suffisent…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Outils : Python de zéro, sans rien installer">Chapitre 00 — Outils : Python de zéro…</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <p class="outline-label">Dans ce TD</p>
+      <ol>
+        <li><a href="#le-fil-rouge-en-un-tableau">Le fil rouge, en un tableau</a></li>
+        <li><a href="#exercice-1-trois-rendements-et-quatre-erreurs">Exercice 1 ★ : Trois rendements et quatre erreurs</a></li>
+        <li><a href="#exercice-2-la-pire-annee-et-celle-quon-croit">Exercice 2 ★★ : La pire année, et celle qu&#x27;on croit</a></li>
+        <li><a href="#exercice-3-question-dentretien-que-va-afficher-ce-code">Exercice 3 ★★★ : Question d&#x27;entretien : « que va afficher ce code ? »</a></li>
+        <li><a href="#exercice-4-ouvert-dimensionner-avant-de-lancer">Exercice 4 ★★★★ : Ouvert : dimensionner avant de lancer</a></li>
+      </ol>
+      <p class="outline-meta">Énoncé seul.<br>Aucun corrigé n’est publié ici.</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Dans ce TD <span>5 parties</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans ce TD</p><nav aria-label="Sommaire mobile"><a href="#le-fil-rouge-en-un-tableau">Le fil rouge, en un tableau</a><a href="#exercice-1-trois-rendements-et-quatre-erreurs">Exercice 1 ★ : Trois rendements et quatre erreurs</a><a href="#exercice-2-la-pire-annee-et-celle-quon-croit">Exercice 2 ★★ : La pire année, et celle qu&#x27;on croit</a><a href="#exercice-3-question-dentretien-que-va-afficher-ce-code">Exercice 3 ★★★ : Question d&#x27;entretien : « que va afficher ce code ? »</a><a href="#exercice-4-ouvert-dimensionner-avant-de-lancer">Exercice 4 ★★★★ : Ouvert : dimensionner avant de lancer</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 00</a><span aria-hidden="true">/</span><span>TD</span></nav>
+        <p class="lesson-kicker">Outils : Python de zéro, sans rien installer</p>
+        <h1>Travaux dirigés du chapitre 00</h1>
+        <p class="lesson-question">L’énoncé seul : les corrigés restent entre les mains de l’enseignant.</p>
+      </header>
+<section class="lesson-section reveal" data-section><p>Quatre exercices, du plus mécanique au plus ouvert. Les trois premiers ont <strong>une</strong> réponse chiffrée ; le quatrième a une réponse argumentée, et ses critères d'évaluation sont écrits dans l'énoncé.</p>
+<p><strong>Comment travailler.</strong> Chaque énoncé est autonome : toutes les données y sont recopiées, vous n'avez pas à rouvrir les unités pour commencer. Les quatre exercices se font <strong>à la maison</strong> (le temps de séance du ch00 est pris par les unités et par les parties A-B du TP) ; comptez 15 + 25 + 20 + 30 = <strong>90 minutes</strong>.</p>
+<p><strong>Trois d'entre eux vous demandent d'écrire une prédiction avant de calculer.</strong> Ce n'est pas une politesse : un chiffre écrit à l'avance transforme un résultat en information. Sans prédiction, un affichage ne vous apprend rien : vous le lisez, vous le croyez, vous passez. L'exercice 3 pousse la consigne à sa limite : il se fait <strong>sans machine du tout</strong>, celle-ci ne servant qu'à corriger, à la fin.</p>
+<p><strong>Ce que ce TD ne demande jamais.</strong> Aucune question ne porte sur ce qu'un contrat <em>vaut</em>, sur ce qu'il <em>rapporte en moyenne</em>, ni sur ce qui est <em>plus ou moins susceptible d'arriver</em> : ces outils arrivent aux chapitres 1 à 4. Ici, tout est arithmétique et Python.</p>
+<p><strong>Vérification.</strong> Toutes les valeurs des énoncés et du corrigé sont recalculées par <code>td_check.py</code> :</p>
+<div class="code-block" data-lang="text"><pre><code>cd &quot;cours_v2/ch00&quot;
+py -3 td_check.py
+</code></pre></div>
+<hr />
+<h2 id="le-fil-rouge-en-un-tableau">Le fil rouge, en un tableau</h2>
+<p>Panel aligné de <strong>4 151 séances</strong>, du 5 janvier 2010 au 4 septembre 2026 (<code>charger_fil_rouge()</code>, autorité <code>data/stats_summary.md</code>). Les nombres ci-dessous sont ceux des unités u01 à u06 ; ils reviennent tels quels dans les quatre exercices.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Grandeur</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clôtures du S&amp;P 500 du 1ᵉʳ au 4 septembre 2026</td>
+<td>7 631,47 · 7 666,60 · 7 747,71 · 7 718,60</td>
+</tr>
+<tr>
+<td>Portefeuille du cours</td>
+<td>SP500 40 % · CAC40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %</td>
+</tr>
+<tr>
+<td>Pire année du portefeuille</td>
+<td>2022, −15,28 %</td>
+</tr>
+<tr>
+<td>Pire année du S&amp;P 500 seul</td>
+<td>2022, −19,44 %</td>
+</tr>
+<tr>
+<td>Séances passées sous le seuil de −2 % en un jour</td>
+<td>139 sur 4 151</td>
+</tr>
+<tr>
+<td>Plafond mémoire du cours (<code>NOTATION.md</code> §12)</td>
+<td>10 000 000 cases, soit 80 Mo en <code>float64</code></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="exercice-1-trois-rendements-et-quatre-erreurs">Exercice 1 ★ : Trois rendements et quatre erreurs</h2>
+<blockquote>
+<p><strong>Difficulté</strong> ★ (application directe) · <strong>Temps</strong> 15 min · <strong>À la maison</strong> · <strong>Unité</strong> u02 · À la main d'abord, Python ensuite.</p>
+</blockquote>
+<p>Quatre clôtures consécutives du S&amp;P 500, telles qu'elles figurent dans le fichier du cours :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Séance</th>
+<th>2026-09-01</th>
+<th>2026-09-02</th>
+<th>2026-09-03</th>
+<th>2026-09-04</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clôture</td>
+<td>7 631,47</td>
+<td>7 666,60</td>
+<td>7 747,71</td>
+<td>7 718,60</td>
+</tr>
+</tbody>
+</table></div>
+<p>On veut les <strong>trois rendements quotidiens</strong> correspondants, affichés avec leur signe et quatre décimales : le format d'un rendement fictif de 1,2345 % serait <code>+1.2345%</code>.</p>
+<p>Un collègue vous envoie sa cellule. Elle contient <strong>quatre erreurs, une par catégorie</strong>, celles d'u02.</p>
+<div class="code-block" data-lang="python"><pre><code>cloture_0901 = <span class="number">7631.47</span>
+    cloture_0902 = <span class="number">7666.60</span>
+cloture_0903 = <span class="string">&quot;7747.71&quot;</span>
+cloture_0904 = <span class="number">7718.60</span>
+r_0902 = cloture_0902 / cloture_0901 - <span class="number">1.0</span>
+r_0903 = cloture_0903 / cloture_0902 - <span class="number">1.0</span>
+r_0904 = cloture_0904 / cloture_090 - <span class="number">1.0</span>
+<span class="name">print</span>(f<span class="string">&quot;{r_0902:+.4%} {r_0903:+.4%} {r_0904:+.4%}&quot;</span>
+</code></pre></div>
+<p><strong>0. Prédiction, à écrire avant de toucher au clavier.</strong> Trois lignes dans votre cahier.</p>
+<ul>
+<li>(i) Les trois rendements, <strong>de tête</strong>, à un dixième de point près. Repère : 81 points sur 7 667, c'est un peu plus de 1 %.</li>
+<li>(ii) Combien de ces quatre erreurs Python signale-t-il <strong>avant d'exécuter la moindre ligne</strong> ? Et dans quel ordre les quatre vont-elles apparaître ?</li>
+<li>
+<p>(iii) La somme des trois rendements quotidiens est-elle égale au rendement du 1ᵉʳ au 4 septembre ? Répondez par oui ou non avant de calculer.</p>
+</li>
+<li>
+<p><strong>Réparer, une erreur à la fois.</strong> Collez la cellule, exécutez, corrigez <strong>la seule</strong> erreur signalée, réexécutez. Recommencez jusqu'à ce que la cellule affiche trois pourcentages. Rendez un tableau à quatre lignes : rang, <strong>nom exact</strong> du message, ligne fautive, correction en quelques mots.</p>
+</li>
+<li><strong>Les trois rendements.</strong> Donnez-les au format demandé, puis vérifiez le deuxième à la main : posez la soustraction 7 747,71 − 7 666,60, divisez par 7 666,60, et dites de combien votre prédiction (i) s'en écarte.</li>
+<li><strong>Ce que vous avez tapé n'est pas ce que contient le fichier.</strong> Les clôtures publiées ont deux décimales ; le fichier du cours les range dans un format de stockage qui en écrit davantage : 7 747,71 y devient <code>7747.709961</code>. Rechargez la vraie série et comparez :</li>
+</ul>
+<p>```python
+   # En Colab, mcdp_utils.py a ete televerse a cote de vous : l'import suffit.
+   # En local, lancez ce notebook depuis cours_v2/ch00/ apres avoir fait u07.
+   from mcdp_utils import charger_fil_rouge</p>
+<p>quatre = charger_fil_rouge()["prix"]["SP500"][-4:]
+   r_fichier = quatre[3] / quatre[2] - 1.0
+   ecart = abs(r_fichier - (7718.60 / 7747.71 - 1.0))
+   print(f"{r_fichier:+.4%}", f"{ecart:.3e}")
+   ```</p>
+<p>Donnez l'écart affiché en notation scientifique, et répondez en une phrase : cet écart vient-il du <strong>calcul</strong>, de la <strong>donnée publiée</strong>, ou du <strong>format dans lequel le fichier la range</strong> ? Combien de décimales de pourcentage faudrait-il afficher pour le voir ?
+4. <strong>La somme et le total.</strong> Calculez la somme des trois rendements quotidiens, puis le rendement direct du 1ᵉʳ au 4 septembre, <span class="math">7\,718{,}60 / 7\,631{,}47 - 1</span>. Donnez les deux nombres à quatre décimales de pourcentage et leur écart <strong>en points de pourcentage</strong>. Relisez votre prédiction (iii). En une phrase : que faudrait-il faire des trois rendements quotidiens pour retomber exactement sur le total ?</p>
+<hr />
+<h2 id="exercice-2-la-pire-annee-et-celle-quon-croit">Exercice 2 ★★ : La pire année, et celle qu’on croit</h2>
+<blockquote>
+<p><strong>Difficulté</strong> ★★ (variante) · <strong>Temps</strong> 25 min · <strong>À la maison</strong> · <strong>Unités</strong> u04, u05 · Python obligatoire.</p>
+</blockquote>
+<p>Les dix-sept années civiles traversées depuis 2010, pour deux séries : le <strong>portefeuille du cours</strong> (SP500 40 %, CAC40 20 %, AAPL 10 %, LVMH 10 %, GLD 10 %, TLT 10 %) et le <strong>S&amp;P 500 seul</strong>. Les performances sont arrondies au dix-millième ; 2010 et 2026 sont des années civiles incomplètes (le fichier commence le 5 janvier 2010 et s'arrête le 4 septembre 2026).</p>
+<div class="code-block" data-lang="python"><pre><code>annees = [<span class="number">2010</span>, <span class="number">2011</span>, <span class="number">2012</span>, <span class="number">2013</span>, <span class="number">2014</span>, <span class="number">2015</span>, <span class="number">2016</span>, <span class="number">2017</span>, <span class="number">2018</span>,
+          <span class="number">2019</span>, <span class="number">2020</span>, <span class="number">2021</span>, <span class="number">2022</span>, <span class="number">2023</span>, <span class="number">2024</span>, <span class="number">2025</span>, <span class="number">2026</span>]
+perfs_ptf = [<span class="number">0.1771</span>, <span class="number">0.0307</span>, <span class="number">0.1505</span>, <span class="number">0.1241</span>, <span class="number">0.1140</span>, <span class="number">0.0298</span>, <span class="number">0.0973</span>, <span class="number">0.2036</span>, -<span class="number">0.0411</span>,
+             <span class="number">0.3468</span>, <span class="number">0.2116</span>, <span class="number">0.2347</span>, -<span class="number">0.1528</span>, <span class="number">0.2079</span>, <span class="number">0.1248</span>, <span class="number">0.1740</span>, <span class="number">0.0374</span>]
+perfs_sp = [<span class="number">0.1102</span>, -<span class="number">0.0002</span>, <span class="number">0.1152</span>, <span class="number">0.3180</span>, <span class="number">0.1139</span>, <span class="number">0.0022</span>, <span class="number">0.0850</span>, <span class="number">0.1942</span>, -<span class="number">0.0624</span>,
+            <span class="number">0.2888</span>, <span class="number">0.1626</span>, <span class="number">0.2689</span>, -<span class="number">0.1944</span>, <span class="number">0.2423</span>, <span class="number">0.2331</span>, <span class="number">0.1639</span>, <span class="number">0.1275</span>]
+<span class="keyword">assert</span> <span class="name">len</span>(annees) == <span class="name">len</span>(perfs_ptf) == <span class="name">len</span>(perfs_sp) == <span class="number">17</span>
+</code></pre></div>
+<p><strong>0. Prédiction, à écrire avant tout code.</strong> Deux lignes.</p>
+<ul>
+<li>(i) Laquelle des deux séries compte le plus d'années négatives, et combien chacune en compte-t-elle ?</li>
+<li>
+<p>(ii) En 2022, de combien de <strong>points de pourcentage</strong> la perte du S&amp;P 500 seul dépasse-t-elle celle du portefeuille ?</p>
+</li>
+<li>
+<p><strong>Une fonction, pas une boucle recopiée.</strong> Écrivez <code>pire_annee(annees, perfs)</code> qui rend le couple <code>(annee, performance)</code> de la plus mauvaise année, avec une docstring d'une ligne en anglais. Une boucle <code>for</code>, un <code>if</code>, un accumulateur initialisé sur une <strong>valeur observée</strong> (u04). Puis trois <code>assert</code> avant tout autre usage :</p>
+</li>
+</ul>
+<p><code>python
+   assert pire_annee([2020, 2021], [0.05, 0.02]) == (2021, 0.02)
+   assert pire_annee([2020, 2021], [-0.05, 0.02]) == (2020, -0.05)
+   assert pire_annee([2020], [0.07]) == (2020, 0.07)</code></p>
+<p>Dites, pour <strong>chacun</strong> des trois, quelle faute précise il attrape. Le premier n'est pas là par hasard.
+2. <strong>Les deux séries.</strong> Appelez la fonction sur les deux listes. Rendez les deux couples, performances au format <code>+.2%</code>. Puis donnez l'écart entre les deux, en points de pourcentage, et comparez-le à votre prédiction (ii).
+3. <strong>Compter les années négatives, et découvrir qu'il faut choisir un seuil.</strong> Comptez, pour chaque série, les années à performance strictement négative, puis affichez la liste <code>(année, performance)</code> de ces années au format <code>+.2%</code>. Vous obtenez 2 d'un côté, 3 de l'autre. Regardez la troisième : c'est un cas limite. Recomptez avec le seuil <code>perf &lt; -0.01</code> (perdre plus de 1 %) et donnez les deux nouveaux comptes. Répondez en deux lignes : <strong>combien de fois le S&amp;P 500 a-t-il vraiment perdu de l'argent depuis 2010</strong>, et pourquoi la question n'a-t-elle pas de réponse tant qu'on n'a pas fixé de seuil ?
+4. <strong>Le piège, démontré sur les données.</strong> Voici la version fausse, celle qui initialise l'accumulateur à zéro :</p>
+<p><code>python
+   def pire_annee_fausse(annees, perfs):
+       """Wrong on purpose: the accumulator starts at zero instead of perfs[0]."""
+       pire, annee_pire = 0.0, None
+       for annee, perf in zip(annees, perfs):
+           if perf &lt; pire:
+               pire, annee_pire = perf, annee
+       return annee_pire, pire</code></p>
+<p>Appelez les <strong>deux</strong> fonctions sur les dix-sept années du portefeuille : elles donnent la même chose. Appelez-les ensuite sur les trois seules années 2023-2025 (<code>[0.2079, 0.1248, 0.1740]</code>). Donnez les deux sorties, dites laquelle est juste, et expliquez en une phrase pourquoi la fausse version a <strong>paru</strong> correcte au premier appel. Quel <code>assert</code> du point 1 l'aurait arrêtée en trois secondes ?
+5. <strong>Deux lignes de conclusion.</strong> Comparez les deux séries sur trois chiffres : la pire année, le nombre d'années négatives, et le nombre d'années (sur les dix-sept) où le portefeuille fait mieux que le S&amp;P 500 seul (calculez-le : une boucle, une comparaison, un compteur). Concluez en deux lignes sur ce que le mélange de six lignes a fait au risque de perte annuelle. <strong>Vous ne pouvez pas encore expliquer <em>pourquoi</em></strong> : le mécanisme porte un nom, et c'est le ch01 u03 qui le donne. Écrivez le constat chiffré, pas l'explication.</p>
+<hr />
+<h2 id="exercice-3-question-dentretien-que-va-afficher-ce-code">Exercice 3 ★★★ : Question d’entretien : « que va afficher ce code ? »</h2>
+<blockquote>
+<p><strong>Difficulté</strong> ★★★ (type entretien) · <strong>Temps</strong> 20 min · <strong>À la maison</strong> · <strong>Unités</strong> u03, u06 · <strong>Sans machine</strong> pour les parties a et b ; la machine ne sert qu'à corriger, à la fin.</p>
+</blockquote>
+<p><em>Mise en situation.</em> Entretien pour un stage en équipe quantitative. On vous tend une feuille avec trois extraits de code et une consigne : « Écrivez ce que chacun affiche, puis expliquez-moi. » Vous n'avez ni ordinateur, ni droit de dire « ça dépend ».</p>
+<p><strong>a) La réponse orale, en trois phrases.</strong> Première question : <em>« En Python, quand est-ce que modifier <code>b</code> modifie aussi <code>a</code> ? »</em> Préparez <strong>trois phrases, pas quatre</strong>, sans écrire une seule ligne de code : la première dit ce que <code>=</code> fait réellement, la deuxième nomme les deux opérations qui fabriquent un second nom sur un même contenu, la troisième donne la parade en un mot. Écrivez ces trois phrases telles quelles, elles seront relues.</p>
+<p><strong>b) Les trois extraits.</strong> Pour chacun : (1) écrivez la sortie <strong>avant</strong> toute vérification, (2) expliquez en <strong>une</strong> phrase, (3) donnez la correction, en une ligne.</p>
+<p><strong>Extrait (i)</strong></p>
+<div class="code-block" data-lang="python"><pre><code>prix = [<span class="number">7711.76</span>, <span class="number">7686.14</span>, <span class="number">7631.47</span>]
+copie = prix
+copie[<span class="number">0</span>] = <span class="number">0.0</span>
+<span class="name">print</span>(prix)
+</code></pre></div>
+<p><strong>Extrait (ii)</strong></p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+prix = np.<span class="name">array</span>([<span class="number">7711.76</span>, <span class="number">7686.14</span>, <span class="number">7631.47</span>, <span class="number">7666.60</span>, <span class="number">7747.71</span>, <span class="number">7718.60</span>])
+trois_derniers = prix[-<span class="number">3</span>:]
+trois_derniers[<span class="number">0</span>] = <span class="number">0.0</span>
+<span class="name">print</span>(prix)
+</code></pre></div>
+<p><strong>Extrait (iii)</strong></p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="keyword">def</span> <span class="name">garder_les_hausses</span>(rendements):
+    <span class="string">&quot;&quot;&quot;Set every negative daily return to zero, then return the series.&quot;&quot;&quot;</span>
+    rendements[rendements &lt; <span class="number">0.0</span>] = <span class="number">0.0</span>
+    <span class="keyword">return</span> rendements
+
+serie = np.<span class="name">array</span>([-<span class="number">0.0033</span>, -<span class="number">0.0071</span>, <span class="number">0.0046</span>, <span class="number">0.0106</span>, -<span class="number">0.0038</span>])
+hausses = <span class="name">garder_les_hausses</span>(serie)
+<span class="name">print</span>(hausses)
+<span class="name">print</span>(serie)
+<span class="name">print</span>(hausses <span class="keyword">is</span> serie)
+</code></pre></div>
+<p>Sur l'extrait (iii), ajoutez deux phrases : <strong>qui</strong> est abîmé, et <strong>pourquoi</strong> c'est plus grave que dans les deux premiers extraits.</p>
+<p><strong>c) La relance.</strong> <em>« D'accord. Et un masque booléen, c'est une vue ou une copie ? »</em> Répondez d'abord de tête, puis justifiez avec cet extrait, que vous pouvez maintenant exécuter :</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+a = np.<span class="name">array</span>([<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>, <span class="number">5.0</span>])
+extrait = a[a &gt; <span class="number">3.0</span>]
+extrait[<span class="number">0</span>] = <span class="number">0.0</span>
+<span class="name">print</span>(a)
+a[a &gt; <span class="number">3.0</span>] = <span class="number">0.0</span>
+<span class="name">print</span>(a)
+</code></pre></div>
+<p>Les deux <code>print</code> ne disent pas la même chose alors que le masque <code>a &gt; 3.0</code> est le même. Expliquez en deux phrases ce qui distingue les deux emplois, et dites lequel des deux est en cause dans l'extrait (iii).</p>
+<p><strong>d) La dernière pique.</strong> <em>« Ce bug, comment le repérez-vous en production ? »</em> Donnez le <strong>symptôme</strong> (une phrase, u06 le nomme), puis la règle d'écriture qui l'empêche définitivement dans une fonction que vous publiez (une phrase, u05 la nomme). Aucun des trois extraits ne lève de message d'erreur : dites en une phrase pourquoi c'est cela, le vrai sujet de la question.</p>
+<hr />
+<h2 id="exercice-4-ouvert-dimensionner-avant-de-lancer">Exercice 4 ★★★★ : Ouvert : dimensionner avant de lancer</h2>
+<blockquote>
+<p><strong>Difficulté</strong> ★★★★ (ouvert) · <strong>Temps</strong> 30 min · <strong>À la maison</strong> · <strong>Unité</strong> u06 · Une page rendue, critères d'évaluation ci-dessous. Pas de corrigé unique.</p>
+</blockquote>
+<p>Vous préparez un calcul pour le chapitre 4. Il s'agit d'évaluer le <strong>gain à l'échéance</strong> d'u05, <span class="math">\max(S - K,\ 0)</span>, pour <strong>500 prix d'exercice</strong> <span class="math">K</span> différents et <strong>100 000 valeurs possibles</strong> du prix final <span class="math">S</span> , soit une grille complète de 500 × 100 000 résultats. (D'où viennent ces 100 000 valeurs est le sujet du ch04 ; ici, c'est un tableau qu'on vous fournit, et la seule question est de savoir comment le traiter.)</p>
+<p>La façon naturelle d'écrire cela avec u06 est en une ligne : construire un tableau <code>S</code> de forme <code>(100_000, 1)</code>, un tableau <code>K</code> de forme <code>(1, 500)</code>, et écrire <code>np.maximum(S - K, 0.0)</code>. La diffusion (u06) fabrique alors un tableau de forme <code>(100 000, 500)</code>.</p>
+<p>Deux règles du cours encadrent ce genre de calcul :</p>
+<ul>
+<li><strong>plafond mémoire</strong> (<code>NOTATION.md</code> §12) : jamais de tableau de plus de <strong>10 000 000</strong> cases, soit 80 Mo en <code>float64</code> (8 octets par case) ;</li>
+<li><strong>plafond de temps</strong> : le notebook rendu d'un TP doit s'exécuter en <strong>moins de 120 secondes</strong> au total.</li>
+</ul>
+<p><strong>0. Prédiction, à écrire avant tout calcul.</strong> Deux nombres et une phrase : (i) combien de <strong>mégaoctets</strong> pèse le tableau complet ? (ii) passe-t-il sous le plafond, et si non, par quel facteur le dépasse-t-il ? (iii) selon vous, lequel des deux plafonds (mémoire ou temps) vous arrête le premier ?</p>
+<p><strong>a) La taille, à la case près.</strong> Donnez le nombre de cases du tableau <code>(100 000, 500)</code>, sa taille en octets, en mégaoctets (10⁶ octets) et en mébioctets (2²⁰ octets) : les deux unités circulent, et l'écart de 5 % entre elles est une source classique de malentendu dans un rapport. Vérifiez votre calcul par une mesure, sur un tableau <strong>cent fois plus petit</strong> :</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+petit = np.<span class="name">zeros</span>((<span class="number">1_000</span>, <span class="number">500</span>))
+<span class="name">print</span>(petit.size, petit.nbytes, petit.nbytes / petit.size)
+</code></pre></div>
+<p><strong>b) Le plafond, et ce que la formule cache.</strong> Le tableau passe-t-il ? Par quel facteur ? Puis allez plus loin : l'expression <code>np.maximum(S - K, 0.0)</code> ne fabrique pas <strong>un</strong> tableau de cette taille mais plusieurs, l'un après l'autre. Comptez-les en lisant l'expression de l'intérieur vers l'extérieur, donnez le pic de mémoire réellement demandé, et dites ce que la machine fait quand ce pic dépasse la mémoire disponible (u07 nomme le message ; comme tous ceux d'u02, il n'abîme rien).</p>
+<p><strong>c) Le découpage.</strong> Proposez un découpage en blocs qui respecte le plafond. Précisez :
+   - la <strong>taille maximale</strong> d'un bloc, en nombre de valeurs de <span class="math">S</span> par bloc, et le nombre de blocs correspondant ;
+   - la taille que vous <strong>recommandez</strong> réellement, en tenant compte du pic trouvé en (b), et pourquoi ;
+   - <strong>ce qu'il faut accumuler</strong> d'un bloc au suivant. Attention : le résultat attendu est une réponse <strong>par prix d'exercice</strong>, pas une réponse unique. Donnez la forme exacte des accumulateurs, leur nombre, et leur poids total en kilooctets. Dites en une phrase ce qu'il ne faut <strong>surtout pas</strong> garder.
+   - Écrivez le squelette de la boucle externe en dix lignes au plus (l'intérieur peut rester une ligne de commentaire).</p>
+<p><strong>d) Le temps, estimé sans lancer le calcul.</strong> Mesurez d'abord le coût unitaire d'une case, en boucle Python puis en tableau, sur un million de valeurs, c'est le chronométrage d'u06 :</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> time
+
+tableau = np.<span class="name">linspace</span>(<span class="number">5000.0</span>, <span class="number">11000.0</span>, <span class="number">1_000_000</span>)
+liste = tableau.<span class="name">tolist</span>()
+debut = time.<span class="name">perf_counter</span>()
+total = <span class="number">0.0</span>
+<span class="keyword">for</span> x <span class="keyword">in</span> liste:
+    total += <span class="name">max</span>(x - <span class="number">7718.60</span>, <span class="number">0.0</span>)
+cout_boucle = (time.<span class="name">perf_counter</span>() - debut) / <span class="number">1_000_000</span>
+<span class="name">print</span>(f<span class="string">&quot;{cout_boucle:.2e} s par case&quot;</span>)
+</code></pre></div>
+<p>Faites la même mesure pour la version en tableau, soit <code>np.maximum(tableau - 7718.60, 0.0).sum()</code> entre deux <code>time.perf_counter()</code>, et donnez les deux coûts unitaires en notation scientifique. Puis, <strong>sans jamais lancer le calcul complet</strong> :
+   - estimez le temps d'une version en <strong>double boucle</strong> Python sur les 5 × 10⁷ cases, et celui de la version en tableaux découpés en blocs ;
+   - donnez le rapport entre les deux ;
+   - dites <strong>à partir de quelle taille de grille</strong> la double boucle devient déraisonnable, en explicitant le seuil que vous choisissez et pourquoi (le plafond de 120 s en est un ; ce n'est pas le seul, et l'argument le plus fort n'est pas celui-là) ;
+   - concluez en une phrase sur votre prédiction (iii) : lequel des deux plafonds vous a arrêté le premier, et de combien.</p>
+<p>Vos temps ne seront pas les nôtres : le facteur se mesure, il ne se récite pas (u06). Donnez vos chiffres mesurés, pas ceux du corrigé.</p>
+<h3 id="livrable-et-criteres-devaluation">Livrable et critères d’évaluation</h3>
+<p>Une page : vos calculs de taille, le squelette de boucle, vos temps mesurés, et vos réponses en français. Le barème, sur 20 :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Critère</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prédiction écrite <strong>avant</strong> tout calcul, puis confrontée explicitement au résultat en (d)</td>
+<td>3</td>
+</tr>
+<tr>
+<td>(a) cases, octets, Mo <strong>et</strong> Mio, mesure de contrôle faite</td>
+<td>3</td>
+</tr>
+<tr>
+<td>(b) facteur de dépassement juste <strong>et</strong> tableaux intermédiaires comptés, pic donné</td>
+<td>4</td>
+</tr>
+<tr>
+<td>(c) taille de bloc justifiée, accumulateurs de forme <code>(500,)</code> nommés, poids chiffré</td>
+<td>5</td>
+</tr>
+<tr>
+<td>(d) coût unitaire mesuré, deux temps estimés, seuil de « déraisonnable » explicité et argumenté</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Une page, chiffres avec leur unité, aucun nombre récité sans mesure</td>
+<td>1</td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Trois réponses valent zéro quel que soit le reste</em> : donner une taille sans unité ; proposer d'accumuler les blocs eux-mêmes dans une liste « pour concaténer à la fin » (c'est le tableau de 400 Mo, reconstruit à la main) ; et citer un rapport de temps lu dans le cours au lieu de celui que votre machine vous a donné.</p></section>
+      <div class="hero-actions"><a class="text-link" href="index.html">Carte du chapitre</a></div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Sans corrigé</strong>Le site publie les énoncés. Les corrigés, quiz commentés et notebooks de solution ne sont pas mis en ligne.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 00 · TD<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Un prix n'est pas un rendement · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Un rendement compte la variation et les revenus ; les log-rendements s’additionnent dans le temps, les rendements simples se pondèrent entre actifs.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch01/u01.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Un prix n&#x27;est pas un rendement · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Un rendement compte la variation et les revenus ; les log-rendements s’additionnent dans le temps, les rendements simples se pondèrent entre actifs.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch01/u01.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Un prix n&#x27;est pas un rendement · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Un rendement compte la variation et les revenus ; les log-rendements s’additionnent dans le temps, les rendements simples se pondèrent entre actifs.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch01" data-unit="u01" data-unit-title="Un prix n&#x27;est pas un rendement" data-ch-title="Les objets de la finance qu&#x27;on peut observer" data-unit-url="cours/ch01/u01.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 01 · Les objets de la finance qu&#x27;on…</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Un prix n&#x27;est pas un rendement">Unité 1/5 · Un prix n&#x27;est pas un rendement</span></nav>
+      <span class="cb-short">Ch. 01 · 1/5</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch01" data-progress-units="u01,u02,u03,u04,u05" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/5 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Un prix n&#x27;est pas un rendement" aria-current="page"><b>01</b><span>Un prix n&#x27;est pas un rendement</span></a><a href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs"><b>02</b><span>La volatilité mesure l&#x27;écart au centre</span></a><a href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner"><b>03</b><span>Diversifier, ce n&#x27;est pas moyenner</span></a><a href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui"><b>04</b><span>Un euro demain ne vaut…</span></a><a href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine"><b>05</b><span>Une option, c&#x27;est d&#x27;abord un…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Les objets de la finance qu&#x27;on peut observer">Chapitre 01 · Les objets de la finance qu&#x27;on peut observer</a></p>
+      <ul class="ol-units"><li><a class="ol-unit is-current" href="u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01" aria-current="page"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open is-here" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 01 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#1-la-question">1. La question</a></li>
+        <li><a href="#2-on-essaie-dabord">2. On essaie d&#x27;abord</a></li>
+        <li><a href="#3-deux-reponses-au-lieu-dune">3. Deux réponses au lieu d&#x27;une</a></li>
+        <li><a href="#4-lechelle-qui-repare-laddition">4. L&#x27;échelle qui répare l&#x27;addition</a></li>
+        <li><a href="#5-la-double-asymetrie">5. La double asymétrie</a></li>
+        <li><a href="#6-le-piege-classique-la-moyenne-des-lignes-nest-pas-le-resultat-du-melange">6. Le piège classique : la moyenne des lignes n&#x27;est pas le résultat du mélange</a></li>
+        <li><a href="#7-verifiez-vous">7. Vérifiez-vous</a></li>
+        <li><a href="#8-ce-que-vous-savez-faire-maintenant">8. Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 20 min<br>Travail complet 40 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 1 sur 5</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit is-current" href="u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01" aria-current="page"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#1-la-question">1. La question</a><a href="#2-on-essaie-dabord">2. On essaie d&#x27;abord</a><a href="#3-deux-reponses-au-lieu-dune">3. Deux réponses au lieu d&#x27;une</a><a href="#4-lechelle-qui-repare-laddition">4. L&#x27;échelle qui répare l&#x27;addition</a><a href="#5-la-double-asymetrie">5. La double asymétrie</a><a href="#6-le-piege-classique-la-moyenne-des-lignes-nest-pas-le-resultat-du-melange">6. Le piège classique : la moyenne des lignes n&#x27;est pas le résultat du mélange</a><a href="#7-verifiez-vous">7. Vérifiez-vous</a><a href="#8-ce-que-vous-savez-faire-maintenant">8. Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 01</a><span aria-hidden="true">/</span><span>Unité 01</span></nav>
+        <p class="lesson-kicker">Les objets de la finance qu'on peut observer</p>
+        <h1>Un prix n’est pas un rendement</h1>
+        <p class="lesson-question">Un rendement compte la variation <strong>et</strong> les revenus ; les log-rendements s'additionnent dans le temps, les rendements simples se pondèrent entre actifs.</p>
+        <div class="lesson-meta"><span>Lecture guidée 20 min</span><span>Travail complet 40 min</span><span>Une idée</span><span>Unité 01 sur 05</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><p><strong>Durée : 20 min</strong> · <strong>Prérequis : ch00 u02</strong> (variables, types), <strong>u03</strong> (listes, tranches), <strong>u04</strong> (boucles), <strong>u05</strong> (fonctions, <code>assert</code>), <strong>u06</strong> (numpy, <code>np.log</code>, <code>np.exp</code>).</p>
+<aside class="callout callout-idee">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8.5v7M8.5 12h7"/></svg>L'idée unique</p>
+<p><strong>L'idée unique de cette unité.</strong> Un rendement rapporte une variation <strong>et les revenus versés</strong> à un capital de départ ; il s'écrit sur deux échelles, l'une qui s'additionne dans le temps, l'autre qui se pondère entre actifs.</p>
+</aside>
+<hr /></section>
+<section class="lesson-section reveal" id="1-la-question" data-section><span class="section-number">01</span><h2 id="1-la-question">1. La question</h2>
+<p>Le S&amp;P 500 (un indice qui suit les cours de cinq cents grandes sociétés américaines) valait <strong>1 136,52</strong> le 5 janvier 2010. Le 4 septembre 2026, il vaut <strong>7 718,60</strong>. Ce sont les deux extrémités du jeu de données du cours : 4 151 <em>séances de bourse</em>, les jours où le marché a ouvert. Elles sont chargées par <code>charger_fil_rouge()</code>, la fonction fournie du cours ; nous la lirons au §6, et vous n'aurez jamais à l'écrire.</p>
+<p>Un épargnant a placé <strong>1 000 €</strong> sur cet indice le 5 janvier 2010 et n'y a plus touché. Le 4 septembre 2026, combien a-t-il ?</p>
+<p>Le <em>prix</em> d'un actif, noté <span class="math">S_t</span>, est le nombre d'euros qu'il faut payer à la date <span class="math">t</span> pour en détenir une unité. Nous avons deux prix. La question demande autre chose : de combien le capital a <strong>grandi</strong>. C'est un <em>rendement</em>, et ce n'est pas la même chose qu'un prix.</p>
+<aside class="pred-card" data-pred="ch01.u01" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch01-u01">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch01-u01" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="2-on-essaie-dabord" data-section><span class="section-number">02</span><h2 id="2-on-essaie-dabord">2. On essaie d’abord</h2>
+<p>Écrivez deux réponses avant de lire la suite. Elles seront confrontées au résultat dans les deux sections qui suivent.</p>
+<p><strong>(a)</strong> Le montant, en euros, obtenu en 2026.
+<strong>(b)</strong> Un placement perd 50 % une année, puis gagne 50 % l'année suivante. Sur les deux ans : gain, perte, ou match nul ?</p>
+</section>
+<section class="lesson-section reveal" id="3-deux-reponses-au-lieu-dune" data-section><span class="section-number">03</span><h2 id="3-deux-reponses-au-lieu-dune">3. Deux réponses au lieu d’une</h2>
+<p>Le calcul direct : <span class="math">1\,000 \times 7\,718{,}60 / 1\,136{,}52 = \mathbf{6\,791{,}43}</span> €. Le capital a été multiplié par 6,79.</p>
+<p>Le même jeu de données contient une deuxième colonne, <code>SPY</code> : les cours du plus gros fonds coté sur le S&amp;P 500 (il détient les mêmes cinq cents sociétés) <strong>corrigés des dividendes versés</strong>, c'est-à-dire recalculés comme si chaque dividende avait été aussitôt réinvesti (<code>auto_adjust=True</code>, <code>data/README_DATA.md</code>). Le fonds, lui, les verse en espèces quatre fois par an : c'est le calcul qui les remet dedans, comme le ferait un épargnant qui réinvestit. Un <em>dividende</em> est un revenu versé au détenteur d'une action ; le jour où il est versé, il sort du prix de l'action. Sur <code>SPY</code>, la même mise de 1 000 € donne <strong>9 082,18 €</strong>.</p>
+<p><strong>Deux mille deux cent quatre-vingt-onze euros d'écart</strong>, sur le même marché, pendant les mêmes seize ans et huit mois. Le premier chiffre suit un <em>indice de prix</em> : il ne regarde que les cours. Le second suit un <em>indice dividendes réinvestis</em>. La différence <strong>est</strong> le dividende, au frottement près des frais du fonds, environ 9 points de base par an, et rien d'autre.</p>
+<p>Ramenées à une <em>base 100</em> le 5 janvier 2010 (chaque série divisée par sa valeur de ce jour-là, puis multipliée par 100), les deux courbes finissent à <strong>679,1</strong> et <strong>908,2</strong> : <strong>229,1 points d'écart</strong>. En taux annuel, celui du <em>TCAC</em>, taux de croissance annuel composé, c'est-à-dire le taux constant qui aurait mené du premier au dernier prix, cela fait <strong>12,18 %</strong> contre <strong>14,16 %</strong>, soit <strong>1,974 point par an</strong> ; en taux continu, cet écart est le <em>taux de dividende</em> <span class="math">q \simeq 1{,}74\,\%</span>, la part du prix reversée chaque année en revenus. (<code>data/stats_summary.md</code> publie 12,20 % et 14,17 % : il part d'une séance plus tôt, le 4 janvier 2010, et deux centièmes de point d'écart en découlent.)</p>
+<figure class="unit-figure"><img src="figures/fig01_prix_vs_total_return.png" alt="Deux courbes en base 100 au 2010-01-05, ordonnées logarithmiques. Ce qu&#x27;il faut voir : les deux courbes ont exactement la même forme (mêmes creux, mêmes rebonds) et pourtant l&#x27;écart entre elles s&#x27;élargit régulièrement, jusqu&#x27;à 229,1 points à la fin. Cet écart est le dividende accumulé, environ 1,74 % par an en composition continue." width="1597" height="916" loading="lazy"><figcaption>Deux courbes en base 100 au 2010-01-05, ordonnées logarithmiques. Ce qu&#x27;il faut voir : les deux courbes ont exactement la même forme (mêmes creux, mêmes rebonds) et pourtant l&#x27;écart entre elles s&#x27;élargit régulièrement, jusqu&#x27;à 229,1 points à la fin. Cet écart est le dividende accumulé, environ 1,74 % par an en composition continue.</figcaption></figure>
+<aside class="callout callout-definition">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4Zm16 0h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7Z"/></svg>Définition</p>
+<p><strong>Définition : rendement total.</strong> Le rendement total compte la variation du prix <strong>et</strong> les revenus versés sur la période. Un rendement calculé sur un indice de prix n'est pas un rendement total : il oublie les dividendes. Annoncer « le S&amp;P 500 a rapporté 12,18 % par an » est incomplet tant qu'on n'a pas dit si les dividendes y sont.</p>
+</aside>
+</section>
+<section class="lesson-section reveal" id="4-lechelle-qui-repare-laddition" data-section><span class="section-number">04</span><h2 id="4-lechelle-qui-repare-laddition">4. L’échelle qui répare l’addition</h2>
+<p>Passons à la question (b). Rendement simple de l'année 1 : <span class="math">R_1 = -0{,}50</span>. Année 2 : <span class="math">R_2 = +0{,}50</span>. Leur somme vaut zéro, mais 1 € devient <span class="math">1 \times 0{,}50 \times 1{,}50 = 0{,}75</span> €, soit <strong>−25 %</strong>. Les rendements simples se <strong>multiplient</strong> dans le temps ; les additionner est faux.</p>
+<p>Il existe une écriture du même mouvement qui, elle, s'additionne. On prend le logarithme du rapport des prix.</p>
+<aside class="callout callout-formule">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h6M8 20V6a2 2 0 0 1 2-2h1M5 11h6M14 10l5 8M19 10l-5 8"/></svg>Formule</p>
+<p><strong>Formule : le log-rendement.</strong>
+<span class="math math-display">\ell_t = \ln\!\left(\frac{S_t}{S_{t-1}}\right) = \ln(1 + R_t)</span>
+<strong><span class="math">S_t</span></strong> : prix à la date <span class="math">t</span> · <strong><span class="math">R_t = S_t/S_{t-1} - 1</span></strong> : rendement simple de la période · <strong><span class="math">\ell_t</span></strong> : log-rendement de la même période. On écrit <span class="math">\ell</span>, jamais <span class="math">r</span> : la lettre <span class="math">r</span> est réservée au taux sans risque (u04). Retour en arrière : <span class="math">R_t = e^{\ell_t} - 1</span>.</p>
+</aside>
+<p>Sur notre exemple : <span class="math">\ln 0{,}50 = -0{,}6931</span>, <span class="math">\ln 1{,}50 = +0{,}4055</span>, somme <span class="math">= -0{,}2877</span>, et <span class="math">e^{-0{,}2877} - 1 = -25{,}00\,\%</span>. <strong>La même réponse, obtenue par une addition.</strong></p>
+<p>Quatre repères à mémoriser, parce qu'ils disent quand les deux échelles se ressemblent et quand elles divergent :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Rendement simple <span class="math">R</span></th>
+<th>−50 %</th>
+<th>−1 %</th>
+<th>+1 %</th>
+<th>+50 %</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Log-rendement <span class="math">\ell</span></td>
+<td><strong>−69,31 %</strong></td>
+<td>−1,005 %</td>
+<td>+0,995 %</td>
+<td><strong>+40,55 %</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Sous ±1 %, les deux chiffres sont indiscernables à un demi-point de base près, et à ±2 % l'écart n'est encore que de deux points de base, et c'est pourquoi la confusion survit si longtemps. Au-delà, ils s'écartent, et <span class="math">\ell</span> est <strong>toujours</strong> plus petit que <span class="math">R</span>.</p>
+<aside class="callout callout-demo">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18.5 8 11l4 4 3-5 6 8.5Z"/><circle cx="7" cy="5.5" r="2"/></svg>Démo interactive</p>
+<p><strong>Démo interactive</strong> : <em>Le convertisseur.</em> Curseur <span class="math">R</span> de −90 % à +200 % ; affiche <span class="math">R</span>, <span class="math">\ell = \ln(1+R)</span>, l'écart <span class="math">R - \ell</span>, plus deux cases figées à ±50 %. On voit : indiscernables sous ±2 %, divergents au-delà, <span class="math">\ell</span> toujours plus petit que <span class="math">R</span>.</p>
+<p><strong>Définition : point de base (pb).</strong> Un centième de pour-cent, soit 0,0001. C'est l'unité dans laquelle les salles de marché expriment les petits écarts : « 46 pb » veut dire 0,46 %.</p>
+</aside>
+</section>
+<section class="lesson-section reveal" id="5-la-double-asymetrie" data-section><span class="section-number">05</span><h2 id="5-la-double-asymetrie">5. La double asymétrie</h2>
+<p>Voilà l'idée à retenir, et elle a deux moitiés :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Échelle correcte</th>
+<th>Opération</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Empiler <strong>plusieurs dates</strong> d'un même actif</td>
+<td><strong>log</strong></td>
+<td>on <strong>additionne</strong> les <span class="math">\ell_t</span></td>
+</tr>
+<tr>
+<td>Mélanger <strong>plusieurs actifs</strong> sur une même date</td>
+<td><strong>simple</strong></td>
+<td>on <strong>pondère</strong> les <span class="math">R_t</span> par les poids</td>
+</tr>
+</tbody>
+</table></div>
+<p>La seconde moitié se démontre sur une seule séance. Une <em>ligne</em> est un actif détenu avec son poids ; le portefeuille du cours en compte six. Le 12 mars 2020, elles ont fait, en rendements <strong>simples</strong> : SP500 <strong>−9,51 %</strong>, CAC40 <strong>−12,28 %</strong>, AAPL <strong>−9,88 %</strong>, LVMH <strong>−8,68 %</strong>, GLD <strong>−3,99 %</strong>, TLT <strong>+0,62 %</strong>. Avec les poids 40/20/10/10/10/10, le portefeuille a perdu <strong>−8,4521 %</strong>. Le même calcul mené sur les log-rendements pondérés donne <strong>−8,9103 %</strong> : <strong>45,8 points de base d'erreur en une seule séance</strong>, dans le mauvais sens.</p>
+</section>
+<section class="lesson-section reveal" id="6-le-piege-classique-la-moyenne-des-lignes-nest-pas-le-resultat-du-melange" data-section><span class="section-number">06</span><h2 id="6-le-piege-classique-la-moyenne-des-lignes-nest-pas-le-resultat-du-melange">6. Le piège classique : la moyenne des lignes n’est pas le résultat du mélange</h2>
+<aside class="callout callout-piege">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4.5M12 17.4v.2"/></svg>Piège classique</p>
+<p><strong>Piège classique : l'ascenseur de Batanero.</strong> Quatre femmes de 120 livres et six hommes de 180 livres montent dans un ascenseur. Poids moyen des dix personnes ? La réponse spontanée est 150, la moyenne de 120 et 180. La bonne réponse est <span class="math">(4 \times 120 + 6 \times 180)/10 = \mathbf{156}</span> : il y a plus d'hommes. Moyenner sans pondérer est une faute d'arithmétique, pas de finance ; elle coûte 6 livres ici et 45,8 points de base le 12 mars 2020.</p>
+</aside>
+<p>Le code du fil rouge tient en onze lignes. Nous lisons chaque ligne, parce que plusieurs constructions y apparaissent pour la première fois sur des données réelles.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> sys; sys.path.<span class="name">insert</span>(<span class="number">0</span>, <span class="string">&quot;..&quot;</span>)          <span class="comment"># 1</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np                            <span class="comment"># 2</span>
+<span class="keyword">from</span> mcdp_utils <span class="keyword">import</span> charger_fil_rouge      <span class="comment"># 3</span>
+
+donnees = <span class="name">charger_fil_rouge</span>()                 <span class="comment"># 4</span>
+prix = donnees[<span class="string">&quot;prix&quot;</span>][<span class="string">&quot;SP500&quot;</span>]               <span class="comment"># 5</span>
+ell = np.<span class="name">log</span>(prix[<span class="number">1</span>:] / prix[:-<span class="number">1</span>])            <span class="comment"># 6</span>
+<span class="name">print</span>(ell.size, prix.size)                    <span class="comment"># 7  -&gt; 4150 4151</span>
+<span class="name">print</span>(np.<span class="name">exp</span>(ell.<span class="name">sum</span>()) - <span class="number">1</span>)                  <span class="comment"># 8  -&gt; 5.791433465465942</span>
+i = <span class="name">int</span>(np.<span class="name">where</span>(donnees[<span class="string">&quot;dates&quot;</span>] == np.<span class="name">datetime64</span>(<span class="string">&quot;2020-03-12&quot;</span>))[<span class="number">0</span>][<span class="number">0</span>])   <span class="comment"># 9</span>
+R = {a: np.<span class="name">exp</span>(donnees[<span class="string">&quot;rendements_log&quot;</span>][a][i]) - <span class="number">1</span> <span class="keyword">for</span> a <span class="keyword">in</span> donnees[<span class="string">&quot;poids&quot;</span>]}  <span class="comment"># 10</span>
+<span class="name">print</span>(<span class="name">sum</span>(donnees[<span class="string">&quot;poids&quot;</span>][a] * R[a] <span class="keyword">for</span> a <span class="keyword">in</span> R))                       <span class="comment"># 11 -&gt; -0.084521</span>
+</code></pre></div>
+<p>Ligne 1 : <code>sys.path.insert(0, "..")</code> dit à Python d'aller chercher le module commun <code>mcdp_utils.py</code>, un dossier au-dessus. Ligne 3 : on n'importe <strong>que</strong> la fonction dont on a besoin. Ligne 4 : <code>charger_fil_rouge()</code> rend un dictionnaire, le rangement à clés de ch00 u03. Ligne 5 : la clé <code>"prix"</code> donne un dictionnaire d'actifs ; la clé <code>"SP500"</code> donne un tableau numpy de 4 151 prix. Ligne 6 : <code>prix[1:]</code> est la tranche « tout sauf le premier », <code>prix[:-1]</code> « tout sauf le dernier » ; les deux ont 4 150 cases, et numpy divise case à case : c'est la vectorisation de ch00 u06, une opération écrite une fois et appliquée 4 150 fois. Ligne 7 : <strong>4 150 rendements pour 4 151 prix</strong>, d'où une précision qui évitera une surprise au TP. <code>charger_fil_rouge()</code> livre aussi une clé <code>"rendements_log"</code> qui contient, elle, <strong>4 151</strong> valeurs : son premier rendement est calculé à partir du cours du 4 janvier 2010, une séance que la clé <code>"prix"</code> ne contient pas. Les deux séries disent la même chose ; elles n'ont simplement pas la même première date, et le cours emploie partout la seconde. Ligne 8 : la somme des 4 150 log-rendements, ramenée en rendement simple par <span class="math">e^x - 1</span>, redonne exactement <strong>+579,14 %</strong>, c'est-à-dire le facteur 6,79 du début. Lignes 9 à 11 : les six rendements <strong>simples</strong> du 12 mars 2020, pondérés, redonnent les <strong>−8,4521 %</strong> du §5.</p>
+</section>
+<section class="lesson-section reveal" id="7-verifiez-vous" data-section><span class="section-number">07</span><h2 id="7-verifiez-vous">7. Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch01.u01" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<ol>
+<li><strong>(★)</strong> Une action passe de 40 € à 50 € et verse 2 € de dividende dans l'intervalle. Rendement total sur la période ?</li>
+<li><strong>(★)</strong> Un placement fait +10 % puis −10 %. Que vaut la somme des deux log-rendements ? Et la richesse finale ?</li>
+<li><strong>(★★)</strong> Les <strong>4 150</strong> log-rendements du S&amp;P 500 calculés à partir de la colonne <code>prix</code> s'additionnent à 1,9157. Quel rendement simple cela fait-il, et retrouvez-vous le facteur 6,79 ?</li>
+<li><strong>(★, retour sur ch00 u06)</strong> Avec un tableau numpy <code>prix</code>, quelle expression d'une ligne donne le tableau des log-rendements ?</li>
+<li><strong>(★, retour sur ch00 u03)</strong> Pourquoi <code>prix[1:]</code> et <code>prix[:-1]</code> ont-ils la même longueur, et laquelle ?</li>
+</ol>
+<details class="check"><summary>Réponses</summary><div>
+
+1. <span class="math">(50 + 2 - 40)/40 = 12/40 = \mathbf{30\,\%}</span>. Le dividende compte : sans lui on aurait écrit 25 %, soit cinq points de moins.
+2. <span class="math">\ln(1{,}10) + \ln(0{,}90) = 0{,}09531 - 0{,}10536 = \mathbf{-0{,}01005}</span>. Richesse : <span class="math">e^{-0{,}01005} = 0{,}99</span>, soit **−1 %**. Comme au (b) de la prédiction, deux mouvements symétriques laissent une perte.
+3. <span class="math">e^{1{,}9157} - 1 = 5{,}7914</span>, soit **+579,14 %** : le capital est multiplié par **6,79**. C'est le même nombre que la ligne 8 du code.
+4. `np.log(prix[1:] / prix[:-1])`. Un seul appel, aucune boucle.
+5. `prix[1:]` retire la première case, `prix[:-1]` la dernière : chacune en retire exactement une. Sur 4 151 prix, il reste **4 150** cases de chaque côté, et 4 150 rendements, puisqu'il faut deux prix pour faire un rendement.
+
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="8-ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">08</span><h2 id="8-ce-que-vous-savez-faire-maintenant">8. Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Distinguer un indice de prix d'un indice dividendes réinvestis, et chiffrer l'écart (679,1 contre 908,2 en base 100).</li>
+<li>Convertir un rendement simple en log-rendement et l'inverse, et dire lequel s'additionne dans le temps, lequel se pondère entre actifs.</li>
+<li>Calculer les log-rendements d'une série de prix en une ligne de numpy, et vérifier le résultat en revenant au rendement total.</li>
+</ul>
+<p><strong>Unité suivante.</strong> Nous savons mesurer un mouvement passé, pas dire s'il était calme ou agité, et c'est ce chiffre-là qui décidera de tout le reste du cours.</p>
+<hr />
+<p><strong>Sources.</strong> IEFP, <em>Rendement et risque des placements en actions</em>, <a class="url-plain" href="https://www.lafinancepourtous.com/decryptages/finance-perso/epargne-et-placement/rendement-et-risque-des-placements-en-actions/">https://www.lafinancepourtous.com/decryptages/finance-perso/epargne-et-placement/rendement-et-risque-des-placements-en-actions/</a> · pfolio.io academy, <em>Log returns vs simple returns</em>, <a class="url-plain" href="https://www.pfolio.io/academy/log-vs-simple-returns">https://www.pfolio.io/academy/log-vs-simple-returns</a> · C. Batanero, J. D. Godino, A. Vallecillos, D. R. Green, P. Holmes, « Errors and difficulties in understanding elementary statistical concepts », <em>International Journal of Mathematical Education in Science and Technology</em> 25(4), 1994, p. 527-547 (l'ascenseur), <a class="url-plain" href="https://www.ugr.es/~batanero/pages/ARTICULOS/errors.PDF">https://www.ugr.es/~batanero/pages/ARTICULOS/errors.PDF</a></p></section>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue et continuer" data-mark-next="u02.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue et continuer</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="index.html"><small>Début du chapitre</small><strong>Carte du chapitre 01</strong></a><a class="unit-nav-card next" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs"><small>Unité suivante</small><strong>02 · La volatilité mesure l&#x27;écart au centre</strong></a></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 01</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 01 · unité 01<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

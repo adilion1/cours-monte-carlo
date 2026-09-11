@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d'une · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Sur un tableau, une opération écrite une fois s’applique à toutes les cases : plus court à écrire, deux ordres de grandeur plus rapide.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u06.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Sur un tableau, une opération écrite une fois s’applique à toutes les cases : plus court à écrire, deux ordres de grandeur plus rapide.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u06.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Sur un tableau, une opération écrite une fois s’applique à toutes les cases : plus court à écrire, deux ordres de grandeur plus rapide.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script defer src="../../assets/data/fil_rouge.js"></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch00" data-unit="u06" data-unit-title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-ch-title="Outils : Python de zéro, sans rien installer" data-unit-url="cours/ch00/u06.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 00 · Outils</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une">Unité 6/8 · Un tableau numpy remplace la boucle</span></nav>
+      <span class="cb-short">Ch. 00 · 6/8</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch00" data-progress-units="u01,u02,u03,u04,u05,u06,u07,u08" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/8 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Six lignes suffisent pour voir seize ans de marché"><b>01</b><span>Six lignes suffisent pour voir…</span></a><a href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque"><b>02</b><span>Un nom retient un résultat…</span></a><a href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom"><b>03</b><span>Une liste range des prix dans l&#x27;ordre</span></a><a href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes"><b>04</b><span>Une boucle parcourt</span></a><a href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu"><b>05</b><span>Une fonction nomme un calcul</span></a><a href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" aria-current="page"><b>06</b><span>Un tableau numpy remplace la boucle</span></a><a href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours"><b>07</b><span>Votre machine devient l&#x27;ordinateur du cours</span></a><a href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours"><b>08</b><span>Huit fiches d&#x27;une page suffisent…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Outils : Python de zéro, sans rien installer">Chapitre 00 · Outils : Python de zéro…</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06" aria-current="page"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open is-here" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 00 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#la-question">La question</a></li>
+        <li><a href="#on-essaie-dabord">On essaie d&#x27;abord</a></li>
+        <li><a href="#lidee">L&#x27;idée</a></li>
+        <li><a href="#les-pieges">Les pièges</a></li>
+        <li><a href="#verifiez-vous">Vérifiez-vous</a></li>
+        <li><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 25 min<br>Travail complet 40 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 6 sur 8</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06" aria-current="page"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#la-question">La question</a><a href="#on-essaie-dabord">On essaie d&#x27;abord</a><a href="#lidee">L&#x27;idée</a><a href="#les-pieges">Les pièges</a><a href="#verifiez-vous">Vérifiez-vous</a><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 00</a><span aria-hidden="true">/</span><span>Unité 06</span></nav>
+        <p class="lesson-kicker">Outils : Python de zéro, sans rien installer</p>
+        <h1>Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d’une</h1>
+        <p class="lesson-question">Sur un tableau, une opération écrite une fois s'applique à toutes les cases : plus court à écrire, deux ordres de grandeur plus rapide.</p>
+        <div class="lesson-meta"><span>Lecture guidée 25 min</span><span>Travail complet 40 min</span><span>Une idée</span><span>Unité 06 sur 08</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><blockquote>
+<p><strong>Durée</strong> 25 min · <strong>Prérequis</strong> u01 à u05 · <strong>Idée unique</strong> : sur un tableau numpy, une opération écrite <strong>une fois</strong> s'applique à toutes les cases : plus court à écrire, et deux ordres de grandeur plus rapide qu'une boucle.</p>
+</blockquote></section>
+<section class="lesson-section reveal" id="la-question" data-section><span class="section-number">01</span><h2 id="la-question">La question</h2>
+<p>Le fil rouge contient <strong>4 151</strong> variations quotidiennes du S&amp;P 500, une par séance depuis le 5 janvier 2010. Une question de gestion des risques, posée telle quelle sur un desk : <strong>combien de ces séances sont passées sous le seuil de −2 % en une seule journée ?</strong></p>
+<p>Avec u04, la réponse s'écrit en cinq lignes qui tournent 4 151 fois. Le problème est ailleurs : à partir du ch04, le cours manipulera des tableaux de <strong>cent mille</strong> à <strong>dix millions</strong> de nombres, où la même boucle prendrait des minutes. Il faut une écriture qui vaille aussi bien pour 4 151 valeurs que pour 10 000 000.</p>
+<aside class="pred-card" data-pred="ch00.u06" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch00-u06">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch00-u06" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="on-essaie-dabord" data-section><span class="section-number">02</span><h2 id="on-essaie-dabord">On essaie d’abord</h2>
+<p>Écrivez deux nombres avant de lire la suite : <strong>combien de séances sous −2 %</strong> parmi les 4 151, et <strong>de combien</strong> a reculé la pire d'entre elles.</p>
+<p>Les réponses sont <strong>139 séances</strong>, soit 3,35 % du total (environ une séance par mois et demi) et une pire séance le <strong>16 mars 2020</strong>, à <strong>−0,1277</strong> sur l'échelle du fichier, soit une baisse de <strong>11,98 %</strong>. La plupart des lecteurs sous-estiment les deux. Retenez la seconde : une seule séance a coûté au S&amp;P 500 près du huitième de sa valeur.</p>
+<p>Deux précisions. La colonne employée ici n'est pas tout à fait le rendement d'u02 : sur son échelle, le seuil <code>-0.02</code> vaut une baisse de <strong>1,98 %</strong>, d'où 139 séances, contre 138 si l'on exige 2,00 % pleins. Et <strong>ne comparez pas ce −11,98 % d'une journée à la pire <em>année</em> du portefeuille</strong> (−15,28 %, u04) : ni le même actif, ni la même durée, ni la même façon de compter. Refuser une comparaison est le premier réflexe du métier.</p>
+</section>
+<section class="lesson-section reveal" id="lidee" data-section><span class="section-number">03</span><h2 id="lidee">L’idée</h2>
+<h3 id="ce-que-charger_fil_rouge-rend-deja">Ce que <code>charger_fil_rouge()</code> rend déjà</h3>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> mcdp_utils <span class="keyword">import</span> charger_fil_rouge
+fil = <span class="name">charger_fil_rouge</span>()
+rendements = fil[<span class="string">&quot;rendements_log&quot;</span>][<span class="string">&quot;SP500&quot;</span>]
+<span class="name">print</span>(<span class="name">type</span>(rendements).__name__, rendements.shape)   <span class="comment"># ndarray (4151,)</span>
+</code></pre></div>
+<p>L'objet rangé sous la clé <code>"SP500"</code> n'est pas une liste d'u03 : c'est un <strong>tableau numpy</strong> (<code>ndarray</code>), une suite de nombres <strong>tous du même type</strong>, rangés côte à côte en mémoire. <code>shape</code> en donne les dimensions : <code>(4151,)</code>. La virgule seule signifie « un seul axe, 4 151 cases » : c'est ainsi que numpy distingue une suite d'une grille.</p>
+<p>Les valeurs de <code>rendements_log</code> sont une variante du rendement d'u02 ; laquelle, et pourquoi le cours en garde deux, c'est <strong>ch01 u01</strong>. Notez qu'il y a <strong>autant de variations que de séances</strong>, et non une de moins : la première se calcule contre la clôture du 4 janvier 2010, la veille du panel. Refaites-les depuis les seuls 4 151 prix avec la formule d'u02, vous en obtiendrez 4 150, sur l'autre échelle, et un compte de 138.</p>
+<h3 id="une-operation-ecrite-une-fois-appliquee-a-toutes-les-cases">Une opération écrite une fois, appliquée à toutes les cases</h3>
+<div class="code-block" data-lang="python"><pre><code><span class="name">print</span>(rendements.<span class="name">mean</span>())               <span class="comment"># 0.0004622435235084024</span>
+<span class="name">print</span>(rendements.<span class="name">std</span>(ddof=<span class="number">1</span>))          <span class="comment"># 0.010902629250137815  -- ddof=1 : voir piege (ii)</span>
+<span class="name">print</span>(rendements.<span class="name">std</span>(ddof=<span class="number">1</span>) * np.<span class="name">sqrt</span>(<span class="number">252</span>))   <span class="comment"># 0.1730738737956197</span>
+<span class="name">print</span>((rendements * <span class="number">100.0</span>)[:<span class="number">3</span>])        <span class="comment"># [0.31108326 0.05453718 0.39932177]</span>
+</code></pre></div>
+<p><code>rendements * 100.0</code> ne multiplie pas un nombre : il multiplie <strong>les 4 151</strong>, et rend un tableau neuf de même forme. C'est cela, une opération <strong>élément par élément</strong>. <code>mean()</code> et <code>std()</code> font l'inverse : elles écrasent les 4 151 cases en un seul nombre. Le troisième affichage, <strong>0,1731</strong>, est simplement un écart-type multiplié par <span class="math">\sqrt{252}</span> : ce qu'il mesure, et pourquoi cette racine, c'est le <strong>ch01 u02</strong>.</p>
+<h3 id="compter-sans-boucle-le-masque-booleen">Compter sans boucle : le masque booléen</h3>
+<div class="code-block" data-lang="python"><pre><code>sous_deux = rendements &lt; -<span class="number">0.02</span>
+<span class="name">print</span>(sous_deux.shape, sous_deux[:<span class="number">4</span>])   <span class="comment"># (4151,) [False False False False]</span>
+<span class="name">print</span>(sous_deux.<span class="name">sum</span>())                  <span class="comment"># 139</span>
+<span class="name">print</span>(rendements.<span class="name">min</span>())                 <span class="comment"># -0.127652197567</span>
+<span class="name">print</span>(fil[<span class="string">&quot;dates&quot;</span>][rendements.<span class="name">argmin</span>()])   <span class="comment"># 2020-03-16</span>
+</code></pre></div>
+<p><code>rendements &lt; -0.02</code> compare <strong>chaque</strong> case à −0,02 et rend un tableau de même forme rempli de <code>True</code> et de <code>False</code> : un <strong>masque booléen</strong>. Pourquoi une <em>somme</em> donne-t-elle un <em>compte</em> ? Parce que <code>True</code> vaut 1 et <code>False</code> vaut 0 : additionner les vrais, c'est les compter. <code>argmin()</code> rend la <strong>position</strong> du minimum, qui sert à lire la date dans <code>fil["dates"]</code>. Cinq lignes, aucune boucle, et la réponse aux deux questions du début.</p>
+<h3 id="le-meme-geste-sur-la-fonction-du05">Le même geste sur la fonction d’u05</h3>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">def</span> <span class="name">payoff_call_vec</span>(S, K):
+    <span class="string">&quot;&quot;&quot;Vectorised version of payoff_call: S may be an array of any shape.&quot;&quot;&quot;</span>
+    <span class="keyword">return</span> np.<span class="name">maximum</span>(S - K, <span class="number">0.0</span>)
+
+prix = np.<span class="name">linspace</span>(<span class="number">5000.0</span>, <span class="number">11000.0</span>, <span class="number">10000</span>)
+gains = <span class="name">payoff_call_vec</span>(prix, <span class="number">7718.60</span>)
+<span class="name">print</span>(gains.shape, gains.<span class="name">max</span>())    <span class="comment"># (10000,) 3281.3999999999996</span>
+</code></pre></div>
+<p><code>np.maximum</code> est la version « toutes les cases » du <code>max</code> d'u05 : il compare case par case <code>S - K</code> à 0 et rend un tableau. Au passage, <code>S - K</code> mêle un tableau de 10 000 cases et un nombre seul : numpy étend le nombre à toutes les cases, ce qu'on appelle la <strong>diffusion</strong> (<em>broadcasting</em>). La figure d'u05 demandait une boucle sur 200 prix ; celle-ci calcule 10 000 gains en une ligne, et rend toujours 781,40 sur un nombre seul.</p>
+<h3 id="mesurer-jamais-reciter">Mesurer, jamais réciter</h3>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> time
+tableau = np.<span class="name">linspace</span>(<span class="number">5000.0</span>, <span class="number">11000.0</span>, <span class="number">1_000_000</span>)   <span class="comment"># le _ est un separateur de lisibilite</span>
+liste = tableau.<span class="name">tolist</span>()
+debut = time.<span class="name">perf_counter</span>()
+total = <span class="number">0.0</span>
+<span class="keyword">for</span> x <span class="keyword">in</span> liste:
+    total += <span class="name">max</span>(x - <span class="number">7718.60</span>, <span class="number">0.0</span>)
+duree_boucle = time.<span class="name">perf_counter</span>() - debut
+debut = time.<span class="name">perf_counter</span>()
+total_vec = np.<span class="name">maximum</span>(tableau - <span class="number">7718.60</span>, <span class="number">0.0</span>).<span class="name">sum</span>()
+duree_vecteur = time.<span class="name">perf_counter</span>() - debut
+<span class="name">print</span>(<span class="name">round</span>(duree_boucle, <span class="number">4</span>), <span class="name">round</span>(duree_vecteur, <span class="number">5</span>), <span class="name">round</span>(duree_boucle / duree_vecteur))
+</code></pre></div>
+<p>Sur la machine de référence, dix exécutions donnent <strong>0,10 à 0,18 s contre 0,003 à 0,005 s</strong> : le rapport n'est pas un nombre mais une fourchette, <strong>entre 20 et 45</strong>, et il change à chaque lancement. Chez vous ce sera autre chose : QuantEcon publie ×33 sur un calcul voisin. <strong>Le facteur se mesure, il ne se récite pas.</strong> Remplacer une boucle par une opération de tableau s'appelle <strong>vectoriser</strong> ; la mesure qui l'accompagne est un <strong>chronométrage</strong>.</p>
+<p>Deux causes, et pas « numpy est magique ». À chaque tour de boucle, Python vérifie de quel type est <code>x</code> avant de savoir quoi faire de <code>+</code> ; le tableau, lui, est déclaré une fois <code>float64</code>. Et les cases d'un tableau sont <strong>contiguës</strong> en mémoire, là où une liste est une suite d'adresses menant chacune ailleurs.</p>
+<figure class="unit-figure fig-wide"><img src="figures/fig_ch00_u06_deux_panneaux.png" alt="Deux panneaux. À gauche : les 4 151 variations quotidiennes du S&amp;P 500 ; ce qu&#x27;il faut voir, c&#x27;est que la zone rouge sous −2 % ne contient que 139 séances au regard du pic central, mais qu&#x27;elle s&#x27;étend beaucoup plus loin vers la gauche que le bord droit ne va vers la droite. À droite : le même calcul sur un million de valeurs, en boucle puis en tableau, échelle logarithmique, temps mesurés inscrits sur les barres." width="2077" height="835" loading="lazy"><figcaption>Deux panneaux. À gauche : les 4 151 variations quotidiennes du S&amp;P 500 ; ce qu&#x27;il faut voir, c&#x27;est que la zone rouge sous −2 % ne contient que 139 séances au regard du pic central, mais qu&#x27;elle s&#x27;étend beaucoup plus loin vers la gauche que le bord droit ne va vers la droite. À droite : le même calcul sur un million de valeurs, en boucle puis en tableau, échelle logarithmique, temps mesurés inscrits sur les barres.</figcaption></figure>
+<blockquote>
+<p><strong>Les quinze primitives du cours.</strong> Jusqu'au ch05, vous n'écrirez <strong>rien d'autre que celles-ci</strong> : <code>np.array</code> · <code>.shape</code> · indexation et tranche · masque booléen · <code>np.maximum</code> · <code>np.mean</code> · <code>np.std</code> · <code>np.percentile</code> · <code>np.exp</code> / <code>np.log</code> · <code>np.cumsum</code> · <code>np.sqrt</code> · <code>np.random.default_rng(SEED)</code> · <code>rng.standard_normal</code> · <code>rng.choice</code> · <code>rng.spawn</code> ; plus <code>plt.subplots</code> et <code>ax.plot</code> / <code>ax.hist</code>.</p>
+<p>Deux écritures pour la même chose : <code>np.mean(rendements)</code> et <code>rendements.mean()</code> font le même calcul (u03, « le point »). Les fonctions de <strong>confort</strong> qui fabriquent un jeu d'essai ou lisent un résultat, soit <code>np.linspace</code>, <code>.argmin</code>, <code>.tolist</code> ici, quelques autres dans le filet u08, apparaissent dans du code <strong>fourni</strong> et ne sont pas à mémoriser. Tout le reste s'<strong>appelle</strong>, ne s'écrit pas. Les trois dernières primitives servent au ch02.</p>
+<p><strong>Une graine, un générateur.</strong> <code>np.random.default_rng(SEED)</code> fabrique l'objet qui tire les nombres au sort, et la même graine redonne la même suite sur n'importe quelle machine. La règle complète du cours, à savoir <strong>un</strong> <code>SEED</code>, <strong>un</strong> <code>rng</code> créé une fois et passé en argument, toute répétition dérivée par <code>rng.spawn(k)</code>, et <strong>jamais</strong> <code>default_rng(SEED + i)</code>, motif que la documentation de NumPy assortit d'un « UNSAFE! Do not do this! » et dont l'erreur ne lève aucun message, se met en pratique dans la <strong>partie F du TP</strong>, et sert à partir du ch02.</p>
+</blockquote>
+</section>
+<section class="lesson-section reveal" id="les-pieges" data-section><span class="section-number">04</span><h2 id="les-pieges">Les pièges</h2>
+<h3 id="i-une-tranche-de-tableau-est-une-vue-pas-une-copie">(i) Une tranche de tableau est une vue, pas une copie</h3>
+<div class="code-block" data-lang="python"><pre><code>a = np.<span class="name">array</span>([<span class="number">10.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>, <span class="number">5.0</span>, <span class="number">6.0</span>])
+b = a[<span class="number">3</span>:]
+b[<span class="number">0</span>] = <span class="number">40.0</span>
+<span class="name">print</span>(a)      <span class="comment"># [10.  2.  3. 40.  5.  6.]  &lt;- a a change</span>
+liste = [<span class="number">10.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>, <span class="number">5.0</span>, <span class="number">6.0</span>]
+m = liste[<span class="number">3</span>:]
+m[<span class="number">0</span>] = <span class="number">40.0</span>
+<span class="name">print</span>(liste)  <span class="comment"># [10.0, 2.0, 3.0, 4.0, 5.0, 6.0]  &lt;- la liste, elle, est intacte</span>
+</code></pre></div>
+<p>Sur une <strong>liste</strong>, une tranche fabrique une nouvelle liste (u03). Sur un <strong>tableau</strong>, <code>a[3:]</code> est une <strong>vue</strong> : un second nom sur la même mémoire, comme l'alias <code>copie = prix</code> d'u03, mais ici il suffit de découper. Parade identique : <code>b = a[3:].copy()</code>.</p>
+<p>Une nuance utile : un <strong>masque</strong> booléen, lui, fabrique une copie : <code>a[a &gt; 3]</code> se modifie sans danger, <code>a[3:]</code> non. Le symptôme n'est jamais un message : c'est un résultat qui change quand on réexécute la même cellule.</p>
+<h3 id="ii-ddof-lecart-type-qui-nest-pas-le-meme-selon-la-bibliotheque">(ii) <code>ddof</code>, l’écart-type qui n’est pas le même selon la bibliothèque</h3>
+<div class="code-block" data-lang="python"><pre><code>echantillon = np.random.<span class="name">default_rng</span>(<span class="number">42</span>).<span class="name">standard_normal</span>(<span class="number">20</span>)
+<span class="name">print</span>(echantillon.<span class="name">std</span>())            <span class="comment"># 0.8481444...  (ddof=0, le defaut de numpy)</span>
+<span class="name">print</span>(echantillon.<span class="name">std</span>(ddof=<span class="number">1</span>))      <span class="comment"># 0.8701778...  (la convention du cours)</span>
+</code></pre></div>
+<p>Deux nombres pour la même quantité, <strong>2,60 % d'écart</strong> sur 20 valeurs. <code>np.std</code> divise par <span class="math">N</span> (<code>ddof=0</code>) ; pandas, et tout le reste de ce cours, par <span class="math">N-1</span> (<code>ddof=1</code>). Sur un million de valeurs l'écart tombe à 0,00005 %, donc invisible, donc jamais détecté, alors qu'il fausse tous les petits échantillons. <strong>Écrivez <code>ddof=1</code> explicitement</strong>, partout.</p>
+<p>Ces deux pièges ont un point commun avec celui d'u05 : aucun ne lève de message. Sur les dix erreurs classiques que ce cours recense, <strong>cinq sont muettes</strong>, d'où les <code>assert</code> d'u05.</p>
+</section>
+<section class="lesson-section reveal" id="verifiez-vous" data-section><span class="section-number">05</span><h2 id="verifiez-vous">Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch00.u06" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<p><strong>(a)</strong> <code>rendements.shape</code> affiche <code>(4151,)</code>. Que dit la virgule seule ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Qu'il n'y a **qu'un seul axe**, de 4 151 cases. `(4151,)` est à distinguer de `(4151, 1)`, une grille de 4 151 lignes et 1 colonne, qui ne se combine pas de la même façon avec les autres tableaux. Vérifier `shape` par un `assert` après chaque étape est le réflexe qui attrape le plus de bugs muets.
+</div></details>
+
+<p><strong>(b)</strong> Pourquoi <code>(rendements &lt; -0.02).sum()</code> compte-t-il des séances, alors que <code>sum</code> additionne ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Parce que la comparaison rend un tableau de `True` et de `False`, et que `True` vaut 1, `False` vaut 0 : leur somme est le nombre de `True`, ici **139**. Le même masque filtre au lieu de compter : `rendements[rendements < -0.02]` rend les 139 valeurs, dans une copie neuve.
+</div></details>
+
+<p><strong>(c) (rétrospective)</strong> Vous réexécutez deux fois la même cellule et obtenez deux nombres différents. Quelle est votre première hypothèse ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Qu'un tableau a été modifié **en place** par une vue : la première exécution a abîmé la donnée que la seconde relit. Seconde hypothèse, un générateur déjà consommé : le même `rng` appelé deux fois donne deux suites, c'est son travail. Jamais « numpy est instable » : à graine et versions fixées, le calcul en tableaux est reproductible.
+</div></details>
+
+<p><strong>(d) (rétrospective)</strong> En u03, <code>copie = prix</code> puis <code>copie[0] = 0.0</code> abîmait <code>prix</code>, et <code>prix.copy()</code> réparait. Qu'est-ce qui change ici, et qu'est-ce qui ne change pas ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+La cause ne change pas : deux noms, un seul contenu en mémoire. Ce qui change, c'est **à quel point c'est facile à déclencher** : sur une liste il fallait une affectation explicite, sur un tableau un simple découpage `a[3:]` suffit, et du découpage, on en fait à chaque ligne. D'où la règle des fonctions pures d'u05 : on ne modifie jamais en place un tableau reçu d'ailleurs.
+</div></details>
+
+<p><strong>(e) (rétrospective)</strong> Votre voisin annonce « numpy va cent fois plus vite ». Vous mesurez 27. Lequel de vous deux a raison ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Ni l'un ni l'autre tant que personne n'a dit **sur quoi** et **sur quelle machine**. Un rapport de temps n'est pas une constante : il dépend du calcul, du nombre de valeurs, de la version de numpy et de la charge de la machine, d'où la fourchette de 20 à 40, et le ×33 de QuantEcon. Le seul énoncé défendable est celui que vous avez mesuré, avec ses conditions.
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">06</span><h2 id="ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Reconnaître un tableau numpy, lire sa <code>shape</code>, lui appliquer une opération élément par élément, le résumer par <code>mean</code> / <code>std(ddof=1)</code>.</li>
+<li>Compter et filtrer par masque booléen, remplacer une boucle par une opération de tableau, puis <strong>mesurer</strong> le gain au chronomètre.</li>
+<li>Éviter les deux fautes muettes : la vue prise pour une copie, et le <code>ddof</code> laissé au défaut.</li>
+</ul>
+<p><strong>Ce que ce chapitre ne vous a pas appris.</strong> <code>pandas</code> range des tableaux avec des étiquettes de dates et de colonnes ; ses <code>read_csv</code>, <code>.loc</code> et <code>.groupby</code> sont ce que vous croiserez dans n'importe quel code de marché. Le tronc commun s'en passe : <code>charger_fil_rouge()</code> rend des tableaux numpy nus, et c'est ce qu'il faut pour voir ce qui se passe. Sujet traité dans <code>cours_v2/avance/</code>, hors examen.</p>
+<p><strong>Unité suivante.</strong> Vous savez calculer sur des milliers de valeurs ; il manque les valeurs, c'est-à-dire ce que sont réellement un prix, un rendement, un risque et un droit d'acheter. Le <strong>ch01</strong> va les chercher, sur les mêmes 4 151 séances. (Pour quitter d'abord le navigateur, u07 est écrite pour cela, obligatoire avant le ch05.)</p></section><div class="demo" data-demo="ch00-u06"></div>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue et continuer" data-mark-next="u07.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue et continuer</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu"><small>Unité précédente</small><strong>05 · Une fonction nomme un calcul</strong></a><a class="unit-nav-card next" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours"><small>Unité suivante</small><strong>07 · Votre machine devient l&#x27;ordinateur du cours</strong></a></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 00</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 00 · unité 06<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

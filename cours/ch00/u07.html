@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Votre machine devient l'ordinateur du cours · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Installer, ce n’est pas « avoir Python », c’est avoir un environnement, savoir le prouver, et savoir diagnostiquer les trois pannes qui font l’essentiel des incidents.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u07.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Votre machine devient l&#x27;ordinateur du cours · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Installer, ce n’est pas « avoir Python », c’est avoir un environnement, savoir le prouver, et savoir diagnostiquer les trois pannes qui font l’essentiel des incidents.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u07.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Votre machine devient l&#x27;ordinateur du cours · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Installer, ce n’est pas « avoir Python », c’est avoir un environnement, savoir le prouver, et savoir diagnostiquer les trois pannes qui font l’essentiel des incidents.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch00" data-unit="u07" data-unit-title="Votre machine devient l&#x27;ordinateur du cours" data-ch-title="Outils : Python de zéro, sans rien installer" data-unit-url="cours/ch00/u07.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 00 · Outils</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Votre machine devient l&#x27;ordinateur du cours">Unité 7/8 · Votre machine devient l&#x27;ordinateur du cours</span></nav>
+      <span class="cb-short">Ch. 00 · 7/8</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch00" data-progress-units="u01,u02,u03,u04,u05,u06,u07,u08" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/8 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Six lignes suffisent pour voir seize ans de marché"><b>01</b><span>Six lignes suffisent pour voir…</span></a><a href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque"><b>02</b><span>Un nom retient un résultat…</span></a><a href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom"><b>03</b><span>Une liste range des prix dans l&#x27;ordre</span></a><a href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes"><b>04</b><span>Une boucle parcourt</span></a><a href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu"><b>05</b><span>Une fonction nomme un calcul</span></a><a href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une"><b>06</b><span>Un tableau numpy remplace la boucle</span></a><a href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" aria-current="page"><b>07</b><span>Votre machine devient l&#x27;ordinateur du cours</span></a><a href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours"><b>08</b><span>Huit fiches d&#x27;une page suffisent…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Outils : Python de zéro, sans rien installer">Chapitre 00 · Outils : Python de zéro…</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07" aria-current="page"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open is-here" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 00 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#la-question">La question</a></li>
+        <li><a href="#on-essaie-dabord">On essaie d&#x27;abord</a></li>
+        <li><a href="#lidee">L&#x27;idée</a></li>
+        <li><a href="#le-piege-ca-marche-dans-mon-terminal">Le piège : « ça marche dans mon terminal »</a></li>
+        <li><a href="#verifiez-vous">Vérifiez-vous</a></li>
+        <li><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 30 min<br>Travail complet 40 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 7 sur 8</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07" aria-current="page"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#la-question">La question</a><a href="#on-essaie-dabord">On essaie d&#x27;abord</a><a href="#lidee">L&#x27;idée</a><a href="#le-piege-ca-marche-dans-mon-terminal">Le piège : « ça marche dans mon terminal »</a><a href="#verifiez-vous">Vérifiez-vous</a><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 00</a><span aria-hidden="true">/</span><span>Unité 07</span></nav>
+        <p class="lesson-kicker">Outils : Python de zéro, sans rien installer</p>
+        <h1>Votre machine devient l’ordinateur du cours</h1>
+        <p class="lesson-question">Installer, ce n'est pas « avoir Python », c'est avoir <strong>un</strong> environnement, savoir le prouver, et savoir diagnostiquer les trois pannes qui font l'essentiel des incidents.</p>
+        <div class="lesson-meta"><span>Lecture guidée 30 min</span><span>Travail complet 40 min</span><span>Une idée</span><span>Unité 07 sur 08</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><aside class="callout callout-charniere">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h9M13 7l5 5-5 5M16 4h4v16h-4"/></svg>Charnière</p>
+<p><strong>Charnière</strong> : facultative jusqu'au ch04, <strong>obligatoire avant le ch05 et le projet</strong>. Datez-la dans votre agenda : 30 min de lecture, et environ une heure d'installation la première fois.</p>
+<p><strong>Durée</strong> 30 min · <strong>Prérequis</strong> u01 à u06 · <strong>Idée unique</strong> : installer, ce n'est pas « avoir Python », c'est avoir <strong>un</strong> environnement, savoir le <strong>prouver</strong>, et savoir diagnostiquer les trois pannes qui font l'essentiel des incidents.</p>
+</aside></section>
+<section class="lesson-section reveal" id="la-question" data-section><span class="section-number">01</span><h2 id="la-question">La question</h2>
+<p>Jusqu'ici, la machine était prêtée par Colab et remise à neuf à chaque session : rien à installer, rien à casser. À partir du ch05, cela ne suffit plus. Un seul calcul du ch05 fabrique <strong>100 000 scénarios de 252 pas</strong>, soit 25,2 millions de nombres à virgule, soit <strong>202 Mo</strong> pour un seul tableau, au-delà du plafond de 10 millions d'éléments (80 Mo) que ce cours s'impose, donc à découper en blocs. Et Colab coupe la session après quelques heures d'inactivité.</p>
+<p>Seconde raison, moins visible et plus sérieuse : le projet final sera <strong>exécuté chez le correcteur</strong>, sur une autre machine que la vôtre. La question est donc double : <strong>que faut-il exactement sur votre machine, et comment le prouver à quelqu'un qui n'est pas devant ?</strong></p>
+<aside class="pred-card" data-pred="ch00.u07" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch00-u07">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch00-u07" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="on-essaie-dabord" data-section><span class="section-number">02</span><h2 id="on-essaie-dabord">On essaie d’abord</h2>
+<p>Une seule question : <strong>combien de Python différents pensez-vous déjà avoir sur cet ordinateur ?</strong></p>
+<p>La plupart des gens répondent « un, ou zéro ». La réponse observée en salle est <strong>deux ou trois</strong> : l'alias que Windows installe d'office et qui renvoie vers le Microsoft Store, une vieille Anaconda oubliée, parfois un Python de <code>python.org</code> livré avec un autre logiciel. Vérifiez, dix secondes, dans un terminal :</p>
+<div class="code-block" data-lang="text"><pre><code>py -0p
+</code></pre></div>
+<p>Et depuis n'importe quel notebook ou script :</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> sys
+<span class="keyword">import</span> shutil
+<span class="name">print</span>(sys.executable)          <span class="comment"># le Python qui execute CETTE ligne</span>
+<span class="name">print</span>(shutil.<span class="name">which</span>(<span class="string">&quot;python&quot;</span>))  <span class="comment"># celui que le terminal appellerait</span>
+</code></pre></div>
+<p>Si ces deux chemins diffèrent, vous tenez la cause de l'incident numéro un du cours. C'est tout l'objet de ce qui suit : cesser de dire « Python » et commencer à dire <strong>lequel</strong>.</p>
+</section>
+<section class="lesson-section reveal" id="lidee" data-section><span class="section-number">03</span><h2 id="lidee">L’idée</h2>
+<h3 id="un-environnement-pas-une-installation">Un environnement, pas une installation</h3>
+<p>Un <strong>environnement</strong> est une installation isolée : son propre <strong>interpréteur</strong> (le programme qui lit vos lignes de Python et les exécute), ses propres bibliothèques, ses propres versions. On en crée un par cours, par projet, par client : deux environnements sur la même machine peuvent porter deux versions de numpy sans se gêner, et c'est pour cela qu'on en fait.</p>
+<p><strong>Étape 0 : obtenir le dossier du cours.</strong> Tout ce qui suit se passe <strong>dans</strong> ce dossier : il faut donc l'avoir sur son disque avant de commencer. Ce dossier, c'est le <strong>dépôt</strong> du cours, l'arborescence complète des fichiers telle que l'enseignant la distribue. Il vous est remis en séance, ou déposé sur l’espace de cours, sous forme d’<strong>archive ZIP</strong> : pensez à la <strong>décompresser</strong> : un ZIP non décompressé n’est pas un dossier utilisable.</p>
+<p>Une exigence sur l'<strong>emplacement</strong> : chemin <strong>sans espace, sans accent, hors OneDrive</strong>. <code>C:\cours\mc-dp-finance</code> va ; un <code>OneDrive\Bureau\Cours de Finance\</code> cassera l'installation de façons peu lisibles (point 4 des incidents). Ouvrez ensuite un terminal <strong>dans ce dossier</strong> : clic droit → <em>Ouvrir dans le terminal</em>.</p>
+<p><strong>Étape 1 : créer l'environnement.</strong> Le cours en fournit la recette dans <code>environment.yml</code>. Trois commandes, dans l'<strong>Anaconda Prompt</strong>, le terminal que l'installateur conda ajoute au menu Démarrer, et qui est le seul, sous Windows, à connaître la commande <code>conda</code> sans réglage :</p>
+<div class="code-block" data-lang="text"><pre><code>conda env create -f environment.yml
+conda activate mc-dp-finance
+python check_install.py
+</code></pre></div>
+<p>La première construit l'environnement (3 à 10 minutes). La deuxième l'<strong>active</strong> : le préfixe de la ligne de commande passe de <code>(base)</code> à <code>(mc-dp-finance)</code>, et c'est cette parenthèse, et rien d'autre, qui dit où vous êtes ; elle est à retaper <strong>à chaque nouveau terminal</strong>. La troisième est le sujet du paragraphe suivant.</p>
+<p>Deux consignes qui évitent la moitié des incidents : choisissez <strong>Miniconda</strong> (quelques centaines de Mo installés) plutôt qu'Anaconda (plusieurs Go) ; installez-le pour <strong>vous seul</strong>, dans le chemin proposé par défaut.</p>
+<h3 id="la-preuve-check_installpy">La preuve : <code>check_install.py</code></h3>
+<p>Une installation n'est pas bonne « parce qu'elle n'a rien affiché de rouge » : elle est bonne parce qu'un script l'a mise à l'épreuve et l'a dit.</p>
+<p><code>check_install.py</code>, à la racine du dossier du cours, exécute huit sections : l'interpréteur et sa version ; la version de chaque bibliothèque requise ; un million de nombres tirés au sort, avec contrôle de leur moyenne, de leur dispersion et de la reproductibilité à graine fixée ; un produit de matrices 1500 × 1500 chronométré ; un calcul de 100 000 × 252 valeurs comparé à une formule de référence ; le rendu d'une figure ; le chargement du fil rouge ; et <code>numba</code>, en avertissement seulement. La septième affiche <code>4151 seances, S&amp;P 500 a 7 718,60</code>, les deux chiffres qu'u01 et u06 vous ont fait produire : c'est le seul contrôle qui prouve que vos <strong>données</strong> sont bonnes, et pas seulement vos bibliothèques. Chaque ligne est préfixée <code>[ OK ]</code>, <code>[WARN]</code> ou <code>[ KO ]</code>, et le script conclut par <code>INSTALLATION VALIDE</code> ou par la liste de ce qui bloque.</p>
+<p><strong>Ce que vous rendez, c'est la sortie complète de ce script, en texte.</strong> Pas une capture d'écran : on ne peut ni chercher ni copier dans une image, et les lignes qui comptent sont souvent celles qui dépassent du cadre.</p>
+<h3 id="les-trois-diagnostics-qui-reglent-presque-tout">Les trois diagnostics qui règlent presque tout</h3>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> sys
+<span class="keyword">import</span> matplotlib
+<span class="keyword">import</span> numpy
+<span class="name">print</span>(sys.executable)               <span class="comment"># suis-je dans le bon environnement ?</span>
+<span class="name">print</span>(matplotlib.<span class="name">get_backend</span>())     <span class="comment"># pourquoi mes figures sont-elles muettes ?</span>
+<span class="name">print</span>(numpy.__version__)            <span class="comment"># la version attendue ?</span>
+</code></pre></div>
+<p>Trois lignes, trois pannes. Si <code>sys.executable</code> ne contient pas <code>mc-dp-finance</code>, votre notebook tourne sur un autre environnement. Si <code>get_backend()</code> répond <code>Agg</code>, matplotlib écrit dans des fichiers et n'affiche rien : <code>%matplotlib inline</code> en première cellule le corrige. Si la version de numpy n'est pas celle d'<code>environment.yml</code>, deux machines peuvent produire des chiffres différents à graine identique, car NumPy ne garantit la stabilité de ses tirages entre versions que pour une partie d'entre eux.</p>
+<figure class="unit-figure fig-wide"><img src="figures/fig_ch00_u07_diagnostic.png" alt="Arbre de diagnostic à trois branches : un symptôme, une commande, un remède. Ce qu&#x27;il faut voir : aucune des trois pannes les plus fréquentes ne se règle en réinstallant quoi que ce soit, car chacune se règle par une commande d&#x27;une ligne, à condition de l&#x27;avoir tapée avant de paniquer." width="1641" height="768" loading="lazy"><figcaption>Arbre de diagnostic à trois branches : un symptôme, une commande, un remède. Ce qu&#x27;il faut voir : aucune des trois pannes les plus fréquentes ne se règle en réinstallant quoi que ce soit, car chacune se règle par une commande d&#x27;une ligne, à condition de l&#x27;avoir tapée avant de paniquer.</figcaption></figure>
+<h3 id="les-incidents-connus-par-frequence-observee">Les incidents connus, par fréquence observée</h3>
+<ol>
+<li><strong>Mauvais noyau Jupyter.</strong> Le plus fréquent, de loin : <code>ModuleNotFoundError: No module named 'numpy'</code> dans le notebook, alors que le même import passe dans le terminal. Remède : <em>Kernel → Change Kernel…</em>. Si l'environnement n'apparaît pas, faites-le connaître à Jupyter une fois pour toutes : <code>python -m ipykernel install --user --name mc-dp-finance</code>.</li>
+<li><strong>Alias Windows Store.</strong> Taper <code>python</code> ouvre le Microsoft Store. Remède : l'Anaconda Prompt, ou désactiver l'alias dans <em>Paramètres → Applications → Alias d'exécution d'application</em>. Avec un Python de <code>python.org</code>, la commande fiable est <code>py -3</code>.</li>
+<li><strong><code>conda</code> non reconnu</strong>, parce que la commande a été tapée dans PowerShell (le terminal fourni par Windows) et non dans l'Anaconda Prompt.</li>
+<li><strong>Chemin avec espaces ou accents</strong>, ou dossier OneDrive : <code>PermissionError</code>, fichiers dédoublés en <code>-Copie</code>, figures qui refusent de s'écrire.</li>
+<li><strong><code>plt.show()</code> muet</strong> : backend <code>Agg</code>, deuxième diagnostic ci-dessus.</li>
+<li><strong>Proxy universitaire</strong> bloquant les téléchargements de conda ; le plus simple est d'installer chez soi.</li>
+<li><strong><code>MemoryError</code></strong> sur un tableau trop grand : le calcul de mémoire de la question d'ouverture, à faire <em>avant</em> de lancer.</li>
+</ol>
+<h3 id="la-regle-de-rendu">La règle de rendu</h3>
+<p>Un notebook qui ne passe que dans votre ordre de clics n'est pas un résultat (u04). Avant tout rendu : <em>Kernel → Restart &amp; Run All</em>, et vérification que tout passe de haut en bas. En lot :</p>
+<div class="code-block" data-lang="text"><pre><code>jupyter nbconvert --to notebook --execute --inplace ^
+  --ExecutePreprocessor.timeout=900 mon_notebook.ipynb
+</code></pre></div>
+<p><code>nbconvert</code> est l'outil qui rejoue un notebook sans l'ouvrir, du haut vers le bas. Le <code>timeout</code> y est indispensable : la valeur par défaut est de <strong>30 secondes par cellule</strong>, ce qui fait échouer toute cellule de calcul un peu longue, et le message d'erreur, lui, parle de temps dépassé, pas de code faux.</p>
+<h3 id="trois-portes-de-sortie-nommees-et-non-enseignees">Trois portes de sortie, nommées et non enseignées</h3>
+<p><code>pip + venv</code> remplace conda si vous avez déjà un Python 3.12 : plus rapide, plus fragile sous Windows. <strong>VS Code</strong> offre un confort réel à partir du ch09 ; il exige de sélectionner explicitement le bon interpréteur, étape que tout le monde oublie. <strong>pandas</strong> enfin (fin d'u06). Les trois sont traités dans <code>cours_v2/avance/</code>, hors examen ; JupyterLab et conda restent la référence.</p>
+</section>
+<section class="lesson-section reveal" id="le-piege-ca-marche-dans-mon-terminal" data-section><span class="section-number">04</span><h2 id="le-piege-ca-marche-dans-mon-terminal">Le piège : « ça marche dans mon terminal »</h2>
+<p>La phrase qui fait perdre le plus de temps, parce qu'elle est vraie et qu'elle ne prouve rien.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> sys
+<span class="name">print</span>(<span class="string">&quot;terminal  :&quot;</span>, sys.executable)
+</code></pre></div>
+<p>Exécutez-la dans le terminal où <code>conda activate mc-dp-finance</code> a été tapé, <strong>puis</strong> dans une cellule du notebook. Sur une installation saine, les deux chemins sont identiques ; sur l'installation cassée la plus courante, ils diffèrent :</p>
+<div class="code-block" data-lang="text"><pre><code>terminal  : C:\Users\vous\miniconda3\envs\mc-dp-finance\python.exe
+notebook  : C:\Users\vous\miniconda3\python.exe
+</code></pre></div>
+<p>Le terminal a bien activé l'environnement ; le notebook, lui, a démarré un <strong>noyau</strong> enregistré ailleurs, celui de <code>base</code>. Les deux Python existent, un seul contient les bibliothèques du cours. Aucun message ne dit « mauvais noyau » : le symptôme est un <code>ModuleNotFoundError</code> sur une bibliothèque que vous venez d'installer, ce qui envoie la plupart des gens la réinstaller, sans effet, puisqu'elle n'a jamais manqué.</p>
+</section>
+<section class="lesson-section reveal" id="verifiez-vous" data-section><span class="section-number">05</span><h2 id="verifiez-vous">Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch00.u07" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<p><strong>(a)</strong> Que déposez-vous pour prouver que votre installation est bonne ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+La **sortie complète** de `python check_install.py`, copiée en texte, verdict final compris. Ni une capture d'écran, ni « ça marche chez moi », ni la seule dernière ligne : les `[WARN]` et les numéros de version font partie de la preuve, et ce sont eux qu'on relit quand un chiffre diverge trois séances plus tard.
+</div></details>
+
+<p><strong>(b)</strong> <code>check_install.py</code> affiche <code>[WARN] numba</code>. Faut-il régler cela avant la séance ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Non. `numba` est **optionnel** : aucun TP du tronc commun n'en dépend, et son installation est la plus fragile parce que sa contrainte porte sur la version de numpy, pas sur celle de Python. Un `[WARN]` n'est pas un `[ KO ]` ; seul le second empêche de travailler.
+</div></details>
+
+<p><strong>(c) (rétrospective)</strong> En u04, un <code>NameError</code> venait de l'ordre d'exécution des cellules. Ici, un <code>ModuleNotFoundError</code> vient du noyau. Qu'ont en commun ces deux pannes ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Dans les deux cas, **le code est correct** et le message décrit fidèlement ce que la machine a constaté, mais la cause est dans l'**état** du noyau, pas dans le code. D'où la même famille de remèdes, qui ne touchent jamais au code : *Restart & Run All* pour l'un, *Change Kernel* pour l'autre.
+</div></details>
+
+<p><strong>(d) (rétrospective)</strong> En u06 vous avez mesuré qu'une boucle Python sur un million de valeurs prend environ 0,12 s. Un correcteur vous signale qu'une cellule de votre projet échoue sur un dépassement de temps. Que regardez-vous en premier ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Le `timeout` de `nbconvert`, avant de toucher au code : 30 secondes par cellule par défaut, de quoi faire échouer une cellule parfaitement correcte. Si le dépassement persiste à 900 secondes, alors seulement on cherche une boucle Python là où un tableau suffirait. Et pour mettre au point, on divise le nombre de scénarios par 100, on fait marcher, puis on remonte.
+</div></details>
+
+<p><strong>(e)</strong> Un notebook qui ne s'exécute que dans un certain ordre de clics est-il un résultat ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Non. La seule preuve acceptée est un *Restart & Run All* qui passe de haut en bas, ou l'exécution en lot par `nbconvert`. Un notebook est un programme dont l'ordre d'exécution est invisible sur la page : tant qu'il n'a pas été remis à plat, personne, pas même vous dans un mois, ne sait ce qui a produit les chiffres affichés.
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">06</span><h2 id="ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Obtenir le dossier du cours à un emplacement sain, puis créer et <strong>activer</strong> son environnement, et reconnaître à la parenthèse de la ligne de commande dans lequel vous êtes.</li>
+<li>Prouver votre installation par <code>check_install.py</code> et rendre sa sortie en texte.</li>
+<li>Diagnostiquer les trois pannes courantes en trois lignes (<code>sys.executable</code>, <code>matplotlib.get_backend()</code>, <code>numpy.__version__</code>) et rendre un notebook par <em>Restart &amp; Run All</em>.</li>
+</ul>
+<p><strong>Unité suivante.</strong> Votre machine est prête. Si le hasard et les moyennes du ch02 vous semblent lointains, u08 en tient huit fiches d'une page, à lire seulement quand une unité vous y renvoie. Sinon, le <strong>ch01</strong> vous attend.</p></section>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue et continuer" data-mark-next="u08.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue et continuer</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une"><small>Unité précédente</small><strong>06 · Un tableau numpy remplace la boucle</strong></a><a class="unit-nav-card next" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours"><small>Unité suivante</small><strong>08 · Huit fiches d&#x27;une page suffisent…</strong></a></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 00</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 00 · unité 07<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

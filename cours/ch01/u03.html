@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diversifier, ce n'est pas moyenner · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Le risque d’un mélange dépend des mouvements communs des lignes, que la corrélation mesure.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch01/u03.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Diversifier, ce n&#x27;est pas moyenner · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Le risque d’un mélange dépend des mouvements communs des lignes, que la corrélation mesure.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch01/u03.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Diversifier, ce n&#x27;est pas moyenner · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Le risque d’un mélange dépend des mouvements communs des lignes, que la corrélation mesure.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script defer src="../../assets/data/fil_rouge.js"></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch01" data-unit="u03" data-unit-title="Diversifier, ce n&#x27;est pas moyenner" data-ch-title="Les objets de la finance qu&#x27;on peut observer" data-unit-url="cours/ch01/u03.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 01 · Les objets de la finance qu&#x27;on…</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Diversifier, ce n&#x27;est pas moyenner">Unité 3/5 · Diversifier, ce n&#x27;est pas moyenner</span></nav>
+      <span class="cb-short">Ch. 01 · 3/5</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch01" data-progress-units="u01,u02,u03,u04,u05" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/5 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Un prix n&#x27;est pas un rendement"><b>01</b><span>Un prix n&#x27;est pas un rendement</span></a><a href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs"><b>02</b><span>La volatilité mesure l&#x27;écart au centre</span></a><a href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" aria-current="page"><b>03</b><span>Diversifier, ce n&#x27;est pas moyenner</span></a><a href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui"><b>04</b><span>Un euro demain ne vaut…</span></a><a href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine"><b>05</b><span>Une option, c&#x27;est d&#x27;abord un…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Les objets de la finance qu&#x27;on peut observer">Chapitre 01 · Les objets de la finance qu&#x27;on peut observer</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03" aria-current="page"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open is-here" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 01 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#1-la-question">1. La question</a></li>
+        <li><a href="#2-on-essaie-dabord">2. On essaie d&#x27;abord</a></li>
+        <li><a href="#3-la-reponse-puis-pourquoi">3. La réponse, puis pourquoi</a></li>
+        <li><a href="#4-ce-qui-produit-lecart-mesure">4. Ce qui produit l&#x27;écart, mesuré</a></li>
+        <li><a href="#5-le-contre-test-retirer-une-ligne">5. Le contre-test : retirer une ligne</a></li>
+        <li><a href="#6-le-piege-classique-le-temps-reduit-le-risque">6. Le piège classique : « le temps réduit le risque »</a></li>
+        <li><a href="#7-verifiez-vous">7. Vérifiez-vous</a></li>
+        <li><a href="#8-ce-que-vous-savez-faire-maintenant">8. Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 25 min<br>Travail complet 45 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 3 sur 5</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03" aria-current="page"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#1-la-question">1. La question</a><a href="#2-on-essaie-dabord">2. On essaie d&#x27;abord</a><a href="#3-la-reponse-puis-pourquoi">3. La réponse, puis pourquoi</a><a href="#4-ce-qui-produit-lecart-mesure">4. Ce qui produit l&#x27;écart, mesuré</a><a href="#5-le-contre-test-retirer-une-ligne">5. Le contre-test : retirer une ligne</a><a href="#6-le-piege-classique-le-temps-reduit-le-risque">6. Le piège classique : « le temps réduit le risque »</a><a href="#7-verifiez-vous">7. Vérifiez-vous</a><a href="#8-ce-que-vous-savez-faire-maintenant">8. Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 01</a><span aria-hidden="true">/</span><span>Unité 03</span></nav>
+        <p class="lesson-kicker">Les objets de la finance qu'on peut observer</p>
+        <h1>Diversifier, ce n’est pas moyenner</h1>
+        <p class="lesson-question">Le risque d'un mélange dépend des mouvements communs des lignes, que la corrélation mesure.</p>
+        <div class="lesson-meta"><span>Lecture guidée 25 min</span><span>Travail complet 45 min</span><span>Une idée</span><span>Unité 03 sur 05</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><p><strong>Durée : 25 min</strong> · <strong>Prérequis : u02</strong> (volatilité annualisée, fenêtre), <strong>u01</strong> (les deux échelles de rendement).</p>
+<aside class="callout callout-idee">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8.5v7M8.5 12h7"/></svg>L'idée unique</p>
+<p><strong>L'idée unique de cette unité.</strong> Le risque d'un portefeuille n'est pas la moyenne des risques de ses lignes : il dépend de la façon dont les lignes bougent <strong>ensemble</strong>, et la corrélation ne fait que mesurer cela.</p>
+</aside>
+<hr /></section>
+<section class="lesson-section reveal" id="1-la-question" data-section><span class="section-number">01</span><h2 id="1-la-question">1. La question</h2>
+<p>Voici les six lignes du portefeuille du cours, avec leur volatilité annualisée calculée sur les 4 151 séances (u02) :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ligne</th>
+<th>SP500</th>
+<th>CAC40</th>
+<th>AAPL</th>
+<th>LVMH</th>
+<th>GLD</th>
+<th>TLT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math">\sigma</span> annualisée</td>
+<td>17,31 %</td>
+<td>19,61 %</td>
+<td>28,27 %</td>
+<td>28,00 %</td>
+<td>16,85 %</td>
+<td><strong>14,98 %</strong></td>
+</tr>
+<tr>
+<td>poids <span class="math">w</span></td>
+<td>40 %</td>
+<td>20 %</td>
+<td>10 %</td>
+<td>10 %</td>
+<td>10 %</td>
+<td>10 %</td>
+</tr>
+</tbody>
+</table></div>
+<p>Les <em>poids</em> sont les parts de la valeur totale placées sur chaque ligne ; leur somme fait 1. GLD est un fonds adossé à l'or, TLT un fonds d'<em>obligations</em> d'État américaines à longue échéance, des titres qui promettent des versements datés (u04).</p>
+<p><strong>Aucune des six lignes n'est en dessous de 14,98 %.</strong> Quelle est la volatilité annualisée du mélange ?</p>
+<aside class="pred-card" data-pred="ch01.u03" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch01-u03">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch01-u03" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="2-on-essaie-dabord" data-section><span class="section-number">02</span><h2 id="2-on-essaie-dabord">2. On essaie d’abord</h2>
+<p>Écrivez <strong>un chiffre</strong>, avec une décimale, avant de tourner la page. Rien d'autre : pas de fourchette, pas de « ça dépend ». Vous n'avez pas encore les corrélations, et c'est voulu.</p>
+</section>
+<section class="lesson-section reveal" id="3-la-reponse-puis-pourquoi" data-section><span class="section-number">03</span><h2 id="3-la-reponse-puis-pourquoi">3. La réponse, puis pourquoi</h2>
+<p><strong>13,42 %</strong> en convention log, <strong>13,40 %</strong> en rendements simples (encadré ci-dessous). Moins que la plus petite des six lignes. La réponse spontanée est la moyenne pondérée des six volatilités, <span class="math">0{,}40 \times 17{,}31 + 0{,}20 \times 19{,}61 + \dots = 19{,}65\,\%</span> : <strong>6,24 points de volatilité gagnés sans changer un seul actif</strong>, uniquement en les mélangeant. <em>(À pleine précision, <span class="math">0{,}196548 - 0{,}134165 = 0{,}062383</span> ; soustraire les deux chiffres arrondis donne 6,23, même écart d'arrondi qu'entre 12,18 et 12,20 en u01.)</em></p>
+<blockquote>
+<p><strong>Un chiffre, deux conventions : à ne jamais séparer de son nom.</strong> Le chiffre de <strong>référence</strong> du cours est <strong>13,40 %</strong> : écart-type des rendements <strong>simples</strong> du portefeuille rebalancé quotidiennement, <span class="math">\times\sqrt{252}</span>, publié par <code>data/stats_summary.md</code> et cité tel quel par les chapitres suivants. La fonction fournie <code>vol_portefeuille()</code> rend, elle, <strong>0,13417</strong>, l'écart-type des <strong>log</strong>-rendements, soit <strong>13,42 %</strong> : la <strong>variante en convention log</strong>, celle que vérifient les <code>assert</code> de ce chapitre, un test devant contrôler ce que le code produit. Les 2 points de base d'écart sont ceux qu'explique u01. On n'écrit jamais l'un sans dire lequel.</p>
+</blockquote>
+<p><strong>Pourquoi ce n'est pas anecdotique.</strong> Sur 25 967 actions américaines suivies de 1926 à 2016, Bessembinder (2018) mesure que <strong>42,6 % seulement</strong> ont mieux rapporté, sur leur durée de vie cotée, que des bons du Trésor à un mois, et que les <strong>4 % les plus performantes</strong> expliquent à elles seules la totalité du gain net du marché américain sur quatre-vingt-dix ans. La répartition des résultats d'actions individuelles est violemment asymétrique : quelques titres portent tout, la majorité déçoit, et un portefeuille concentré rate facilement les 4 %.</p>
+<p><strong>Au passage, « diversifier, c'est prendre vingt titres » est une consigne, pas un résultat.</strong> Avec une répartition aussi asymétrique, il en faut un ordre de grandeur de <strong>deux cent cinquante</strong> (chiffre cité dans la littérature, pas produit par nos données) pour que le portefeuille ressemble au marché plutôt qu'à un tirage. Et le nombre n'est pas le levier principal : six lignes bien choisies font mieux que vingt titres tous corrélés à +0,8.</p>
+</section>
+<section class="lesson-section reveal" id="4-ce-qui-produit-lecart-mesure" data-section><span class="section-number">04</span><h2 id="4-ce-qui-produit-lecart-mesure">4. Ce qui produit l’écart, mesuré</h2>
+<p>La <em>corrélation</em> <span class="math">\rho</span> entre deux séries de rendements est un coefficient calculé sur les données, entre −1 et +1 : <strong>+1</strong>, elles montent et descendent toujours ensemble ; <strong>0</strong>, aucun lien linéaire ; <strong>−1</strong>, systématiquement l'inverse. Sur nos six lignes :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paire</th>
+<th>SP500 / AAPL</th>
+<th>SP500 / CAC40</th>
+<th>CAC40 / LVMH</th>
+<th>SP500 / GLD</th>
+<th>SP500 / TLT</th>
+<th>GLD / TLT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math">\rho</span></td>
+<td>+0,677</td>
+<td>+0,584</td>
+<td><strong>+0,773</strong></td>
+<td><strong>+0,076</strong></td>
+<td><strong>−0,290</strong></td>
+<td>+0,206</td>
+</tr>
+</tbody>
+</table></div>
+<p>CAC40 et LVMH bougent quasiment ensemble : les mélanger n'apporte presque rien. L'or est décorrélé des actions américaines (+0,076) ; les obligations longues font l'inverse (−0,290). Ce sont ces deux dernières colonnes qui fabriquent les 6,24 points.</p>
+<figure class="unit-figure fig-wide"><img src="figures/fig04_diversification.png" alt="Panneau (a) : les six volatilités en barres bleues, puis la moyenne pondérée (19,65 %) en rouge et le portefeuille (13,42 %, convention log) en vert. Ce qu&#x27;il faut voir : la barre verte passe sous la ligne pointillée des 14,98 %, c&#x27;est-à-dire sous la plus prudente des six lignes. Panneau (b) : la matrice des corrélations, rouge pour positif, bleu pour négatif. Ce qu&#x27;il faut voir : la seule colonne franchement bleue est TLT, et la seule colonne pâle est GLD, les deux lignes qui font baisser le risque du mélange." width="2269" height="918" loading="lazy"><figcaption>Panneau (a) : les six volatilités en barres bleues, puis la moyenne pondérée (19,65 %) en rouge et le portefeuille (13,42 %, convention log) en vert. Ce qu&#x27;il faut voir : la barre verte passe sous la ligne pointillée des 14,98 %, c&#x27;est-à-dire sous la plus prudente des six lignes. Panneau (b) : la matrice des corrélations, rouge pour positif, bleu pour négatif. Ce qu&#x27;il faut voir : la seule colonne franchement bleue est TLT, et la seule colonne pâle est GLD, les deux lignes qui font baisser le risque du mélange.</figcaption></figure>
+<aside class="callout callout-formule">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h6M8 20V6a2 2 0 0 1 2-2h1M5 11h6M14 10l5 8M19 10l-5 8"/></svg>Formule</p>
+<p><strong>Formule : la volatilité d'un mélange de deux actifs.</strong>
+<span class="math math-display">\sigma_{\text{ptf}}^2 = w_1^2\sigma_1^2 + w_2^2\sigma_2^2 + 2\,w_1 w_2\,\rho\,\sigma_1\sigma_2</span>
+<strong><span class="math">w_1, w_2</span></strong> : les deux poids, de somme 1 · <strong><span class="math">\sigma_1, \sigma_2</span></strong> : les volatilités annualisées · <strong><span class="math">\rho</span></strong> : leur corrélation. À six lignes, on <strong>appelle</strong> <code>vol_portefeuille(rendements, poids)</code>, qui ne reçoit ni <span class="math">\sigma</span> ni <span class="math">\rho</span>, mais les six <strong>séries</strong> de rendements et les six poids, et refait le calcul complet depuis les données, ce qui lui évite quinze corrélations.</p>
+</aside>
+<p>Trois vérifications à poids égaux, 50/50, sur nos données :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paire</th>
+<th><span class="math">\rho</span></th>
+<th><span class="math">\sigma</span> du mélange</th>
+<th>moyenne des deux <span class="math">\sigma</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SP500 / TLT</td>
+<td>−0,290</td>
+<td><strong>9,66 %</strong></td>
+<td>16,14 %</td>
+</tr>
+<tr>
+<td>SP500 / GLD</td>
+<td>+0,076</td>
+<td><strong>12,53 %</strong></td>
+<td>17,08 %</td>
+</tr>
+<tr>
+<td>SP500 / AAPL</td>
+<td>+0,677</td>
+<td>20,99 %</td>
+<td>22,79 %</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="callout callout-demo">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18.5 8 11l4 4 3-5 6 8.5Z"/><circle cx="7" cy="5.5" r="2"/></svg>Démo interactive</p>
+<p><strong>Démo interactive</strong> : <em>Le curseur de corrélation.</em> Deux actifs à 20 % de volatilité, curseurs <span class="math">w_1</span> et <span class="math">\rho</span> (−1 à +1) ; affiche <span class="math">\sigma_{\text{ptf}}</span> et la courbe <span class="math">\sigma_{\text{ptf}}(w_1)</span>. On voit : <span class="math">\rho = +1</span> donne une droite (rien à gagner), <span class="math">\rho = 0</span> un creux à 14,14 % en 50/50, <span class="math">\rho = -1</span> un zéro.</p>
+</aside><div class="demo" data-demo="ch01-u03"></div>
+<p>Plus <span class="math">\rho</span> est petit, plus le gain est grand. À <span class="math">\rho = +1</span>, la formule se réduit à <span class="math">\sigma_{\text{ptf}} = w_1\sigma_1 + w_2\sigma_2</span> : le gain est <strong>exactement nul</strong>. La diversification n'est donc pas un effet du nombre de lignes, c'est un effet de leurs mouvements communs.</p>
+</section>
+<section class="lesson-section reveal" id="5-le-contre-test-retirer-une-ligne" data-section><span class="section-number">05</span><h2 id="5-le-contre-test-retirer-une-ligne">5. Le contre-test : retirer une ligne</h2>
+<p>Retirons chaque ligne à tour de rôle et renormalisons les poids des cinq restantes :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ligne retirée</th>
+<th>AAPL</th>
+<th>LVMH</th>
+<th>SP500</th>
+<th>CAC40</th>
+<th>GLD</th>
+<th>TLT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math">\sigma</span> des cinq restantes</td>
+<td>12,88 %</td>
+<td>12,88 %</td>
+<td>12,99 %</td>
+<td>13,22 %</td>
+<td><strong>14,65 %</strong></td>
+<td><strong>15,27 %</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Retirer AAPL ou LVMH <strong>baisse</strong> le risque. Retirer GLD ou TLT le <strong>fait monter</strong>, jusqu'à 15,27 %, au-dessus du portefeuille complet. Or ce sont les deux lignes les moins rentables du lot : GLD a rapporté 8,18 % par an et TLT 2,39 % (2,43 % dans <code>stats_summary.md</code>, qui part d'une séance plus tôt), contre 12,18 % pour le S&amp;P 500. <strong>Elles ne sont pas là pour gagner de l'argent, elles sont là pour ne pas baisser en même temps que le reste.</strong></p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> sys; sys.path.<span class="name">insert</span>(<span class="number">0</span>, <span class="string">&quot;..&quot;</span>)
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> mcdp_utils <span class="keyword">import</span> charger_fil_rouge, vol_portefeuille
+
+d = <span class="name">charger_fil_rouge</span>()
+lignes = [<span class="string">&quot;SP500&quot;</span>, <span class="string">&quot;CAC40&quot;</span>, <span class="string">&quot;AAPL&quot;</span>, <span class="string">&quot;LVMH&quot;</span>, <span class="string">&quot;GLD&quot;</span>, <span class="string">&quot;TLT&quot;</span>]
+vols = {k: d[<span class="string">&quot;rendements_log&quot;</span>][k].<span class="name">std</span>(ddof=<span class="number">1</span>) * np.<span class="name">sqrt</span>(<span class="number">252</span>) <span class="keyword">for</span> k <span class="keyword">in</span> lignes}
+moyenne_ponderee = <span class="name">sum</span>(d[<span class="string">&quot;poids&quot;</span>][k] * vols[k] <span class="keyword">for</span> k <span class="keyword">in</span> lignes)   <span class="comment"># 0.19654770</span>
+sigma_ptf = <span class="name">vol_portefeuille</span>(d[<span class="string">&quot;rendements_log&quot;</span>], d[<span class="string">&quot;poids&quot;</span>])     <span class="comment"># 0.13416546</span>
+<span class="keyword">assert</span> sigma_ptf &lt; <span class="name">min</span>(vols.<span class="name">values</span>())
+<span class="name">print</span>(<span class="name">round</span>(<span class="number">100</span> * (moyenne_ponderee - sigma_ptf), <span class="number">2</span>))             <span class="comment"># -&gt; 6.24</span>
+</code></pre></div>
+<p>La troisième ligne construit un dictionnaire par compréhension : une volatilité par clé <code>k</code>. L'<code>assert</code> énonce le résultat de l'unité sous forme vérifiable.</p>
+</section>
+<section class="lesson-section reveal" id="6-le-piege-classique-le-temps-reduit-le-risque" data-section><span class="section-number">06</span><h2 id="6-le-piege-classique-le-temps-reduit-le-risque">6. Le piège classique : « le temps réduit le risque »</h2>
+<aside class="callout callout-piege">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4.5M12 17.4v.2"/></svg>Piège classique</p>
+<p><strong>Piège classique : ce que nos données démontrent, et ce qu'elles ne démontrent pas.</strong> Sur les fenêtres glissantes de cinq ans de notre jeu de données, <strong>aucune</strong> n'est négative : le portefeuille rapporte entre <strong>+25,9 %</strong> et +138,6 % sur cinq ans, le S&amp;P 500 seul entre <strong>+6,1 %</strong> et +136,8 %. La conclusion « attendre cinq ans supprime le risque » est pourtant <strong>fausse</strong>, et l'échantillon dit lui-même pourquoi : il commence en 2010, <strong>après</strong> le point bas de la crise précédente, et ne contient <strong>aucune société disparue</strong>. Bessembinder, lui, regarde quatre-vingt-dix ans et 25 967 titres, faillites comprises : 57,4 % n'ont pas battu les bons du Trésor. Ce que le temps réduit, c'est la dispersion du rendement <strong>annualisé</strong> ; il ne réduit pas le risque de perte définitive sur une ligne donnée. Notre portefeuille a d'ailleurs connu une <em>perte maximale</em> (la plus forte baisse d'un sommet à un creux ultérieur) de <strong>−26,00 %</strong>.</p>
+</aside>
+<p>C'est aussi la réponse à la cinquième question du diagnostic d'ouverture du chapitre : non, une action unique n'est pas plus sûre qu'un fonds diversifié. Les deux <strong>actions</strong> du panel, AAPL et LVMH, sont à <strong>28,27 %</strong> et <strong>28,00 %</strong>, les deux plus fortes volatilités du tableau, quand le mélange des six lignes est à <strong>13,42 %</strong> (convention log), deux fois moins. Le S&amp;P 500, lui, n'est pas une action : ses 17,31 % sont déjà le résultat d'une diversification faite avant nous, sur cinq cents sociétés.</p>
+</section>
+<section class="lesson-section reveal" id="7-verifiez-vous" data-section><span class="section-number">07</span><h2 id="7-verifiez-vous">7. Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch01.u03" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<ol>
+<li><strong>(★)</strong> Deux actifs de volatilité 20 % chacun, mélangés à 50/50, avec <span class="math">\rho = 0</span>. Volatilité du mélange ?</li>
+<li><strong>(★★)</strong> Peut-on, <strong>en gardant les poids 40/20/10/10/10/10</strong>, obtenir 21 % de volatilité, quelles que soient les corrélations ? Et en changeant les poids, toujours positifs ?</li>
+<li><strong>(★★)</strong> Un collègue veut retirer TLT parce que cette ligne n'a rapporté que 2,4 % par an. Répondez-lui avec un chiffre.</li>
+<li><strong>(★★, retour sur u02)</strong> Pourquoi ne peut-on pas simplement moyenner les six volatilités ?</li>
+<li><strong>(★, retour sur u01)</strong> Le rendement d'un portefeuille sur une séance se calcule-t-il sur les rendements simples ou sur les log-rendements des lignes ?</li>
+</ol>
+<details class="check"><summary>Réponses</summary><div>
+
+1. <span class="math">\sqrt{0{,}5^2 \times 0{,}2^2 + 0{,}5^2 \times 0{,}2^2 + 0} = 0{,}2/\sqrt2 = \mathbf{14{,}14\,\%}</span>. Deux actifs sans lien, et le risque baisse de 29 %.
+2. **Avec ces poids, non ; en changeant les poids, oui.** La formule impose <span class="math">\sigma_{\text{ptf}} \le \sum_j w_j \sigma_j</span>, avec égalité seulement si **toutes** les corrélations valent +1 : avec les poids du cours, le plafond absolu est la moyenne pondérée, **19,65 %**, atteint seulement si les six lignes bougeaient ensemble. Si l'on autorise d'autres poids positifs, en revanche, 21 % est atteignable : il suffit de charger AAPL et LVMH, dont le mélange 50/50 est déjà à **22,66 %**. La borne ne dit rien de plus que ceci : *un mélange ne dépasse jamais sa propre moyenne pondérée*, et cette moyenne dépend de vos poids.
+3. Retirer TLT fait passer le portefeuille de **13,42 % à 15,27 %** (convention log), soit **+1,86 point de volatilité** (15,2727 − 13,4165 ; la soustraction des deux chiffres arrondis du tableau donne 1,85), pour environ un point de rendement annuel récupéré. Le collègue confond le rendement d'une ligne et son **rôle** dans le mélange : TLT est payé pour sa corrélation de −0,290, pas pour son rendement.
+4. Parce qu'un écart-type n'est pas une grandeur additive. Ce qui s'additionne, ce sont les **variances** et les termes croisés <span class="math">2w_1w_2\rho\sigma_1\sigma_2</span> ; la racine ne se distribue pas sur une somme. C'est la même raison qui donnait <span class="math">\sqrt{252}</span> et non 252 en u02.
+5. Sur les **rendements simples** pondérés : entre actifs, à une date donnée, c'est l'échelle simple qui se pondère (u01, tableau de la double asymétrie). Les log-rendements du portefeuille s'en déduisent ensuite, pour empiler les séances.
+
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="8-ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">08</span><h2 id="8-ce-que-vous-savez-faire-maintenant">8. Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Expliquer chiffrément pourquoi la volatilité d'un portefeuille peut passer sous celle de sa ligne la plus prudente (13,42 % en convention log, contre 14,98 %).</li>
+<li>Lire une matrice de corrélations et désigner les lignes qui réduisent le risque du mélange (GLD +0,076, TLT −0,290).</li>
+<li>Calculer la volatilité d'un mélange de deux actifs à la main, et appeler <code>vol_portefeuille()</code> au-delà de deux.</li>
+</ul>
+<p><strong>Unité suivante.</strong> Nous avons décrit ce qu'on possède. Reste ce que vaut aujourd'hui une somme qu'on ne touchera que plus tard, et cette question-là ne parle plus de risque du tout.</p>
+<hr />
+<p><strong>Sources.</strong> H. Bessembinder, « Do stocks outperform Treasury bills? », <em>Journal of Financial Economics</em> 129(3), 2018, p. 440-457, <a class="url-plain" href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2900447">https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2900447</a> et <a class="url-plain" href="https://ideas.repec.org/a/eee/jfinec/v129y2018i3p440-457.html">https://ideas.repec.org/a/eee/jfinec/v129y2018i3p440-457.html</a> · Open Yale ECON 252 (R. Shiller), leçon 4 <em>Portfolio Diversification</em>, <a class="url-plain" href="https://oyc.yale.edu/economics/econ-252">https://oyc.yale.edu/economics/econ-252</a>, CC BY-NC-SA 3.0 · <code>cours_v2/data/stats_summary.md</code> pour les volatilités, corrélations et poids.</p></section>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue et continuer" data-mark-next="u04.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue et continuer</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs"><small>Unité précédente</small><strong>02 · La volatilité mesure l&#x27;écart au centre</strong></a><a class="unit-nav-card next" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui"><small>Unité suivante</small><strong>04 · Un euro demain ne vaut…</strong></a></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 01</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 01 · unité 03<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

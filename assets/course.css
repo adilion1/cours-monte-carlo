@@ -1,0 +1,1541 @@
+/* course.css — complements du socle (styles.css / landing.css) pour le site du cours v2.
+   N'y figurent que des regles absentes du socle : encadres typés, tableaux,
+   demos interactives, cartes de chapitre, chapitres verrouilles, KaTeX.
+   Toutes les couleurs passent par les variables du socle (clair et sombre). */
+
+/* ------------------------------------------------------------------ *
+ * 1. Encadres typés (aside.callout.callout-xxx)
+ * ------------------------------------------------------------------ */
+
+.callout {
+  position: relative;
+  margin: 34px 0;
+  padding: 20px 24px 20px 26px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line-strong);
+  background: var(--surface);
+  border-radius: 2px;
+}
+
+.callout > p {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+.callout > p:last-child,
+.callout > ul:last-child,
+.callout > ol:last-child,
+.callout > .table-wrap:last-child {
+  margin-bottom: 0;
+}
+
+.callout ul,
+.callout ol {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  font-size: 15px;
+}
+
+.callout .callout-label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.callout .callout-label svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.callout-intuition { border-left-color: var(--blue); }
+.callout-intuition .callout-label { color: var(--blue); }
+.callout-idee { border-left-color: var(--blue); background: var(--blue-wash); }
+.callout-idee .callout-label { color: var(--blue); }
+.callout-definition { border-left-color: var(--line-strong); }
+.callout-definition .callout-label { color: var(--muted); }
+.callout-formule { border-left-color: var(--line-strong); background: var(--paper-deep); }
+.callout-formule .callout-label { color: var(--muted); }
+.callout-piege { border-left-color: var(--orange); }
+.callout-piege .callout-label { color: var(--orange-text); }
+.callout-charniere { border-left-color: var(--orange); background: var(--orange-wash); }
+.callout-charniere .callout-label { color: var(--orange-text); }
+.callout-entretien { border-left-color: var(--violet); background: var(--violet-wash); }
+.callout-entretien .callout-label { color: var(--violet); }
+.callout-savoir { border-left-color: var(--green); background: var(--green-wash); }
+.callout-savoir .callout-label { color: var(--green); }
+.callout-demo { border-left-color: var(--blue-bright); border-style: dashed; }
+.callout-demo .callout-label { color: var(--blue-bright); }
+.callout-rapide { border-left-color: var(--line-strong); border-style: dashed; }
+.callout-rapide .callout-label { color: var(--muted); }
+.callout-note .callout-label { color: var(--muted); }
+
+/* ------------------------------------------------------------------ *
+ * 2. Corps de texte des unites
+ * ------------------------------------------------------------------ */
+
+.lesson-section h3 + p,
+.lesson-section h4 {
+  margin-top: 22px;
+}
+
+.lesson-section h4 {
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.lesson-section ul,
+.lesson-section ol {
+  max-width: var(--measure);
+  padding-left: 22px;
+}
+
+.lesson-section li {
+  margin-bottom: 8px;
+}
+
+/* Les URL citees en source ne doivent pas pousser la page sur petit ecran. */
+.lesson-section p,
+.lesson-section li,
+.lesson-section td,
+.callout p,
+details.check > div {
+  overflow-wrap: break-word;
+}
+
+.lesson-section a[href^="http"] {
+  overflow-wrap: anywhere;
+}
+
+.lesson-section hr {
+  margin: 42px 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.lesson-section blockquote {
+  margin: 30px 0;
+  padding-left: 20px;
+  border-left: 2px solid var(--line-strong);
+  color: var(--muted);
+}
+
+.lesson-section code {
+  padding: 1px 5px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-deep);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.86em;
+}
+
+.code-block code { border: 0; background: none; color: inherit; font-size: inherit; padding: 0; }
+.code-block .keyword { color: #c39bd8; }
+.code-block .string { color: #a7d3a1; }
+.code-block[data-lang="text"]::before { content: "Sortie"; }
+.code-block[data-lang="bash"]::before { content: "Terminal"; }
+.code-block[data-lang="none"]::before { content: ""; }
+
+/* Tableaux (absents du socle) */
+.table-wrap {
+  margin: 30px 0;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+}
+
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table-wrap th,
+.table-wrap td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table-wrap thead th {
+  background: var(--paper-deep);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.table-wrap tbody tr:last-child td { border-bottom: 0; }
+
+/* Le code en ligne vaut 0,86 em : dans un en-tete de tableau (11 px) il
+   tombait a 9,5 px, plus petit que tout le reste du site. Dans ces cellules
+   il garde la taille de l'en-tete. */
+.table-wrap th code { font-size: 1em; }
+
+/* Le numero de rubrique du socle etait a 10 px : personne ne descend sous
+   11 px sur ce site. */
+.section-number { font-size: 11px; }
+
+/* Figures d'unite.
+   Le generateur lit l'en-tete du PNG et pose width/height sur <img> : la place
+   est reservee avant l'arrivee de l'image, la page ne saute plus. Les figures a
+   un seul panneau s'alignent sur la mesure du texte ; celles a deux panneaux
+   (largeur / hauteur > 2, classe .fig-wide) prennent toute la colonne. */
+.unit-figure {
+  max-width: var(--measure);
+  margin: 38px 0;
+}
+
+.unit-figure.fig-wide {
+  max-width: none;
+}
+
+.unit-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.unit-figure figcaption {
+  margin-top: 10px;
+  max-width: var(--measure);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+/* « Ce qu'il faut voir » : la lecture a faire du dessin, detachee du reste. */
+.unit-figure figcaption .fig-see {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Champ de prediction : « predire » avant « simuler », puis « confronter ».
+   Carte a la fin de « La question », rappel en tete de « Verifiez-vous ».
+   Les deux sont ecrites `hidden` : sans JavaScript, elles ne paraissent pas. */
+.pred-card,
+.pred-recall-card {
+  max-width: var(--measure);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper-deep);
+  padding: 18px 20px 20px;
+}
+
+.pred-card { margin: 30px 0 6px; }
+.pred-recall-card { margin: 0 0 26px; }
+
+.pred-eyebrow {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.pred-hint {
+  display: block;
+  margin: 0 0 12px;
+  color: var(--text);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+/* Une fois la prediction notee, la consigne a fait son office. */
+.pred-card.is-noted .pred-hint { display: none; }
+
+.pred-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.pred-input {
+  flex: 1 1 260px;
+  min-height: 3.2em;
+  max-height: 5.4em;      /* une a trois lignes */
+  padding: 9px 11px;
+  border: 1px solid var(--line-strong, var(--line));
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.pred-input::placeholder { color: var(--muted); opacity: 0.75; }
+
+.pred-save {
+  flex: 0 0 auto;
+  padding: 10px 20px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: opacity 160ms ease;
+}
+
+.pred-save:hover { opacity: 0.86; }
+
+.pred-quote {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.pred-when {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.pred-modify {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--blue);
+  font-family: inherit;
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.pred-empty {
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* Verifiez-vous : reponses repliees */
+details.check {
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+details.check + details.check { margin-top: 0; }
+
+/* Le titre reste en encre pleine, ouvert comme ferme : seule la fleche est grise. */
+details.check summary,
+details.check:not([open]) summary,
+details.check[open] summary {
+  position: relative;
+  padding: 18px 45px 18px 0;
+  color: var(--ink);
+  opacity: 1;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  list-style: none;
+}
+
+details.check summary::-webkit-details-marker { display: none; }
+
+details.check summary::after {
+  content: "+";
+  position: absolute;
+  top: 13px;
+  right: 8px;
+  color: var(--muted);
+  font-family: var(--display);
+  font-size: 24px;
+  transition: color 0.15s ease;
+}
+
+details.check summary:hover::after { color: var(--blue); }
+
+details.check[open] summary::after { content: "2"; }
+
+details.check > div {
+  max-width: 66ch;
+  padding: 0 45px 18px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+details.check > div p:first-child { margin-top: 0; }
+
+/* KaTeX */
+.math-display {
+  display: block;
+  margin: 26px 0;
+  padding: 6px 0;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.katex { font-size: 1.03em; }
+
+/* ------------------------------------------------------------------ *
+ * 3. Pages de chapitre et parcours
+ * ------------------------------------------------------------------ */
+
+.page-wrap {
+  width: min(100% - 48px, 1000px);
+  margin: 0 auto;
+  padding: 54px 0 110px;
+}
+
+.page-head {
+  max-width: 44rem;
+  margin-bottom: 54px;
+}
+
+.page-head h1 {
+  margin: 12px 0 18px;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: clamp(30px, 4.4vw, 46px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+}
+
+.page-head .chapter-question {
+  margin: 0 0 16px;
+  padding-left: 18px;
+  border-left: 2px solid var(--orange);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 19px;
+  font-style: italic;
+  line-height: 1.55;
+}
+
+.page-head p.page-lead {
+  max-width: var(--measure);
+  color: var(--muted);
+}
+
+.section-title {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* La carte des unites : une rangee par unite, toutes de la meme facture que les
+   autres cartes du site (filet de 1 px, rayon de 14 px, soulevement de 2 px au
+   survol). L'etat « lue » est pose par reperage.js sur .unit-row. */
+.unit-list {
+  margin: 0 0 60px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.unit-row {
+  display: grid;
+  /* 172 px : « travail complet 50 min » tient sur une ligne en JetBrains Mono. */
+  grid-template-columns: 58px minmax(0, 1fr) 172px;
+  gap: 20px;
+  align-items: baseline;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.unit-row:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  background: var(--paper-deep);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unit-row { transition: none; }
+  .unit-row:hover { transform: none; }
+}
+
+.unit-row .unit-num {
+  color: var(--blue);
+  font-family: var(--display);
+  font-size: 22px;
+}
+
+.unit-row .unit-title {
+  display: block;
+  margin: 0 0 6px;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.unit-row .unit-idea {
+  display: block;
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.unit-row .unit-times {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  text-align: right;
+}
+
+.unit-row .unit-times b { color: var(--ink); font-weight: 500; }
+
+.skills-list {
+  max-width: var(--measure);
+  margin: 0 0 60px;
+  padding-left: 20px;
+  color: var(--text);
+}
+
+.skills-list li { margin-bottom: 10px; }
+
+.card-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 50px;
+}
+
+/* Parcours : blocs et chapitres */
+.block-head {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  margin: 56px 0 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.block-head h2 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.block-head span {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: 14px;
+}
+
+.chapter-card {
+  display: block;
+  padding: 20px 20px 18px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: inherit;
+  text-decoration: none;
+}
+
+a.chapter-card:hover { border-color: var(--blue); }
+
+.chapter-card .ch-num {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+
+.chapter-card h3 {
+  margin: 6px 0 8px;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.32;
+}
+
+.chapter-card p {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.state {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.state svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.state-open { color: var(--blue); }
+.state-locked { color: var(--muted); }
+
+.chapter-card.is-locked { background: transparent; border-style: dashed; }
+.chapter-card.is-locked h3 { color: var(--muted); }
+
+/* Teaser d'un chapitre verrouille */
+.teaser-ideas {
+  max-width: var(--measure);
+  margin: 0 0 40px;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.teaser-ideas li {
+  padding: 15px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  font-size: 15px;
+}
+
+.teaser-ideas li b {
+  margin-right: 10px;
+  color: var(--blue);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.lock-badge {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  padding: 9px 15px;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-deep);
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.lock-badge svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+
+/* ------------------------------------------------------------------ *
+ * 4. Demos interactives
+ * ------------------------------------------------------------------ */
+
+.demo {
+  margin: 42px 0;
+  padding: 22px 24px 20px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+}
+
+.demo-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.demo h3 {
+  margin: 0 0 6px;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.demo .demo-see {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.demo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.demo-control {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.demo-control > span { color: var(--muted); }
+
+.demo-control input[type="range"] {
+  width: 148px;
+  accent-color: var(--blue);
+}
+
+.demo-control select {
+  padding: 5px 8px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.demo-control output {
+  min-width: 62px;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.demo-control input[type="checkbox"] { accent-color: var(--orange); }
+
+.demo-button {
+  padding: 7px 14px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 12.5px;
+}
+
+.demo-button:hover { border-color: var(--blue); color: var(--blue); }
+
+.demo-plot { width: 100%; overflow-x: auto; }
+.demo-plot svg { display: block; width: 100%; height: auto; }
+
+.demo-plot .grid { stroke: var(--line); stroke-width: 1; }
+.demo-plot .axis { stroke: var(--line-strong); stroke-width: 1; }
+.demo-plot .serie { fill: none; stroke: var(--blue); stroke-width: 1.6; }
+.demo-plot .serie-2 { fill: none; stroke: var(--orange); stroke-width: 1.6; }
+.demo-plot .band { fill: var(--blue-wash); }
+.demo-plot .mark { fill: var(--orange); }
+.demo-plot .bar { fill: var(--blue); }
+.demo-plot .bar-neg { fill: var(--orange); }
+.demo-plot .dashed { fill: none; stroke: var(--orange); stroke-width: 1.3; stroke-dasharray: 5 4; }
+.demo-plot text { fill: var(--muted); font-family: var(--sans); font-size: 11px; }
+.demo-plot text.annot { fill: var(--ink); font-size: 12px; }
+
+.demo-readout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 26px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.demo-readout div { display: flex; flex-direction: column; gap: 3px; }
+
+.demo-readout small {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.demo-readout output {
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+/* Passe 4 : partout ou un nombre change sous les yeux du lecteur (curseurs des
+   demos, releves, etiquettes des graphiques, colonnes chiffrees des tableaux),
+   les chiffres doivent avoir la meme chasse, sinon la valeur tremble a chaque
+   tirage. L'accueil le faisait deja ; les pages de cours, non. */
+.demo-control output,
+.demo-readout output,
+.demo-plot text,
+.table-wrap td,
+.table-wrap th,
+.pred-recall-card b,
+.cb-read,
+.ol-unit .d,
+.path-unit .d { font-variant-numeric: tabular-nums; }
+
+.demo-note {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.demo-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.demo-legend span { display: inline-flex; gap: 7px; align-items: center; }
+
+.demo-legend span::before {
+  content: "";
+  width: 16px;
+  height: 2px;
+  background: var(--blue);
+}
+
+.demo-legend span.k2::before { background: var(--orange); }
+.demo-legend span.k3::before { height: 9px; background: var(--blue-wash); }
+
+/* ------------------------------------------------------------------ *
+ * 5. Reperage : « ou suis-je ? »
+ *    barre de cours collante, colonne laterale, fins d'unite.
+ * ------------------------------------------------------------------ */
+
+.lesson-page,
+.chapter-page {
+  --cb-top: 78px;
+  --cb-h: 44px;
+}
+
+@media (max-width: 600px) {
+  .lesson-page,
+  .chapter-page { --cb-top: 68px; }
+}
+
+html:has(.lesson-page) { scroll-padding-top: 148px; }
+
+/* --- la barre ----------------------------------------------------- */
+
+.coursebar {
+  position: sticky;
+  top: var(--cb-top);
+  z-index: 15;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.coursebar-in {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  width: min(100% - 48px, 1360px);
+  min-height: var(--cb-h);
+  margin: 0 auto;
+}
+
+.cb-trail {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.cb-trail a { color: var(--text); text-decoration: none; }
+.cb-trail a:hover { color: var(--blue); }
+/* Le chevron du fil d'Ariane etait pose sur --line-strong, une couleur de
+   filet : 1,64:1 en clair, 2,59:1 en sombre. Sur --muted a 75 % il depasse
+   3:1 dans les deux themes et reste subordonne aux libelles. */
+.cb-trail .cb-sep { color: var(--muted); opacity: 0.75; }
+.cb-trail .cb-here {
+  min-width: 0;
+  color: var(--ink);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cb-short { display: none; color: var(--ink); font-size: 12.5px; font-weight: 500; }
+
+.cb-right {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.cb-prog {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.cb-bar {
+  display: block;
+  width: 96px;
+  height: 3px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cb-bar > i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--orange);
+  transition: width 220ms ease;
+}
+
+.cb-menu { position: relative; display: none; }
+
+.cb-menu > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 5px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.cb-menu > summary::-webkit-details-marker { display: none; }
+
+.cb-menu > nav {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 22;
+  width: min(84vw, 320px);
+  max-height: 60vh;
+  overflow: auto;
+  padding: 6px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.cb-menu > nav a {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 8px 10px;
+  color: var(--text);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.cb-menu > nav a:hover { background: var(--paper-deep); color: var(--ink); }
+.cb-menu > nav a b { color: var(--muted); font-family: var(--mono); font-size: 11px; font-weight: 500; }
+.cb-menu > nav a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+
+@media (max-width: 900px) {
+  .coursebar-in { width: min(100% - 40px, 760px); }
+  .cb-trail { display: none; }
+  .cb-short { display: block; }
+  .cb-menu { display: block; }
+}
+
+/* --- colonne laterale gauche -------------------------------------- */
+
+.lesson-page .lesson-outline { top: calc(var(--cb-top) + var(--cb-h) + 20px); padding-top: 34px; }
+
+.ol-chap {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.28;
+}
+
+.ol-chap a { color: inherit; text-decoration: none; }
+.ol-chap a:hover { color: var(--blue); }
+
+.ol-units { margin: 0 0 22px; padding: 0; list-style: none; }
+
+.ol-unit {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 2px 6px;
+  padding: 6px 6px 6px 0;
+  border-left: 1px solid var(--line);
+  padding-left: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+.ol-unit .n { color: var(--muted); font-family: var(--mono); font-size: 11px; }
+.ol-unit .t { min-width: 0; color: var(--text); }
+.ol-unit .d { grid-column: 2; color: var(--muted); font-family: var(--mono); font-size: 11px; }
+.ol-unit:hover { border-left-color: var(--line-strong); }
+.ol-unit:hover .t { color: var(--ink); }
+
+.ol-unit.is-current {
+  border-left-color: var(--orange);
+  background: var(--orange-wash);
+}
+
+.ol-unit.is-current .t { color: var(--ink); font-weight: 600; }
+.ol-unit.is-current .n { color: var(--orange-text); }
+
+.ol-unit .check {
+  position: absolute;
+  top: 7px;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+
+.ol-unit.is-read .check { opacity: 1; }
+.ol-unit.is-read .t { color: var(--muted); }
+
+/* --- mini-carte « Vous etes ici » --------------------------------- */
+
+.ol-map { margin: 0 0 22px; padding-top: 16px; border-top: 1px solid var(--line); }
+
+.ol-map > p {
+  margin: 0 0 9px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ol-map-dots { display: flex; flex-wrap: wrap; gap: 5px; margin: 0; padding: 0; list-style: none; }
+
+.ol-map-dots li {
+  width: 11px;
+  height: 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+}
+
+.ol-map-dots li.is-open { background: var(--blue); border-color: var(--blue); }
+.ol-map-dots li.is-here { background: var(--orange); border-color: var(--orange); transform: scale(1.25); }
+
+.ol-map-legend { margin: 9px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+
+/* --- fin d'unite : marquer comme lue, precedente / suivante ------- */
+
+.unit-end { margin-top: 44px; padding-top: 26px; border-top: 1px solid var(--line); }
+
+.unit-end-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+.mark-read {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 46px;
+  padding: 11px 20px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.mark-read:hover { background: var(--blue); border-color: var(--blue); }
+.mark-read svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.mark-read.is-read { background: transparent; color: var(--orange-text); border-color: var(--orange); }
+
+.unit-nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.unit-nav-card {
+  display: block;
+  min-width: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.unit-nav-card:hover { border-color: var(--line-strong); background: var(--paper-deep); }
+
+.unit-nav-card small {
+  display: block;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.unit-nav-card strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.unit-nav-card.next { text-align: right; }
+.unit-nav-card.is-locked { border-style: dashed; color: var(--muted); }
+.unit-nav-card.is-locked strong { color: var(--muted); }
+.unit-nav-card.placeholder { border: 0; }
+
+.unit-end-back { margin-top: 16px; font-size: 13.5px; }
+.unit-end-back a { color: var(--blue); }
+
+@media (max-width: 700px) {
+  .unit-nav { grid-template-columns: minmax(0, 1fr); }
+  .unit-nav-card.next { text-align: left; }
+  .unit-nav-card.placeholder { display: none; }
+}
+
+/* --- panneau repliable mobile (reprend la colonne laterale) ------- */
+
+.mobile-outline .ol-units,
+.mobile-outline .ol-map { margin-bottom: 16px; }
+
+.mobile-outline .panel-label {
+  margin: 12px 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.mobile-outline .ol-unit { font-size: 13px; }
+
+/* --- page de chapitre --------------------------------------------- */
+
+.unit-row .unit-state {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 6px;
+  color: var(--orange-text);
+  font-size: 11.5px;
+  opacity: 0;
+}
+
+.unit-row .unit-state svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.unit-row.is-read .unit-state { opacity: 1; }
+
+.chapter-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.chapter-meta li { display: inline-flex; gap: 7px; align-items: baseline; }
+.chapter-meta b { color: var(--ink); font-weight: 500; }
+
+.chapter-progress {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 18px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+/* --- page du parcours --------------------------------------------- */
+
+.path-counter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 18px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.path-counter b { color: var(--ink); font-size: 14px; font-weight: 600; }
+
+.path-units { margin: 0; padding: 0 0 6px 56px; list-style: none; }
+
+.path-unit {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  font-size: 13.5px;
+  text-decoration: none;
+}
+
+.path-unit:hover { color: var(--ink); }
+.path-unit .n { color: var(--muted); font-family: var(--mono); font-size: 11px; }
+.path-unit .d { color: var(--muted); font-family: var(--mono); font-size: 11px; }
+.path-unit .check { width: 12px; height: 12px; fill: none; stroke: var(--orange); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.path-unit.is-read .check { opacity: 1; }
+.path-unit.is-read { color: var(--muted); }
+
+@media (max-width: 700px) {
+  .path-units { padding-left: 0; }
+}
+
+/* ------------------------------------------------------------------ *
+ * 6. Divers restant des pages de cours
+ * ------------------------------------------------------------------ */
+
+.teaser-note {
+  max-width: 44rem;
+  margin-top: 26px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.section-lead {
+  max-width: 62ch;
+  margin: 0 0 8px;
+  color: var(--muted);
+}
+
+@media (max-width: 720px) {
+  .unit-row { grid-template-columns: 40px minmax(0, 1fr); }
+  .unit-row .unit-times { grid-column: 2; text-align: left; }
+}
+
+/* ------------------------------------------------------------------ *
+ * 7. Deux utilitaires
+ * ------------------------------------------------------------------ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.nav-resume {
+  display: inline-flex;
+  gap: 7px;
+  align-items: baseline;
+  max-width: 14rem;
+  padding: 5px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  color: var(--ink);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: none;
+}
+
+.nav-resume:hover { border-color: var(--blue); color: var(--blue); }
+.nav-resume span { color: var(--muted); font-family: var(--mono); font-size: 11px; }
+
+/* ------------------------------------------------------------------ *
+ * N. Finitions communes (chargees apres styles.css et landing.css)
+ * ------------------------------------------------------------------ */
+
+/* `hidden` doit l'emporter sur les `display:` poses par les regles de mise en
+   page (sans quoi le bouton « Reprendre », masque tant qu'aucune unite n'a ete
+   lue, resterait visible et vide). */
+[hidden] { display: none !important; }
+
+/* Un seul anneau de focus sur tout le site : 2 px, decale de 2 px. */
+:focus-visible {
+  outline: 2px solid var(--blue-bright);
+  outline-offset: 2px;
+}
+
+/* Passe 4 : les titres des unites, souvent longs, cassaient sur un orphelin
+   (« … sort en / dix lignes »). `balance` egalise les lignes des titres ;
+   `pretty` evite le mot seul en fin de paragraphe, sans rien changer au
+   reste du pliage. */
+.lesson-hero h1,
+.page-head h1,
+.lesson-section h2,
+.lesson-section h3,
+.lesson-section h4,
+.unit-row .unit-title,
+.teaser-lead,
+.callout .callout-label + p { text-wrap: balance; }
+
+.lesson-section p,
+.unit-figure figcaption,
+.lesson-lead { text-wrap: pretty; }
+
+/* Mode sombre : les figures PNG des unites sont dessinees pour du papier.
+   On leur donne une planche claire, pour qu'elles ne flottent pas sur le fond
+   sombre et restent lisibles quel que soit leur fond (blanc ou transparent).
+   En mode clair, rien de plus que le filet deja pose. */
+:root[data-theme="dark"] .unit-figure img {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fbfaf7;
+}
+
+/* Le selecteur « .lesson-outline a » du socle (specificite 0,1,1) ecrase le
+   « display: grid » de « .ol-unit » (0,1,0) : le numero, le titre et la duree se
+   retrouvaient colles sur une seule ligne. On remonte la specificite pour
+   retablir la grille voulue par la regle d'origine. */
+.lesson-outline a.ol-unit {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 2px 6px;
+  padding: 6px 6px 6px 10px;
+}
+
+/* ------------------------------------------------------------------ *
+ * Impression : une unite doit sortir lisible sur papier.
+ *
+ * Le socle pose deja une base (variables claires, colonnes masquees) ;
+ * on la complete ici pour les pages de cours : plus rien de ce qui ne
+ * s'imprime pas (barres, boutons, champ de prediction), du noir sur du
+ * blanc, les adresses des liens externes ecrites en clair, et aucune
+ * coupure au milieu d'une figure, d'un encadre ou d'un bloc de code.
+ * Cette feuille arrive apres celle du socle : elle a le dernier mot.
+ * ------------------------------------------------------------------ */
+
+@media print {
+  :root,
+  :root[data-theme="dark"] {
+    color-scheme: light;
+    --paper: #fff;
+    --paper-deep: #fff;
+    --surface: #fff;
+    --ink: #000;
+    --text: #000;
+    --muted: #333;
+    --blue: #000;
+    --blue-bright: #000;
+    --orange: #000;
+    --green: #000;
+    --line: #999;
+    --line-strong: #666;
+    --blue-wash: #fff;
+  }
+
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* 1. Ce qui ne s'imprime pas : barres, reperage, commandes. */
+  .skip-link,
+  .site-header,
+  .site-nav,
+  .mobile-menu,
+  .menu-toggle,
+  .theme-toggle,
+  .reading-progress,
+  .coursebar,
+  .lesson-outline,
+  .mobile-outline,
+  .lesson-margin,
+  .unit-nav,
+  .unit-end-actions,
+  .unit-end-back,
+  .hero-actions,
+  .chapter-progress,
+  .cb-prog,
+  .pred-card,
+  .pred-recall,
+  .site-footer nav,
+  button,
+  .button {
+    display: none !important;
+  }
+
+  /* 2. Une seule colonne, pleine largeur. */
+  .lesson-wrap,
+  .page-wrap {
+    display: block;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .lesson-main { min-width: 0; }
+
+  .lesson-section {
+    padding: 18px 0 0;
+    border: 0;
+  }
+
+  .lesson-section > p,
+  .lesson-section > ul,
+  .lesson-section > ol,
+  .unit-figure,
+  .unit-figure figcaption {
+    max-width: none;
+  }
+
+  .section-number { display: none; }
+
+  /* 3. Noir sur blanc : aucun aplat, aucun filet de couleur. */
+  .callout,
+  .code-block,
+  details.check,
+  .unit-row,
+  .chapter-card,
+  .table-wrap,
+  .demo {
+    background: #fff !important;
+    box-shadow: none !important;
+    border-color: #999 !important;
+  }
+
+  .callout .callout-label,
+  .callout .callout-label svg,
+  .code-block,
+  .code-block * {
+    color: #000 !important;
+  }
+
+  .code-block::before,
+  .code-block::after { display: none; }
+
+  /* 4. En-tete : le chapitre puis le titre de l'unite, en haut de la page.
+     Le grand numero en filigrane et la hauteur de 560 px de l'ecran n'ont pas
+     de sens sur papier : l'en-tete se resserre sur son texte. */
+  .lesson-hero {
+    min-height: 0;
+    padding: 0 0 10px;
+    border-bottom: 1px solid #999;
+  }
+
+  .lesson-hero::after { content: none; }
+
+  .lesson-hero .breadcrumbs { display: none; }
+
+  .lesson-hero .lesson-kicker {
+    margin: 0 0 4px;
+    color: #000 !important;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .lesson-hero h1 {
+    margin: 0;
+    font-size: 24pt;
+  }
+
+  .lesson-meta { color: #333 !important; font-size: 9pt; }
+
+  /* 5. Figures : jamais plus large que la page, jamais coupees. */
+  .unit-figure img {
+    max-width: 100%;
+    height: auto;
+    padding: 0;
+    border: 1px solid #999;
+    background: #fff;
+    border-radius: 0;
+  }
+
+  .unit-figure,
+  .callout,
+  .code-block,
+  details.check,
+  .table-wrap,
+  figure,
+  pre {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Les reponses repliees de « Verifiez-vous » s'impriment ouvertes. */
+  details.check > div { display: block !important; }
+
+  /* 6. Les liens externes valent par leur adresse : on l'ecrit. */
+  a { color: #000 !important; text-decoration: none; }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    word-break: break-all;
+  }
+
+  /* Sauf quand le texte du lien est deja l'adresse : on ne l'ecrit pas deux fois. */
+  a.url-plain::after { content: none; }
+
+  .site-footer {
+    border-top: 1px solid #999;
+    color: #333 !important;
+  }
+}

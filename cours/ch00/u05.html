@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Une fonction nomme un calcul, un assert le met à l'épreuve sur un cas connu · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Une fonction est un calcul nommé, avec des entrées et une sortie, testé sur un cas dont on connaît la réponse.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u05.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Une fonction est un calcul nommé, avec des entrées et une sortie, testé sur un cas dont on connaît la réponse.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u05.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Une fonction est un calcul nommé, avec des entrées et une sortie, testé sur un cas dont on connaît la réponse.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch00" data-unit="u05" data-unit-title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-ch-title="Outils : Python de zéro, sans rien installer" data-unit-url="cours/ch00/u05.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 00 · Outils</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu">Unité 5/8 · Une fonction nomme un calcul</span></nav>
+      <span class="cb-short">Ch. 00 · 5/8</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch00" data-progress-units="u01,u02,u03,u04,u05,u06,u07,u08" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/8 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Six lignes suffisent pour voir seize ans de marché"><b>01</b><span>Six lignes suffisent pour voir…</span></a><a href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque"><b>02</b><span>Un nom retient un résultat…</span></a><a href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom"><b>03</b><span>Une liste range des prix dans l&#x27;ordre</span></a><a href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes"><b>04</b><span>Une boucle parcourt</span></a><a href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" aria-current="page"><b>05</b><span>Une fonction nomme un calcul</span></a><a href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une"><b>06</b><span>Un tableau numpy remplace la boucle</span></a><a href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours"><b>07</b><span>Votre machine devient l&#x27;ordinateur du cours</span></a><a href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours"><b>08</b><span>Huit fiches d&#x27;une page suffisent…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Outils : Python de zéro, sans rien installer">Chapitre 00 · Outils : Python de zéro…</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05" aria-current="page"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open is-here" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 00 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#la-question">La question</a></li>
+        <li><a href="#on-essaie-dabord">On essaie d&#x27;abord</a></li>
+        <li><a href="#lidee">L&#x27;idée</a></li>
+        <li><a href="#le-piege-ma-fonction-marche-je-lai-regardee">Le piège : « ma fonction marche, je l&#x27;ai regardée »</a></li>
+        <li><a href="#verifiez-vous">Vérifiez-vous</a></li>
+        <li><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 20 min<br>Travail complet 45 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 5 sur 8</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05" aria-current="page"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#la-question">La question</a><a href="#on-essaie-dabord">On essaie d&#x27;abord</a><a href="#lidee">L&#x27;idée</a><a href="#le-piege-ma-fonction-marche-je-lai-regardee">Le piège : « ma fonction marche, je l&#x27;ai regardée »</a><a href="#verifiez-vous">Vérifiez-vous</a><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 00</a><span aria-hidden="true">/</span><span>Unité 05</span></nav>
+        <p class="lesson-kicker">Outils : Python de zéro, sans rien installer</p>
+        <h1>Une fonction nomme un calcul, un <code>assert</code> le met à l’épreuve sur un cas connu</h1>
+        <p class="lesson-question">Une fonction est un calcul nommé, avec des entrées et une sortie, testé sur un cas dont on connaît la réponse.</p>
+        <div class="lesson-meta"><span>Lecture guidée 20 min</span><span>Travail complet 45 min</span><span>Une idée</span><span>Unité 05 sur 08</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><blockquote>
+<p><strong>Durée</strong> 20 min · <strong>Prérequis</strong> u01, u02, u03, u04 · <strong>Idée unique</strong> : une fonction est un calcul nommé, avec des entrées et une sortie, que l'on teste sur un cas dont on connaît déjà la réponse.</p>
+</blockquote></section>
+<section class="lesson-section reveal" id="la-question" data-section><span class="section-number">01</span><h2 id="la-question">La question</h2>
+<p>En u02 vous avez calculé une variation de prix : une ligne, un résultat. En u04, la pire des dix-sept années : dix lignes, un résultat. Ces deux calculs, le cours va les refaire sans arrêt. Le fil rouge contient 4 151 séances et six actifs : rien que pour la variation quotidienne, cela fait <strong>24 906 calculs identiques</strong>, et ce n'est que le premier chapitre.</p>
+<p>La méthode du débutant consiste à recopier la ligne <code>prix_fin / prix_debut - 1</code> à chaque fois. Elle échoue pour trois raisons distinctes. On la <strong>retape</strong>, donc on la retape mal une fois sur vingt. On ne peut pas la <strong>tester</strong> : une ligne noyée au milieu d'une cellule ne se vérifie pas toute seule. Et le jour où l'on découvre une erreur dedans, il faut retrouver ses vingt copies, et celle qu'on oublie continuera à produire des nombres faux, sans message.</p>
+<p>La question de cette unité est donc : <strong>comment écrire un calcul une seule fois, l'appeler partout, et ne plus jamais douter qu'il est juste ?</strong></p>
+<aside class="pred-card" data-pred="ch00.u05" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch00-u05">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch00-u05" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="on-essaie-dabord" data-section><span class="section-number">02</span><h2 id="on-essaie-dabord">On essaie d’abord</h2>
+<p>Le second calcul de cette unité est nouveau, et il vaut mieux le deviner avant de le lire.</p>
+<p>Un contrat vous donne, dans un an, le <strong>droit</strong> (pas l'obligation) d'acheter le S&amp;P 500 au prix fixé aujourd'hui de <strong>7 718,60</strong> (sa clôture du 4 septembre 2026). Dans un an, ce droit s'éteint. Écrivez deux nombres :</p>
+<ul>
+<li>si l'indice vaut alors <strong>8 500</strong>, combien ce droit vous rapporte-t-il à ce moment-là, sans compter ce que le contrat vous a coûté ?</li>
+<li>et s'il vaut <strong>7 000</strong> ?</li>
+</ul>
+<p>Les réponses sont <strong>781,40</strong> et <strong>0</strong>. Le premier cas se lit directement : vous achetez à 7 718,60 ce qui en vaut 8 500, soit <span class="math">8\,500 - 7\,718{,}60 = 781{,}40</span> de gain. Le second est celui que l'on rate : le droit ne vous <strong>oblige</strong> à rien, donc vous ne l'exercez pas, et le gain est nul, et non <span class="math">7\,000 - 7\,718{,}60 = -718{,}60</span>. Retenez ce piège : nous allons le faire commettre à une fonction dans quelques minutes.</p>
+</section>
+<section class="lesson-section reveal" id="lidee" data-section><span class="section-number">03</span><h2 id="lidee">L’idée</h2>
+<h3 id="donner-un-nom-a-un-calcul">Donner un nom à un calcul</h3>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">def</span> <span class="name">rendement</span>(prix_debut, prix_fin):
+    <span class="string">&quot;&quot;&quot;Return the simple return between a starting price and an ending price.&quot;&quot;&quot;</span>
+    <span class="keyword">return</span> prix_fin / prix_debut - <span class="number">1.0</span>
+
+<span class="name">print</span>(<span class="name">rendement</span>(<span class="number">7747.71</span>, <span class="number">7718.60</span>))    <span class="comment"># -0.003757239235851584</span>
+</code></pre></div>
+<p>Cinq mots-clés, une seule fois expliqués :</p>
+<ul>
+<li><code>def</code> annonce une définition. Le nom qui suit, <code>rendement</code>, est celui par lequel on appellera le calcul ensuite ; il obéit aux mêmes règles de nommage que les variables d'u02.</li>
+<li>Entre parenthèses, <code>prix_debut</code> et <code>prix_fin</code> sont les <strong>paramètres</strong> : les cases d'entrée du calcul, vides tant qu'on n'appelle pas.</li>
+<li>Les deux-points et le décalage de quatre espaces disent « ce qui suit est le corps de la fonction », exactement comme pour la boucle d'u04.</li>
+<li>La ligne entre triples guillemets est la <strong>docstring</strong> : une phrase qui dit ce que fait la fonction. Elle est écrite en anglais, comme tout le code du cours, et c'est elle qui s'affiche quand vous tapez <code>rendement?</code> (u01).</li>
+<li><code>return</code> rend le résultat à celui qui a appelé. Sans <code>return</code>, la fonction rend <code>None</code>, c'est-à-dire « rien ».</li>
+</ul>
+<p>À l'appel, <code>rendement(7747.71, 7718.60)</code>, les deux nombres écrits sont les <strong>arguments</strong> : ce qu'on met dans les cases. Paramètre est le nom de la case, argument la valeur qu'on y verse.</p>
+<p>Le TP écrit ces mêmes fonctions avec deux décorations en plus : <code>prix_debut: float</code>, <code>-&gt; float</code>, et une docstring en sections. Elles sont <strong>facultatives</strong> ; le TP les explique dans ses conventions d'ouverture.</p>
+<p>Ce qui vit dans une fonction ne sort pas de la fonction.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">def</span> <span class="name">rendement_bavard</span>(prix_debut, prix_fin):
+    <span class="string">&quot;&quot;&quot;Same computation, with an intermediate name kept inside.&quot;&quot;&quot;</span>
+    variation = prix_fin / prix_debut - <span class="number">1.0</span>
+    <span class="keyword">return</span> variation
+
+<span class="name">print</span>(<span class="name">rendement_bavard</span>(<span class="number">7747.71</span>, <span class="number">7718.60</span>))
+<span class="name">print</span>(variation)     <span class="comment"># NameError: name &#x27;variation&#x27; is not defined</span>
+</code></pre></div>
+<p><code>variation</code> n'existe que pendant l'exécution de la fonction, puis disparaît. C'est une protection, pas une gêne : une fonction ne peut pas polluer en douce le reste de votre notebook.</p>
+<h3 id="un-parametre-qui-a-une-valeur-par-defaut">Un paramètre qui a une valeur par défaut</h3>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">def</span> <span class="name">rendement</span>(prix_debut, prix_fin, en_pourcent=<span class="keyword">False</span>):
+    <span class="string">&quot;&quot;&quot;Return the simple return, as a decimal by default, or in percent.&quot;&quot;&quot;</span>
+    variation = prix_fin / prix_debut - <span class="number">1.0</span>
+    <span class="keyword">if</span> en_pourcent:
+        <span class="keyword">return</span> variation * <span class="number">100.0</span>
+    <span class="keyword">return</span> variation
+
+<span class="name">print</span>(<span class="name">rendement</span>(<span class="number">7747.71</span>, <span class="number">7718.60</span>))                     <span class="comment"># -0.003757239235851584</span>
+<span class="name">print</span>(<span class="name">rendement</span>(<span class="number">7747.71</span>, <span class="number">7718.60</span>, en_pourcent=<span class="keyword">True</span>))   <span class="comment"># -0.3757239235851584</span>
+</code></pre></div>
+<p><code>en_pourcent=False</code> est un <strong>argument par défaut</strong> : la valeur utilisée quand l'appelant n'en fournit pas. L'appel court reste possible, et l'appel long est lisible, parce qu'on nomme l'argument au lieu d'écrire un <code>True</code> orphelin dont personne ne devinerait le sens six mois plus tard.</p>
+<h3 id="le-second-calcul-et-son-unique-formule">Le second calcul, et son unique formule</h3>
+<blockquote>
+<p><strong>Le gain à l'échéance d'un droit d'achat.</strong> Notons <span class="math">S</span> le prix de l'actif au jour où le droit s'éteint, et <span class="math">K</span> le prix fixé au contrat, que l'on appelle le <strong>prix d'exercice</strong>. Le droit d'acheter à <span class="math">K</span> rapporte alors</p>
+<div class="math math-display">\text{payoff}_{\text{call}}(S, K) = \max(S - K,\ 0)</div>
+<p>soit la différence si elle est positive, et zéro sinon. Ce nombre ne descend jamais sous zéro, parce qu'un droit qu'on n'exerce pas ne coûte rien à l'échéance. Le mot anglais <strong>payoff</strong> est le nom d'usage. Ce que le contrat a coûté n'entre pas dans ce nombre : payoff et profit sont deux choses différentes. Ce qu'un tel contrat vaut <em>avant</em> l'échéance, ce qu'il a coûté, et pourquoi on en achète, c'est le sujet de <strong>ch01 u05</strong> ; ici, ce n'est qu'un calcul à programmer.</p>
+</blockquote>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">def</span> <span class="name">payoff_call</span>(S, K):
+    <span class="string">&quot;&quot;&quot;Return the terminal gain of the right to buy at K an asset worth S.&quot;&quot;&quot;</span>
+    <span class="keyword">return</span> <span class="name">max</span>(S - K, <span class="number">0.0</span>)
+
+<span class="name">print</span>(<span class="name">payoff_call</span>(<span class="number">8500.0</span>, <span class="number">7718.60</span>))    <span class="comment"># 781.3999999999996</span>
+<span class="name">print</span>(<span class="name">payoff_call</span>(<span class="number">7000.0</span>, <span class="number">7718.60</span>))    <span class="comment"># 0.0</span>
+</code></pre></div>
+<p><code>max(a, b)</code> rend le plus grand des deux nombres : c'est lui, et lui seul, qui encode « je n'exerce pas ».</p>
+<figure class="unit-figure"><img src="figures/fig_ch00_u05_payoff.png" alt="Le gain à l&#x27;échéance du droit d&#x27;acheter le S&amp;P 500 à 7 718,60, calculé par une boucle Python sur 200 prix entre 5 000 et 11 000. Ce qu&#x27;il faut voir : la courbe est plate à zéro tant que le prix reste sous 7 718,60, puis monte à 45 degrés ; le coude est exactement au prix d&#x27;exercice, et les deux points rouges sont les deux réponses que vous aviez prédites." width="1321" height="871" loading="lazy"><figcaption>Le gain à l&#x27;échéance du droit d&#x27;acheter le S&amp;P 500 à 7 718,60, calculé par une boucle Python sur 200 prix entre 5 000 et 11 000. Ce qu&#x27;il faut voir : la courbe est plate à zéro tant que le prix reste sous 7 718,60, puis monte à 45 degrés ; le coude est exactement au prix d&#x27;exercice, et les deux points rouges sont les deux réponses que vous aviez prédites.</figcaption></figure>
+<h3 id="assert-exiger-une-reponse-que-lon-connait-davance"><code>assert</code> : exiger une réponse que l’on connaît d’avance</h3>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">assert</span> <span class="name">abs</span>(<span class="name">payoff_call</span>(<span class="number">8500.0</span>, <span class="number">7718.60</span>) - <span class="number">781.40</span>) &lt; <span class="number">1e-9</span>
+<span class="keyword">assert</span> <span class="name">payoff_call</span>(<span class="number">7000.0</span>, <span class="number">7718.60</span>) == <span class="number">0.0</span>
+<span class="keyword">assert</span> <span class="name">payoff_call</span>(<span class="number">7718.60</span>, <span class="number">7718.60</span>) == <span class="number">0.0</span>
+<span class="name">print</span>(<span class="string">&quot;les trois controles passent&quot;</span>)
+</code></pre></div>
+<p>Une ligne <code>assert</code> se lit « j'exige que ceci soit vrai ». Si c'est vrai, il ne se passe rien : pas d'affichage, pas de ralentissement. Si c'est faux, l'exécution s'arrête sur une <code>AssertionError</code>, à la ligne fautive. C'est le seul dispositif du cours qui attrape un nombre <strong>plausible mais faux</strong>.</p>
+<p>Pourquoi <code>abs(a - b) &lt; 1e-9</code> plutôt que <code>a == b</code> ? (<code>1e-9</code> est la <strong>notation scientifique</strong> : <span class="math">1 	imes 10^{-9}</span>, un milliardième.) Parce que les nombres à virgule de la machine ne sont pas exacts :</p>
+<div class="code-block" data-lang="python"><pre><code><span class="name">print</span>(<span class="number">0.1</span> + <span class="number">0.2</span>)             <span class="comment"># 0.30000000000000004</span>
+<span class="name">print</span>(<span class="number">0.1</span> + <span class="number">0.2</span> == <span class="number">0.3</span>)      <span class="comment"># False</span>
+</code></pre></div>
+<p>Ce n'est pas un défaut de Python, mais l'écriture en base deux d'un nombre décimal. La règle du cours en découle : <strong>on ne compare jamais deux résultats de calcul par <code>==</code></strong>, on compare leur écart à une tolérance. Les entiers, les textes, les couples d'entiers et les zéros exacts, eux, se comparent normalement, d'où le <code>== 0.0</code> des deux dernières lignes, et les <code>==</code> des <code>assert</code> du TD.</p>
+<blockquote>
+<p><strong>Les trois outils d'auto-correction du cours.</strong> Le module <code>mcdp_utils</code> fournit <code>verifier(condition, message_ok, message_ko)</code>, qui affiche un message lisible puis lève l'erreur si la condition est fausse ; <code>indice(texte)</code>, qui donne une étape du raisonnement ; et <code>solution(texte)</code>, replié, qui donne la réponse. Les TP les utilisent partout, car un <code>assert</code> qui échoue sans rien dire n'apprend rien.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">from</span> mcdp_utils <span class="keyword">import</span> verifier
+<span class="name">verifier</span>(<span class="name">payoff_call</span>(<span class="number">7000.0</span>, <span class="number">7718.60</span>) == <span class="number">0.0</span>,
+         <span class="string">&quot;payoff_call est nul sous le prix d&#x27;exercice&quot;</span>,
+         <span class="string">&quot;attendu 0.0 : avez-vous garde le max ?&quot;</span>)
+</code></pre></div>
+</blockquote>
+</section>
+<section class="lesson-section reveal" id="le-piege-ma-fonction-marche-je-lai-regardee" data-section><span class="section-number">04</span><h2 id="le-piege-ma-fonction-marche-je-lai-regardee">Le piège : « ma fonction marche, je l’ai regardée »</h2>
+<p>Voici la version que presque tout le monde écrit d'abord.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">def</span> <span class="name">payoff_call_faux</span>(S, K):
+    <span class="string">&quot;&quot;&quot;Wrong on purpose: the max is missing.&quot;&quot;&quot;</span>
+    <span class="keyword">return</span> S - K
+
+<span class="name">print</span>(<span class="name">payoff_call_faux</span>(<span class="number">8500.0</span>, <span class="number">7718.60</span>))    <span class="comment"># 781.3999999999996  &lt;- juste</span>
+<span class="name">print</span>(<span class="name">payoff_call_faux</span>(<span class="number">7000.0</span>, <span class="number">7718.60</span>))    <span class="comment"># -718.6000000000004 &lt;- un gain negatif</span>
+</code></pre></div>
+<p>Elle donne la bonne réponse sur le cas regardé, et un gain <strong>négatif</strong> sur un droit qu'on n'est pas obligé d'exercer. Relue à l'œil, elle passe : <code>S - K</code>, c'est bien la définition qu'on a en tête. Le premier <code>assert</code> l'arrête en trois secondes :</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">try</span>:
+    <span class="keyword">assert</span> <span class="name">payoff_call_faux</span>(<span class="number">7000.0</span>, <span class="number">7718.60</span>) == <span class="number">0.0</span>
+<span class="keyword">except</span> AssertionError:
+    <span class="name">print</span>(<span class="string">&quot;AssertionError : la fonction rend -718,60 au lieu de 0,0&quot;</span>)
+</code></pre></div>
+<p><em>Un test qui échoue coûte trois secondes ; un prix faux coûte un chapitre.</em> Écrivez le test <strong>avant</strong> de regarder le résultat, sur un cas dont vous connaissez la réponse sans machine : ici, les deux nombres que vous aviez prédits en début d'unité.</p>
+<blockquote>
+<p><strong>Une fonction ne modifie pas ce qu'on lui donne.</strong> Reprenez la liste d'u03 : <code>prix.append(0.0)</code> à l'intérieur d'une fonction abîme la liste de l'appelant, comme l'alias <code>copie = prix</code>. La règle du cours est celle des <strong>fonctions pures</strong> : une fonction lit ses arguments, fabrique un objet neuf, et le rend. Elle ne modifie jamais rien de ce qu'elle a reçu.</p>
+<p>Un cas de figure mérite d'être connu, parce qu'il surprend même les habitués : une valeur par défaut <strong>modifiable</strong> est fabriquée une seule fois, à la définition, et survit d'un appel à l'autre.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">def</span> <span class="name">ajouter</span>(valeur, memo=[]):        <span class="comment"># a ne jamais ecrire</span>
+    memo.<span class="name">append</span>(valeur)
+    <span class="keyword">return</span> memo
+
+<span class="name">print</span>(<span class="name">ajouter</span>(<span class="number">1.0</span>))                  <span class="comment"># [1.0]</span>
+<span class="name">print</span>(<span class="name">ajouter</span>(<span class="number">2.0</span>))                  <span class="comment"># [1.0, 2.0]  &lt;- la memoire a fuite</span>
+</code></pre></div>
+<p>La parade tient en deux lignes : <code>memo=None</code> en paramètre, puis <code>if memo is None: memo = []</code> en première ligne du corps.</p>
+</blockquote>
+</section>
+<section class="lesson-section reveal" id="verifiez-vous" data-section><span class="section-number">05</span><h2 id="verifiez-vous">Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch00.u05" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<p><strong>(a)</strong> Qu'affiche <code>print(rendement_muet(100.0, 110.0))</code> si <code>rendement_muet</code> calcule bien mais oublie le <code>return</code> ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+`None`. La fonction s'exécute jusqu'au bout et ne rend rien ; `None` est la valeur qui dit « rien ». Le message d'erreur n'arrive que plus loin, quand on essaie de calculer avec : `TypeError: unsupported operand type(s) for *: 'NoneType' and 'float'`. C'est un bug qui se déclare **à distance** de sa cause, raison de plus pour tester chaque fonction dès qu'elle est écrite.
+</div></details>
+
+<p><strong>(b)</strong> Que vaut <code>payoff_call(7718.60, 7718.60)</code> ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+`0.0` : le prix de l'actif est exactement le prix d'exercice, la différence est nulle, et acheter à 7 718,60 ce qui vaut 7 718,60 ne rapporte rien. Ce cas particulier porte un nom en finance, « à la monnaie », et c'est le cas de référence de tout le cours (**ch01 u05**). Il vaut le coup d'être dans vos `assert` : c'est le point où la fonction change de comportement.
+</div></details>
+
+<p><strong>(c)</strong> Pourquoi écrire <code>abs(a - b) &lt; 1e-9</code> plutôt que <code>a == b</code> pour comparer deux résultats de calcul ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Parce qu'un nombre décimal n'a pas toujours d'écriture exacte en base deux : `0.1 + 0.2` vaut `0.30000000000000004`, et le test d'égalité rend `False`. Deux calculs mathématiquement identiques, écrits différemment, peuvent différer de <span class="math">10^{-16}</span>. On compare donc un **écart** à une tolérance. C'est aussi pourquoi `payoff_call(8500.0, 7718.60)` affiche `781.3999999999996` et non `781.4`.
+</div></details>
+
+<p><strong>(d) (rétrospective)</strong> Reprenez le calcul de la pire année d'u04. Écrit sous forme de fonction <code>pire_annee(annees, perfs)</code>, qu'est-ce qui devient possible et qui ne l'était pas ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Trois choses. On peut l'appeler sur une autre série sans rien recopier : le S&P 500 seul, puis chacun des six actifs. On peut la **tester** sur un cas minuscule dont on connaît la réponse, par exemple `pire_annee([2020, 2021], [0.05, 0.02]) == (2021, 0.02)`, qui attrape immédiatement l'initialisation à `0` du piège d'u04. Et on peut la corriger à un seul endroit. La boucle d'u04 ne permettait aucune des trois.
+</div></details>
+
+<p><strong>(e) (rétrospective)</strong> Votre prédiction du début : aviez-vous écrit <code>−718,60</code> pour l'indice à 7 000 ? Si oui, quelle ligne de la fonction vous aurait donné tort, et quelle ligne vous en aurait averti ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+La ligne qui donne tort est `return S - K` : elle traduit fidèlement une intuition fausse, celle d'une obligation d'acheter. La ligne qui avertit est `assert payoff_call(7000.0, 7718.60) == 0.0`. Notez l'ordre : la prédiction du début **est** le test. Un cas de contrôle n'est pas un supplément de rigueur, c'est la réponse que vous aviez déjà en tête avant de coder.
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">06</span><h2 id="ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Écrire une fonction documentée : <code>def</code>, paramètres, docstring en anglais, <code>return</code>, et un argument par défaut nommé.</li>
+<li>La mettre à l'épreuve par un <code>assert</code> sur un cas dont vous connaissez la réponse, avec une tolérance plutôt qu'une égalité de flottants. Un <code>assert</code> qui passe élimine des fautes, il n'établit rien au-delà des cas testés.</li>
+<li>Reconnaître les deux fautes qui ne lèvent aucun message : la fonction qui rend un nombre plausible mais faux, et celle qui modifie ce qu'on lui a passé.</li>
+</ul>
+<p><strong>Unité suivante.</strong> Votre <code>payoff_call</code> traite un prix à la fois ; le ch04 en traitera 100 000 d'un coup, et cette unité vous laisserait écrire une boucle de 100 000 tours. L'unité u06 la supprime : une opération écrite une fois, appliquée à toutes les cases d'un tableau, et le gain, mesuré au chronomètre.</p></section>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue et continuer" data-mark-next="u06.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue et continuer</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes"><small>Unité précédente</small><strong>04 · Une boucle parcourt</strong></a><a class="unit-nav-card next" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une"><small>Unité suivante</small><strong>06 · Un tableau numpy remplace la boucle</strong></a></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 00</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 00 · unité 05<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+/* ==========================================================================
+   brand.css — l'identité du site, et rien d'autre.
+
+   Une seule définition du mot-marque, chargée par page() sur TOUTES les pages
+   (accueil, parcours, chapitres, unités, TD, teasers, 404). C'est la raison
+   d'être de cette feuille : le même « Adil. » partout, au pixel près.
+
+   Cette feuille est chargée en dernier (après styles.css, landing.css et
+   course.css) : elle a donc le dernier mot sur la barre du haut et le pied.
+   Elle ne touche à rien d'autre que la marque.
+   ========================================================================== */
+
+/* --- La marque ----------------------------------------------------------- *
+   Deux lignes brisées dans un carré de 30, puis le nom en Fraunces et un point
+   ocre. La première ligne monte et redescend (encre) ; la seconde la suit en
+   contrebas (ocre) : une trajectoire et sa réplique, ce que le cours passe son
+   temps à faire. Les couleurs viennent des variables de thème (--ink, --orange),
+   donc la marque suit le mode sombre sans règle supplémentaire : encre #14213d
+   / ocre #d95f02 en clair, encre #edf1f7 / ocre #f19a55 en sombre.            */
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+/* Le signe : taille exprimée en em, donc il suit la taille du nom, dans la
+   barre (22 px) comme dans le pied (20 px). Une seule valeur à régler.        */
+.wordmark-sign {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wordmark-sign path:last-child {
+  stroke: var(--orange);
+}
+
+.wordmark-name {
+  display: inline-block;
+}
+
+.wordmark i {
+  color: var(--orange);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* --- La marque dans la barre du haut des pages de cours ------------------- *
+   .brand du socle prévoyait un glyphe dans un cadre (.brand-mark) à gauche du
+   nom. Le glyphe a disparu : on neutralise l'espacement et la taille héritées
+   pour que le mot-marque des pages de cours soit exactement celui de
+   l'accueil (.lp-brand), et pas une seconde version un peu plus petite.       */
+
+.brand {
+  gap: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: normal;
+}
+
+.brand:hover .wordmark,
+.brand:focus-visible .wordmark,
+.lp-brand:hover .wordmark,
+.lp-brand:focus-visible .wordmark {
+  color: var(--ink);
+}
+
+/* --- La marque dans le pied ---------------------------------------------- *
+   Le pied des pages de cours pose le mot-marque au-dessus de la mention de
+   chapitre et de la licence. Une colonne, deux lignes : la grille du pied
+   (1fr auto) n'est pas touchée.                                              */
+
+.footer-brand {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+}
+
+.footer-brand .wordmark {
+  font-size: 20px;
+}
+
+@media (max-width: 640px) {
+  .footer-brand {
+    gap: 10px;
+  }
+}

@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Un nom retient un résultat ; un message d'erreur dit lequel manque · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Une variable est un nom collé à une valeur ; les quatre messages d’erreur qui comptent disent chacun une chose précise et se réparent en une ligne.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u02.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Une variable est un nom collé à une valeur ; les quatre messages d’erreur qui comptent disent chacun une chose précise et se réparent en une ligne.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u02.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Une variable est un nom collé à une valeur ; les quatre messages d’erreur qui comptent disent chacun une chose précise et se réparent en une ligne.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch00" data-unit="u02" data-unit-title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-ch-title="Outils : Python de zéro, sans rien installer" data-unit-url="cours/ch00/u02.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 00 · Outils</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque">Unité 2/8 · Un nom retient un résultat…</span></nav>
+      <span class="cb-short">Ch. 00 · 2/8</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch00" data-progress-units="u01,u02,u03,u04,u05,u06,u07,u08" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/8 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Six lignes suffisent pour voir seize ans de marché"><b>01</b><span>Six lignes suffisent pour voir…</span></a><a href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" aria-current="page"><b>02</b><span>Un nom retient un résultat…</span></a><a href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom"><b>03</b><span>Une liste range des prix dans l&#x27;ordre</span></a><a href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes"><b>04</b><span>Une boucle parcourt</span></a><a href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu"><b>05</b><span>Une fonction nomme un calcul</span></a><a href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une"><b>06</b><span>Un tableau numpy remplace la boucle</span></a><a href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours"><b>07</b><span>Votre machine devient l&#x27;ordinateur du cours</span></a><a href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours"><b>08</b><span>Huit fiches d&#x27;une page suffisent…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Outils : Python de zéro, sans rien installer">Chapitre 00 · Outils : Python de zéro…</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02" aria-current="page"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open is-here" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 00 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#la-question">La question</a></li>
+        <li><a href="#on-essaie-dabord">On essaie d&#x27;abord</a></li>
+        <li><a href="#lidee">L&#x27;idée</a></li>
+        <li><a href="#le-piege-fermer-longlet-devant-un-message-rouge">Le piège : fermer l&#x27;onglet devant un message rouge</a></li>
+        <li><a href="#verifiez-vous">Vérifiez-vous</a></li>
+        <li><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 20 min<br>Travail complet 30 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 2 sur 8</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02" aria-current="page"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#la-question">La question</a><a href="#on-essaie-dabord">On essaie d&#x27;abord</a><a href="#lidee">L&#x27;idée</a><a href="#le-piege-fermer-longlet-devant-un-message-rouge">Le piège : fermer l&#x27;onglet devant un message rouge</a><a href="#verifiez-vous">Vérifiez-vous</a><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 00</a><span aria-hidden="true">/</span><span>Unité 02</span></nav>
+        <p class="lesson-kicker">Outils : Python de zéro, sans rien installer</p>
+        <h1>Un nom retient un résultat ; un message d’erreur dit lequel manque</h1>
+        <p class="lesson-question">Une variable est un nom collé à une valeur ; les quatre messages d'erreur qui comptent disent chacun une chose précise et se réparent en une ligne.</p>
+        <div class="lesson-meta"><span>Lecture guidée 20 min</span><span>Travail complet 30 min</span><span>Une idée</span><span>Unité 02 sur 08</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><blockquote>
+<p><strong>Durée</strong> 20 min · <strong>Prérequis</strong> u01 · <strong>Idée unique</strong> : une variable est un nom collé à une valeur ; les quatre messages d'erreur qui comptent disent chacun une chose précise et se réparent en une ligne.</p>
+</blockquote></section>
+<section class="lesson-section reveal" id="la-question" data-section><span class="section-number">01</span><h2 id="la-question">La question</h2>
+<p>Deux séances consécutives du S&amp;P 500, prises à la fin du fichier du cours : le 3 septembre 2026, clôture à <strong>7 747,71</strong> ; le 4 septembre 2026, clôture à <strong>7 718,60</strong>.</p>
+<p>L'indice a baissé. Mais de combien ? « 29,11 points » ne se compare à rien : le CAC 40 clôture autour de 8 278 et l'action AAPL autour de 320, une baisse de 29 points n'a pas le même sens sur les trois. Le seul chiffre comparable est la variation <strong>en pourcentage</strong>. Et une fois ce pourcentage calculé, une deuxième question surgit tout de suite : comment le <strong>garder</strong>, pour le réafficher, le comparer à celui de la veille, ou le réutiliser trois cellules plus loin ? En u01, la figure s'est affichée puis a disparu de la mémoire de la machine ; rien n'a été retenu.</p>
+<aside class="pred-card" data-pred="ch00.u02" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch00-u02">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch00-u02" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="on-essaie-dabord" data-section><span class="section-number">02</span><h2 id="on-essaie-dabord">On essaie d’abord</h2>
+<p>Écrivez, avant de coder, votre estimation de cette variation <strong>à deux décimales près</strong>, avec son signe. Une seule contrainte : de tête, sans machine et sans poser la division.</p>
+<p>Seulement une fois votre chiffre écrit, vérifiez votre ordre de grandeur : 29,11 rapporté à environ 7 750, c'est un peu moins de quatre millièmes. La réponse est <strong>−0,3757 %</strong>. Si vous avez écrit « −0,38 % » ou « −0,4 % », vous avez l'ordre de grandeur, ce qui est exactement le but : à partir de maintenant, chaque nombre que la machine affichera devra tomber près d'un nombre que vous aviez en tête. Un résultat de calcul qui ne vous surprend jamais est un résultat que vous ne relisez plus.</p>
+</section>
+<section class="lesson-section reveal" id="lidee" data-section><span class="section-number">03</span><h2 id="lidee">L’idée</h2>
+<h3 id="range-une-valeur-il-ne-compare-pas"><code>=</code> range une valeur, il ne compare pas</h3>
+<div class="code-block" data-lang="python"><pre><code>hier = <span class="number">7747.71</span>
+aujourdhui = <span class="number">7718.60</span>
+</code></pre></div>
+<p>Chacune de ces lignes fabrique une <strong>variable</strong> : un nom collé à une valeur. L'opération s'appelle une <strong>affectation</strong>. Le signe <code>=</code> n'est pas le « égale » des mathématiques et ne pose aucune question : il <strong>range</strong>. Il se lit de droite à gauche : « prends 7 747,71 et appelle-le <code>hier</code> ». Ce que le nom retenait avant est perdu sans avertissement.</p>
+<p>Deux détails d'écriture : le séparateur décimal est le <strong>point</strong>, jamais la virgule ; et pas d'espace dans les nombres, puisque <code>7 747,71</code> s'écrit <code>7747.71</code>.</p>
+<h3 id="le-premier-calcul-du-cours">Le premier calcul du cours</h3>
+<div class="code-block" data-lang="python"><pre><code>rendement = aujourdhui / hier - <span class="number">1</span>
+<span class="name">print</span>(rendement)          <span class="comment"># -0.003757239235851584</span>
+</code></pre></div>
+<p>La première ligne calcule d'abord ce qui est à droite du <code>=</code>, puis range le résultat sous le nom <code>rendement</code>. La seconde l'affiche : <code>print</code> est l'outil qui montre une valeur, et c'est le seul moyen de voir ce que contient un nom.</p>
+<p>Le nombre affiché a quinze décimales et se lit mal. Voici la forme lisible :</p>
+<div class="code-block" data-lang="python"><pre><code><span class="name">print</span>(f<span class="string">&quot;rendement : {rendement:.4%}&quot;</span>)   <span class="comment"># rendement : -0.3757%</span>
+</code></pre></div>
+<p>Le <code>f</code> avant le guillemet ouvre une <strong>f-string</strong> : un texte à trous. Ce qui est entre accolades est remplacé par la valeur du nom, et ce qui suit les deux-points dit <strong>comment</strong> l'écrire : ici <code>.4%</code> signifie « en pourcentage, avec quatre décimales ». Le texte hors des accolades est recopié tel quel.</p>
+<blockquote>
+<p><strong>Le rendement simple.</strong> Le nombre que vous venez de calculer porte un nom : le <strong>rendement simple</strong> d'une période, c'est-à-dire la variation relative d'un prix entre deux dates.</p>
+<div class="math math-display">R = \frac{S_1}{S_0} - 1</div>
+<p><span class="math">S_0</span> est le prix de départ (7 747,71), <span class="math">S_1</span> le prix d'arrivée (7 718,60), et <span class="math">R</span> la variation relative, sans unité, qu'on affiche en pourcentage. Il n'en est rien dit de plus ici : pourquoi un prix n'est pas un rendement, et pourquoi deux échelles de rendement coexistent en finance, c'est le sujet de <strong>ch01 u01</strong>.</p>
+</blockquote>
+<figure class="unit-figure"><img src="figures/fig_ch00_u02_cinq_rendements.png" alt="Les cinq derniers rendements quotidiens du S&amp;P 500, du 31 août au 4 septembre 2026, en pourcentage. Ce qu&#x27;il faut voir : quatre des cinq séances tiennent sous 1 % en valeur absolue, les signes alternent sans motif visible, et la dernière barre est celle que vous venez de calculer à la main." width="1264" height="803" loading="lazy"><figcaption>Les cinq derniers rendements quotidiens du S&amp;P 500, du 31 août au 4 septembre 2026, en pourcentage. Ce qu&#x27;il faut voir : quatre des cinq séances tiennent sous 1 % en valeur absolue, les signes alternent sans motif visible, et la dernière barre est celle que vous venez de calculer à la main.</figcaption></figure>
+<p>Une précision d'ingénieur, à lire une fois. Les clôtures du S&amp;P 500 sont <strong>publiées avec deux décimales</strong> (7 747,71), mais le fichier du cours les range dans un <strong>format de stockage</strong> plus court, dit <em>simple précision</em>, qui retient environ sept chiffres significatifs : 7 747,71 y est écrit <code>7747.709961</code>. Ces quatre décimales supplémentaires ne sont pas une information de plus, c'est la trace du format. En tapant <code>7718.60 / 7747.71 - 1</code> vous obtenez <code>-0.003757239…</code> ; en repartant du fichier, <code>-0.003757222…</code>. Les deux s'affichent <code>-0.3757%</code>, et l'écart vaut <span class="math">1{,}8 	imes 10^{-8}</span>. <strong>La règle de travail : le format dans lequel une donnée est rangée se propage à votre résultat exactement comme un arrondi, et la seule question qui compte est de savoir s'il se voit au format que vous affichez.</strong> Nuance à connaître : les colonnes <em>ajustées</em> du fichier (SPY, AAPL, LVMH, TTE, TLT) portent, elles, une vraie précision supplémentaire, parce qu'elles intègrent des facteurs de correction ; <code>AAPL</code> vaut 6,40096 le 4 janvier 2010, et ces décimales-là sont bien de l'information.</p>
+<h3 id="quatre-natures-de-valeur">Quatre natures de valeur</h3>
+<p>Toute valeur a un <strong>type</strong>, c'est-à-dire une nature qui décide de ce qu'on peut en faire. Quatre suffisent pour tout le chapitre :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Ce que c'est</th>
+<th>Exemple du fil rouge</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>float</code></td>
+<td>un nombre à virgule</td>
+<td><code>7718.60</code>, <code>-0.0037572</code></td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td>un nombre entier</td>
+<td><code>4151</code> (le nombre de séances)</td>
+</tr>
+<tr>
+<td><code>str</code></td>
+<td>un texte, entre guillemets</td>
+<td><code>"SP500"</code></td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td>vrai ou faux</td>
+<td><code>aujourdhui &lt; hier</code> vaut <code>True</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>type(7718.60)</code> répond <code>float</code>. Le point important est que <strong><code>"7718.60"</code> n'est pas <code>7718.60</code></strong> : le premier est un texte qui ressemble à un nombre, le second est un nombre. On peut soustraire deux <code>float</code>, pas un <code>str</code> et un <code>float</code>. La conversion existe et s'écrit <code>float("7718.60")</code>.</p>
+<h3 id="les-quatre-messages-derreur-provoques-puis-repares">Les quatre messages d’erreur, provoqués puis réparés</h3>
+<p>Faites-les, dans l'ordre, et lisez chaque message avant de corriger.</p>
+<p><strong>1. Une parenthèse oubliée.</strong> Écrivez <code>print(f"rendement : {rendement:.4%}"</code>, sans la parenthèse finale.</p>
+<div class="code-block" data-lang="text"><pre><code>SyntaxError: &#x27;(&#x27; was never closed
+</code></pre></div>
+<p>Une <strong><code>SyntaxError</code></strong> dit que la phrase n'est pas grammaticalement lisible : la machine n'a même pas essayé de l'exécuter. Elle pointe l'endroit exact. Ajoutez la parenthèse.</p>
+<p><strong>2. Un nom mal orthographié.</strong> Écrivez <code>rendement = aujourdui / hier - 1</code>.</p>
+<div class="code-block" data-lang="text"><pre><code>NameError: name &#x27;aujourdui&#x27; is not defined
+</code></pre></div>
+<p>Une <strong><code>NameError</code></strong> dit qu'un nom a été employé sans jamais avoir été rangé. Corrigez l'orthographe.</p>
+<p><strong>3. Un texte à la place d'un nombre.</strong> Écrivez <code>"7718.60" - 7747.71</code>.</p>
+<div class="code-block" data-lang="text"><pre><code>TypeError: unsupported operand type(s) for -: &#x27;str&#x27; and &#x27;float&#x27;
+</code></pre></div>
+<p>Une <strong><code>TypeError</code></strong> dit que l'opération n'a pas de sens pour ces natures-là. Le message les nomme toutes les deux : <code>str</code> moins <code>float</code>. Réparation : <code>float("7718.60") - 7747.71</code>.</p>
+<p><strong>4. Un décalage parasite.</strong> Mettez quatre espaces devant <code>aujourdhui = 7718.60</code>.</p>
+<div class="code-block" data-lang="text"><pre><code>IndentationError: unexpected indent
+</code></pre></div>
+<p>En Python, le décalage à gauche a un sens (u04 s'en servira). Un décalage qui ne répond à rien est refusé. Supprimez les espaces.</p>
+<p>Maintenant, la ligne qui compte :</p>
+<div class="code-block" data-lang="python"><pre><code><span class="name">print</span>(f<span class="string">&quot;rendement : {rendement:.4%}&quot;</span>)   <span class="comment"># rendement : -0.3757%</span>
+</code></pre></div>
+<p><code>rendement</code> est toujours là, intact, après quatre erreurs. Le <code>#</code> ouvre un <strong>commentaire</strong> : tout ce qui suit sur la ligne est ignoré par la machine et écrit pour un humain.</p>
+<h3 id="nommer">Nommer</h3>
+<p><code>prix_cloture</code> plutôt que <code>x</code>, <code>rendement</code> plutôt que <code>r1</code>. Un nom se relit six mois plus tard, dans une cellule qu'on n'a pas écrite. C'est la seule règle de style que ce cours impose sans discussion.</p>
+</section>
+<section class="lesson-section reveal" id="le-piege-fermer-longlet-devant-un-message-rouge" data-section><span class="section-number">04</span><h2 id="le-piege-fermer-longlet-devant-un-message-rouge">Le piège : fermer l’onglet devant un message rouge</h2>
+<p>L'erreur coûteuse du débutant n'est pas de se tromper : c'est de <strong>refermer</strong> en croyant avoir cassé quelque chose. Vous venez de provoquer quatre pannes à la suite et de réafficher <code>rendement</code> sans rien perdre. Une cellule qui échoue s'interrompt à la ligne fautive ; ce qui a été rangé avant reste rangé.</p>
+<p>Cet ordre (provoquer, lire, réparer) est aussi un investissement rentable. Une étude portant sur <strong>plusieurs centaines de milliers</strong> de soumissions d'exercices de débutants (Pritchard, 2015) montre que la fréquence des messages d'erreur est très déséquilibrée : une petite poignée de messages fait l'essentiel des blocages. Les deux qui dominent sont la <strong><code>SyntaxError</code></strong> et le <strong><code>NameError</code></strong>, les deux premiers de la liste ci-dessus, et <code>IndentationError</code> <strong>n'est pas en tête</strong>, contrairement à ce que sa réputation laisse croire. La source ne permet pas d'en donner un pourcentage fiable, seulement de dire que la répartition est très déséquilibrée. Apprendre à lire quatre messages couvre donc la grande majorité des situations où vous serez bloqué, cette année comme après.</p>
+</section>
+<section class="lesson-section reveal" id="verifiez-vous" data-section><span class="section-number">05</span><h2 id="verifiez-vous">Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch00.u02" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<p><strong>(a)</strong> Vous exécutez <code>prix = 7718.60</code> puis, en dessous, <code>prix = 7747.71</code>. Que vaut <code>prix</code> ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+`7747.71`. Un nom ne retient qu'une seule valeur : la seconde affectation remplace la première, sans message. C'est pourquoi il faudra bientôt autre chose qu'une variable par prix (u03).
+</div></details>
+
+<p><strong>(b)</strong> Que produit <code>"3" + 3</code>, et comment le réparer ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+`TypeError: can only concatenate str (not "int") to str`. Le `+` existe pour deux textes (il les colle : `"3" + "3"` donne `"33"`) et pour deux nombres, mais pas entre les deux. Réparation : `float("3") + 3`, qui vaut `6.0`.
+</div></details>
+
+<p><strong>(c) (rétrospective)</strong> Un prix passe de 100 à 110, puis de 110 à 100. Calculez les deux rendements avec la formule de l'encadré. Se compensent-ils ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+<span class="math">110/100 - 1 = +10{,}00\,\%</span>, puis <span class="math">100/110 - 1 = -9{,}09\,\%</span>. Ils ne se compensent pas : la somme vaut <span class="math">+0{,}91</span> **point de pourcentage** (on dit « point de pourcentage », et non « pour cent », pour parler de l'écart entre deux pourcentages) alors que le prix est revenu au départ. Additionner des rendements simples de dates différentes est faux, et c'est exactement le point de départ de **ch01 u01**.
+</div></details>
+
+<p><strong>(d) (rétrospective)</strong> Juste après la <code>TypeError</code> du point 3, <code>rendement</code> contient-il encore quelque chose ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Oui, la valeur rangée avant l'erreur. La cellule fautive s'est arrêtée sur sa ligne fautive ; elle n'a effacé ni les noms déjà définis, ni le fichier de données, ni quoi que ce soit sur votre ordinateur.
+</div></details>
+
+<p><strong>(e) (rétrospective)</strong> En u01, <code>ax.plott(...)</code> donnait un <code>AttributeError</code> ; ici <code>aujourdui</code> donne un <code>NameError</code>. Quelle est la différence ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+`NameError` : le nom lui-même n'existe nulle part. `AttributeError` : le nom existe (`ax` est bien un axe), mais on lui demande un geste qu'il ne connaît pas. Les deux messages nomment le coupable, ce qui suffit à choisir la correction.
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">06</span><h2 id="ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Ranger une valeur sous un nom, la réafficher, et la mettre en forme avec une f-string.</li>
+<li>Distinguer <code>float</code>, <code>int</code>, <code>str</code>, <code>bool</code>, et convertir un texte en nombre.</li>
+<li>Reconnaître et réparer <code>SyntaxError</code>, <code>NameError</code>, <code>TypeError</code>, <code>IndentationError</code>, et savoir qu'aucune n'abîme quoi que ce soit.</li>
+</ul>
+<p><strong>Unité suivante.</strong> Un nom retient une valeur. Pour les 4 151 clôtures du fichier, il faudrait 4 151 noms. L'unité u03 range plusieurs prix d'un coup, de deux façons : dans l'ordre, ou par nom.</p></section>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue et continuer" data-mark-next="u03.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue et continuer</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché"><small>Unité précédente</small><strong>01 · Six lignes suffisent pour voir…</strong></a><a class="unit-nav-card next" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom"><small>Unité suivante</small><strong>03 · Une liste range des prix dans l&#x27;ordre</strong></a></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 00</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 00 · unité 02<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

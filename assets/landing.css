@@ -1,0 +1,1732 @@
+/* landing.css — page d'accueil du cours (reecrite).
+   Palette et polices : tokens partages de styles.css (--paper, --ink, --blue,
+   --orange, --muted, --line, --display, --sans, --mono).
+   Aucune image, aucun degrade, aucun CDN. Mode sombre pris en charge par les
+   tokens ; les quelques valeurs propres a la page sont declarees deux fois. */
+
+/* ------------------------------------------------------------------ *
+ * 0. Jetons et socle
+ * ------------------------------------------------------------------ */
+
+.landing-page {
+  --lp-rule: var(--line);
+  --lp-rule-strong: var(--line-strong);
+  --lp-soft: #f3f1ea;
+  --lp-card: var(--surface);
+  --lp-accent: var(--orange-text);
+  --lp-gutter: clamp(20px, 5vw, 64px);
+  --lp-max: 1240px;
+  --lp-radius: 14px;
+  --lp-lift: 0 10px 26px rgba(20, 33, 61, 0.09);
+  background: var(--paper);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+:root[data-theme="dark"] .landing-page {
+  --lp-soft: #141d2f;
+  --lp-accent: var(--orange);
+  --lp-lift: 0 10px 26px rgba(0, 0, 0, 0.38);
+}
+
+.landing-page p,
+.landing-page figure,
+.landing-page ul,
+.landing-page ol { margin: 0; }
+
+.landing-page h1,
+.landing-page h2,
+.landing-page h3 { color: var(--ink); margin: 0; }
+
+.landing-page a { color: inherit; text-decoration: none; }
+
+/* `.landing-page a` l'emporterait sur `.lp-btn` : on remonte la specificite
+   des elements dont la couleur ne doit pas etre heritee. */
+.landing-page a.lp-brand { color: var(--ink); }
+.landing-page a.lp-btn { color: var(--paper); }
+.landing-page a.lp-btn:hover { color: var(--paper); }
+.landing-page a.lp-btn.ghost,
+.landing-page a.lp-btn.ghost:hover { color: var(--ink); }
+.landing-page a.lp-btn.paper,
+.landing-page a.lp-btn.paper:hover { color: var(--pc-bg); }
+.landing-page a.lp-resume { color: var(--ink); }
+.landing-page a.lp-resume:hover { color: var(--blue); }
+.landing-page a.lp-chrow { color: var(--text); }
+.landing-page a.path-unit { color: var(--text); }
+.landing-page ul { list-style: none; padding: 0; }
+.landing-page img,
+.landing-page svg { max-width: 100%; }
+
+.lp-wrap {
+  width: 100%;
+  max-width: var(--lp-max);
+  margin-inline: auto;
+  padding-inline: var(--lp-gutter);
+}
+
+.lp-kicker {
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Surtitre numerote, identique d'une section a l'autre : « 01 · La methode ».
+   Pas de marge sous le surtitre : l'interligne du titre suffit, et
+   `.landing-page p { margin: 0 }` l'emporterait de toute facon. */
+.lp-eyebrow {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.lp-eyebrow b {
+  color: var(--lp-accent);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Le point separateur restait un filet (--line-strong, 1,64:1) : invisible en
+   clair, limite en sombre. Sur --muted a 75 % il passe 3:1 dans les deux
+   themes tout en restant plus clair que le libelle qu'il separe. */
+.lp-eyebrow span { color: var(--muted); opacity: 0.75; }
+
+.lp-h2 {
+  font-family: var(--display);
+  font-size: clamp(26px, 3.2vw, 38px);
+  font-weight: 500;
+  line-height: 1.16;
+  letter-spacing: -0.015em;
+}
+
+.lp-h2 em { font-style: italic; color: var(--lp-accent); }
+
+/* « Monte-Carlo » ne se coupe pas a son trait d'union dans le titre du panneau. */
+.lp-course-title em { white-space: nowrap; }
+
+/* Passe 4 : plus de mot seul en derniere ligne. Les titres-questions des
+   cartes (« Si la formule existe, pourquoi / simuler ? ») et les quatre
+   competences (« Ecrire une simulation / propre ») cassaient tous sur un
+   orphelin. `balance` repartit les lignes ; les navigateurs qui l'ignorent
+   retombent sur le pliage normal. Les paragraphes courts prennent `pretty`,
+   qui ne touche qu'a la derniere ligne. */
+.lp-h2,
+.lp-title,
+.lp-course-title,
+.lp-lead,
+.landing-page .lp-note h3,
+.landing-page .lp-outcome h3,
+.landing-page .lp-step h3,
+.lp-bloc-name,
+.lp-end h2 { text-wrap: balance; }
+
+.lp-note-text,
+.landing-page .lp-outcome p,
+.landing-page .lp-step p,
+.lp-end-note { text-wrap: pretty; }
+
+/* Un mot compose ne se coupe pas a son trait d'union : « est-elle »,
+   « in-sample », « out-of-sample » restent d'un seul tenant, meme quand
+   `balance` cherche a egaliser les lignes. */
+.lp-nb { white-space: nowrap; }
+
+.lp-lead {
+  max-width: 58ch;
+  color: var(--muted);
+  font-size: 15.5px;
+  line-height: 1.7;
+}
+
+/* Rythme unique : toutes les sections respirent pareil, et l'ancre s'arrete
+   sous la barre collante.
+   Passe 4 : 112 px de part et d'autre faisaient 224 px de blanc a chaque
+   frontiere, soit plus du quart d'une fenetre de portable. A 88 px la page
+   respire encore (176 px de frontiere, filet compris) mais les sections se
+   tiennent, et l'accueil perd 380 px de vide. */
+.lp-section { padding-block: clamp(56px, 7vw, 88px); }
+.lp-section + .lp-section { border-top: 1px solid var(--lp-rule); }
+
+.lp-hero,
+.lp-proof,
+.lp-section { scroll-margin-top: 78px; }
+
+/* Anneau de focus unique sur toute la page (2 px, decale de 2 px). */
+.landing-page :focus-visible {
+  outline: 2px solid var(--blue-bright);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Cartes : meme rayon, meme filet, meme soulevement au survol. */
+.lp-sigcard,
+.lp-lab-plot,
+.lp-note-figure {
+  border-radius: var(--lp-radius);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.lp-sigcard:hover,
+.lp-lab-plot:hover,
+a.lp-chrow:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--lp-lift);
+}
+
+/* ------------------------------------------------------------------ *
+ * 1. Barre de navigation
+ * ------------------------------------------------------------------ */
+
+/* Barre collante : legere transparence + flou ; le filet et l'ombre
+   n'apparaissent qu'une fois la page defilee (classe posee par reperage.js). */
+.lp-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--paper);
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  backdrop-filter: saturate(1.3) blur(10px);
+  -webkit-backdrop-filter: saturate(1.3) blur(10px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+/* Sentinelle de 1 px posee avant la barre : c'est elle qui dit « on a defile ». */
+[data-topbar-sentinel] { height: 1px; }
+
+.lp-topbar.is-stuck {
+  border-bottom-color: var(--lp-rule);
+  box-shadow: 0 6px 18px rgba(20, 33, 61, 0.05);
+}
+
+:root[data-theme="dark"] .lp-topbar.is-stuck {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.lp-topbar-in {
+  position: relative;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  /* Meme hauteur que `.header-inner` des pages de cours (78 px) : le
+     mot-marque ne saute pas quand on passe de l'accueil au cours, et
+     `scroll-margin-top: 78px` retombe enfin juste. */
+  min-height: 78px;
+  flex-wrap: wrap;
+}
+
+.lp-brand {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--ink);
+}
+
+/* La marque (le signe, « Adil », le point ocre) n'est plus definie ici : elle
+   vit dans assets/brand.css, chargee par toutes les pages du site. Une seule
+   definition, une seule marque : accueil, cours, TD, teasers et 404. */
+
+.lp-topnav {
+  display: flex;
+  gap: clamp(14px, 2.2vw, 30px);
+  align-items: center;
+  margin-left: auto;
+  font-size: 13.5px;
+}
+
+.lp-topnav a {
+  position: relative;
+  padding-block: 6px;
+  color: var(--text);
+}
+
+.lp-topnav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: 2px;
+  height: 1px;
+  background: var(--lp-accent);
+  transition: right 0.2s ease;
+}
+
+.lp-topnav a:hover::after,
+.lp-topnav a:focus-visible::after,
+.lp-topnav a.is-current::after { right: 0; }
+
+.lp-topnav a.is-current { color: var(--ink); }
+
+/* Le bouton plein de la barre : meme grammaire que le bouton primaire du hero,
+   en plus petit. */
+.landing-page a.lp-navbtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.landing-page a.lp-navbtn:hover {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: var(--paper);
+}
+
+.lp-topacts {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.lp-resume {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  max-width: 15rem;
+  padding: 6px 12px;
+  border: 1px solid var(--lp-rule-strong);
+  border-radius: 2px;
+  color: var(--ink);
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp-resume:hover { border-color: var(--blue); color: var(--blue); }
+.lp-resume b { font-weight: 600; }
+.lp-resume span { color: var(--muted); }
+
+.landing-page .theme-toggle { width: 32px; height: 32px; }
+
+/* ------------------------------------------------------------------ *
+ * 2. Hero
+ * ------------------------------------------------------------------ */
+
+.lp-hero { border-bottom: 1px solid var(--lp-rule); }
+
+.lp-hero-in {
+  display: grid;
+  grid-template-columns: 55fr 45fr;
+  gap: clamp(28px, 4vw, 62px);
+  align-items: center;
+  min-height: min(80vh, 760px);
+  padding-block: clamp(36px, 5vw, 70px);
+}
+
+.lp-hero-copy { min-width: 0; }
+
+.lp-title {
+  margin-top: 22px;
+  font-family: var(--display);
+  font-size: clamp(34px, 4.4vw, 64px);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+}
+
+.lp-title em {
+  font-style: italic;
+  color: var(--lp-accent);
+}
+
+.lp-promise {
+  max-width: 34ch;
+  color: var(--text);
+  font-size: clamp(16px, 1.35vw, 20px);
+  line-height: 1.55;
+}
+
+.lp-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.lp-btn {
+  display: inline-flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 13px 22px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 15px;
+  font-weight: 500;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.lp-btn:hover { background: var(--blue); border-color: var(--blue); }
+.lp-btn i { font-style: normal; font-size: 17px; line-height: 1; }
+
+.lp-btn.ghost {
+  background: transparent;
+  border-color: var(--lp-rule-strong);
+  color: var(--ink);
+}
+
+.lp-btn.ghost:hover { border-color: var(--ink); background: var(--lp-soft); }
+
+/* `.landing-page p { margin: 0 }` l'emporterait sur `.lp-credit` :
+   on remonte la specificite pour obtenir les 8 px sous les boutons. */
+.landing-page p.lp-credit {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Le graphique signature */
+
+.lp-hero-fig { min-width: 0; }
+
+.lp-sigcard {
+  position: relative;
+  padding: 16px 18px 12px;
+  border: 1px solid var(--lp-rule);
+  border-radius: var(--lp-radius);
+  background: var(--lp-card);
+}
+
+.lp-sig-head {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.lp-sig-head .lp-sig-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
+.lp-sig-count { flex: 0 0 auto; text-align: right; white-space: nowrap; }
+
+.lp-sig-count .n {
+  display: block;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+}
+
+/* Le compteur est le chiffre le plus lu de la page : Fraunces, >= 40 px
+   sur un bureau, chiffres a chasse fixe pour qu'il ne tremble pas en montant. */
+.lp-sig-count .price {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: clamp(30px, 3.2vw, 46px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-sig-count .ci {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-sig-count .ref {
+  display: block;
+  margin-top: 4px;
+  color: var(--lp-accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.lp-sig-plot { width: 100%; }
+.lp-sig-plot svg { display: block; width: 100%; height: auto; }
+
+/* Quinze trajectoires seulement : chacune peut donc etre plus lisible, et celle
+   qui est mise en avant nettement plus epaisse que les autres. */
+.lp-sig-plot .traj { fill: none; stroke: var(--blue); stroke-width: 1.1; opacity: 0.42; }
+.lp-sig-plot .traj-hero { fill: none; stroke: var(--ink); stroke-width: 2.6; opacity: 1; }
+.lp-sig-plot .kline { fill: none; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 5 4; }
+.lp-sig-plot .payzone { fill: var(--orange); opacity: 0.13; }
+.lp-sig-plot .payedge { fill: none; stroke: var(--orange); stroke-width: 1; opacity: 0.5; }
+/* Etiquettes du graphique : la meme sans que le reste de la page, 12 px. */
+.lp-sig-plot text { fill: var(--muted); font-family: var(--sans); font-size: 12px; }
+.lp-sig-plot text.k { fill: var(--muted); font-family: var(--sans); font-size: 12px; }
+.lp-sig-plot text.pay { fill: var(--lp-accent); font-family: var(--sans); font-size: 12px; }
+
+.lp-sig-foot {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding-top: 9px;
+  border-top: 1px solid var(--lp-rule);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.lp-hero-fig figcaption {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+/* ------------------------------------------------------------------ *
+ * 3. Bande de preuve
+ * ------------------------------------------------------------------ */
+
+.lp-proof { border-bottom: 1px solid var(--lp-rule); background: var(--lp-soft); }
+
+.lp-proof ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  padding-block: 16px;
+}
+
+/* Bande de preuve : chiffres en Fraunces a chasse fixe, libelles en petites
+   capitales espacees. */
+.lp-proof li {
+  padding-inline: clamp(10px, 1.6vw, 22px);
+  border-left: 1px solid var(--lp-rule-strong);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.lp-proof li:first-child { padding-left: 0; border-left: 0; }
+
+.lp-proof li b {
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  text-transform: none;
+}
+
+/* ------------------------------------------------------------------ *
+ * 4. Le cours (panneau bleu nuit) et les trois idees
+ * ------------------------------------------------------------------ */
+
+/* Le seul bloc sombre de la page en mode clair : il casse l'uniformite du
+   papier et porte, a lui seul, la promesse du cours. En mode sombre il
+   redevient une surface cernee d'un filet, pour rester un panneau et non un
+   trou. Les jetons --pc-* ne vivent qu'a l'interieur. */
+.lp-course {
+  --pc-bg: var(--ink);
+  --pc-fg: var(--paper);
+  --pc-dim: rgba(251, 250, 247, 0.68);
+  --pc-rule: rgba(251, 250, 247, 0.22);
+  /* valeur de --orange en mode sombre : le seul ocre lisible sur l'encre */
+  --pc-accent: #f19a55;
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px);
+  margin-top: 4px;
+  padding: clamp(26px, 3.4vw, 44px);
+  border: 1px solid transparent;
+  border-radius: var(--lp-radius);
+  background: var(--pc-bg);
+  color: var(--pc-fg);
+}
+
+:root[data-theme="dark"] .lp-course {
+  --pc-bg: var(--surface);
+  --pc-fg: var(--ink);
+  --pc-dim: var(--muted);
+  --pc-rule: var(--line);
+  --pc-accent: var(--orange);
+  /* En clair, le panneau bleu nuit est le bloc le plus fort de la page ; en
+     sombre il n'etait plus qu'un rectangle a peine plus clair que le papier.
+     Filet plus marque et meme soulevement que les cartes : il redevient le
+     centre de gravite sans toucher a la palette. */
+  border-color: var(--line-strong);
+  box-shadow: var(--lp-lift);
+}
+
+.lp-course-copy { display: flex; flex-direction: column; min-width: 0; }
+
+.lp-course-kicker {
+  color: var(--pc-accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.landing-page .lp-course-title {
+  margin-top: 13px;
+  color: var(--pc-fg);
+  font-family: var(--display);
+  font-size: clamp(25px, 2.9vw, 35px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+}
+
+.lp-course-title em { font-style: italic; color: var(--pc-accent); }
+
+.landing-page p.lp-course-lead {
+  max-width: 42ch;
+  margin-top: 14px;
+  /* Garde-fou : quand la colonne gauche est la plus haute, le `margin-top:
+     auto` des chiffres vaut zero et le filet viendrait coller au texte. */
+  margin-bottom: 26px;
+  color: var(--pc-dim);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.landing-page ul.lp-course-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px clamp(20px, 3vw, 40px);
+  /* Les chiffres et le bouton descendent ensemble au bas du panneau : ils
+     s'alignent sur le lien « Voir les 13 chapitres » de la colonne droite. */
+  margin-top: auto;
+  padding-top: 26px;
+  border-top: 1px solid var(--pc-rule);
+}
+
+.lp-course-stats b {
+  display: block;
+  color: var(--pc-fg);
+  font-family: var(--display);
+  font-variant-numeric: tabular-nums;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.lp-course-stats span {
+  display: block;
+  margin-top: 6px;
+  color: var(--pc-dim);
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+.lp-course .lp-btn.paper {
+  margin-top: 24px;
+  align-self: flex-start;
+  background: var(--pc-fg);
+  border-color: var(--pc-fg);
+}
+
+.lp-course .lp-btn.paper:hover {
+  background: var(--pc-accent);
+  border-color: var(--pc-accent);
+}
+
+/* Colonne droite : trois rangees, une par bloc, et une pastille par chapitre.
+   La liste des treize lignes vit une seule fois, sur cours/index.html. */
+.lp-course-blocs { display: flex; flex-direction: column; min-width: 0; }
+
+.lp-bloc-row { padding: 17px 0; border-top: 1px solid var(--pc-rule); }
+.lp-bloc-row:first-child { padding-top: 0; border-top: 0; }
+
+.lp-bloc-name {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  color: var(--pc-fg);
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.lp-bloc-name b {
+  color: var(--pc-accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+.landing-page p.lp-bloc-meta {
+  margin-top: 3px;
+  color: var(--pc-dim);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+.lp-dots { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 13px; }
+
+.lp-dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--pc-rule);
+  border-radius: 50%;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+
+.landing-page a.lp-dot { color: var(--pc-dim); }
+.lp-dot.is-open { border-color: var(--pc-fg); background: var(--pc-fg); }
+.landing-page a.lp-dot.is-open { color: var(--pc-bg); }
+.landing-page a.lp-dot:hover { border-color: var(--pc-accent); color: var(--pc-accent); }
+.landing-page a.lp-dot.is-open:hover {
+  background: var(--pc-accent);
+  border-color: var(--pc-accent);
+  color: var(--pc-bg);
+}
+
+/* Le cadenas est une pastille dans la pastille : il ne mange pas le numero. */
+.lp-dot-lock {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 14px;
+  height: 14px;
+  padding: 1.5px;
+  border-radius: 50%;
+  background: var(--pc-bg);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.landing-page a.lp-course-more {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--pc-rule);
+  color: var(--pc-fg);
+  font-size: 13.5px;
+}
+
+.lp-course-more i {
+  color: var(--pc-accent);
+  font-style: normal;
+  font-size: 16px;
+  transition: transform 0.18s ease;
+}
+
+.landing-page a.lp-course-more:hover { color: var(--pc-accent); }
+.landing-page a.lp-course-more:hover i { transform: translateX(3px); }
+
+/* --- Les trois idees a emporter ------------------------------------ */
+
+.lp-notes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(22px, 3vw, 44px);
+  margin-top: 30px;
+}
+
+/* Une carte : bande illustree, categorie, question, une phrase, ligne de fin.
+   Les trois lignes de fin s'alignent grace au margin-top: auto. */
+.lp-note {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lp-note-figure {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  padding: 14px;
+  border: 1px solid var(--lp-rule);
+  background: var(--paper-deep);
+  overflow: hidden;
+}
+
+.lp-note-figure > svg,
+.lp-note-figure > div { width: 100%; }
+.lp-note-figure svg { display: block; width: 100%; height: auto; max-height: 120px; }
+
+.lp-note-index {
+  position: absolute;
+  right: 12px;
+  bottom: 9px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.landing-page p.lp-note-category {
+  margin-top: 18px;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.landing-page .lp-note h3 {
+  margin-top: 11px;
+  font-family: var(--display);
+  font-size: clamp(20px, 1.9vw, 24px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.018em;
+  transition: color 0.16s ease;
+}
+
+.landing-page p.lp-note-text {
+  margin-top: 10px;
+  margin-bottom: 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.lp-note-link {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 13px;
+  border-top: 1px solid var(--lp-rule);
+  color: var(--ink);
+  font-size: 12.5px;
+}
+
+.lp-note-link i {
+  color: var(--lp-accent);
+  font-style: normal;
+  font-size: 16px;
+  transition: transform 0.18s ease;
+}
+
+.lp-note:hover h3 { color: var(--lp-accent); }
+.lp-note:hover .lp-note-link i { transform: translate(2px, -2px); }
+.lp-note:hover .lp-note-figure { border-color: var(--lp-rule-strong); }
+
+/* Les trois illustrations : trait d'encre, un seul accent ocre chacune. */
+.lp-fig-cards { max-width: 250px; }
+.lp-fig-cards .cell { fill: none; stroke: var(--ink); stroke-opacity: 0.38; stroke-width: 1; }
+.lp-fig-cards .cell.hot {
+  fill: var(--orange);
+  fill-opacity: 0.16;
+  stroke: var(--orange);
+  stroke-opacity: 0.95;
+}
+
+.lp-fig-glyph {
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: clamp(14px, 1.75vw, 21px);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.lp-fig-glyph em { font-style: italic; color: var(--lp-accent); }
+.lp-fig-glyph sub,
+.lp-fig-glyph sup { font-size: 0.56em; }
+
+.lp-fig-spark .spark { fill: none; stroke: var(--ink); stroke-opacity: 0.72; stroke-width: 1.5; }
+.lp-fig-spark .sparkzero {
+  stroke: var(--ink);
+  stroke-opacity: 0.3;
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+.lp-fig-spark .lowdot { fill: var(--orange); stroke: var(--paper-deep); stroke-width: 1.4; }
+.lp-fig-spark text.low {
+  fill: var(--lp-accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.lp-note-figure .demo-note,
+.lp-note-figure .demo-loading {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ *
+ * 5. Laboratoire
+ * ------------------------------------------------------------------ */
+
+.lp-lab {
+  display: grid;
+  grid-template-columns: 40fr 60fr;
+  gap: clamp(24px, 3vw, 46px);
+  align-items: start;
+  margin-top: 36px;
+}
+
+.lp-lab-side { min-width: 0; }
+
+.lp-figures { border-top: 1px solid var(--ink); }
+
+.lp-figure {
+  padding-block: 16px;
+  border-bottom: 1px solid var(--lp-rule);
+}
+
+.lp-figure > span {
+  display: block;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lp-figure > output,
+.lp-figure > strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: clamp(30px, 3vw, 40px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-figure > small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-figure.is-ok > output { color: var(--green); }
+.lp-figure.is-off > output { color: var(--lp-accent); }
+
+.lp-seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-top: 24px;
+  border: 1px solid var(--lp-rule-strong);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.lp-seg button {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 0;
+  border-left: 1px solid var(--lp-rule-strong);
+  background: transparent;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 12.5px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lp-seg button:first-child { border-left: 0; }
+.lp-seg button:hover { background: var(--lp-soft); }
+.lp-seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.lp-seg button.trap[aria-pressed="true"] { background: var(--orange); color: #fff; }
+
+.lp-lab-controls {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.lp-slider {
+  display: grid;
+  gap: 6px;
+}
+
+.lp-slider .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.lp-slider output {
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-slider input[type="range"] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--blue);
+}
+
+/* Trois jalons sous le curseur : 1 000 reste a un clic, pour montrer l'effet de N. */
+.lp-marks {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.lp-marks button {
+  padding: 4px 10px;
+  border: 1px solid var(--lp-rule);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: border-color 0.16s ease, color 0.16s ease, background 0.16s ease;
+}
+
+.lp-marks button:hover { border-color: var(--blue); color: var(--blue); }
+
+.lp-marks button[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.lp-seedbtn {
+  justify-self: start;
+  padding: 8px 15px;
+  border: 1px solid var(--lp-rule-strong);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.lp-seedbtn:hover { border-color: var(--blue); color: var(--blue); }
+
+.lp-lab-see {
+  margin-top: 18px;
+  padding: 13px 15px;
+  border-left: 3px solid var(--lp-accent);
+  background: var(--lp-soft);
+  color: var(--ink);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.lp-lab-plot {
+  min-width: 0;
+  padding: 12px 12px 8px;
+  border: 1px solid var(--lp-rule);
+  border-radius: var(--lp-radius);
+  background: var(--lp-card);
+}
+
+.lp-lab-plot svg { display: block; width: 100%; height: auto; }
+.lp-lab-plot .traj { fill: none; stroke: var(--blue); stroke-width: 0.8; opacity: 0.25; }
+.lp-lab-plot .kline { fill: none; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 5 4; }
+.lp-lab-plot .grid { stroke: var(--lp-rule); stroke-width: 1; }
+.lp-lab-plot .axis { stroke: var(--lp-rule-strong); stroke-width: 1; }
+.lp-lab-plot .hbar { fill: var(--blue); opacity: 0.55; }
+.lp-lab-plot .hbar.pay { fill: var(--orange); opacity: 0.62; }
+.lp-lab-plot text { fill: var(--muted); font-family: var(--sans); font-size: 12px; }
+.lp-lab-plot text.annot { fill: var(--ink); font-size: 12px; }
+.lp-lab-plot text.annot-accent { fill: var(--lp-accent); font-size: 12px; }
+
+.lp-lab-note {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ------------------------------------------------------------------ *
+ * 6. A la sortie (quatre competences)
+ * ------------------------------------------------------------------ */
+
+/* Meme grammaire que les cartes, en plus serre : un glyphe filaire, un titre
+   serif, une phrase. Quatre colonnes, puis deux, puis une. */
+.lp-outcomes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(20px, 2.6vw, 40px);
+  margin-top: 28px;
+}
+
+.lp-outcome {
+  min-width: 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--ink);
+}
+
+.lp-outcome-ico {
+  display: block;
+  width: 44px;
+  height: 44px;
+  color: var(--ink);
+}
+
+.lp-outcome-ico svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.88;
+}
+
+.lp-outcome-ico .ico-accent { stroke: var(--lp-accent); opacity: 1; }
+.lp-outcome-ico .ico-dot { fill: currentColor; stroke: none; }
+
+.landing-page .lp-outcome h3 {
+  margin-top: 15px;
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.24;
+  letter-spacing: -0.015em;
+}
+
+.lp-outcome p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.62;
+}
+
+/* ------------------------------------------------------------------ *
+ * 7. Comment on apprend ici (frise)
+ * ------------------------------------------------------------------ */
+
+.lp-flow {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+
+/* Le trait qui relie les cinq etapes : horizontal, derriere les pastilles.
+   Il court d'un centre de pastille a l'autre : 19 px a gauche, et a droite
+   la largeur d'une colonne moins 19 px (colonne = (100% - 4 x 24 px) / 5). */
+.lp-flow::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 19px;
+  right: calc((100% - 96px) / 5 - 19px);
+  top: 43px;
+  height: 1px;
+  background: var(--lp-rule-strong);
+}
+
+.lp-step {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  padding-top: 0;
+}
+
+.lp-step-n {
+  display: block;
+  height: 16px;
+  margin-bottom: 8px;
+  color: var(--lp-accent);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+}
+
+.lp-step .lp-step-ico {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 14px;
+  border: 1px solid var(--lp-rule-strong);
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.lp-step svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lp-step:last-child svg { stroke: var(--orange); }
+
+.lp-step b {
+  display: block;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 16.5px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.lp-step span {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+/* L'argumentaire de la méthode : une phrase large, puis quatre lignes courtes
+   sur deux colonnes. Il remplace les trois pastilles, qui répétaient ce que la
+   frise disait déjà juste au-dessus.                                          */
+
+.lp-method-sell {
+  max-width: 74ch;
+  margin: 38px auto 0;
+}
+
+.landing-page p.lp-method-lead {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(15px, 1.5vw, 17px);
+  line-height: 1.68;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+.landing-page ul.lp-method-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 30px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lp-method-list li {
+  position: relative;
+  padding: 9px 0 9px 20px;
+  border-top: 1px solid var(--lp-rule);
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Le tiret d'entrée de ligne est dessiné, pas écrit : aucun caractère de
+   ponctuation n'entre dans le texte de la page.                               */
+.lp-method-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 18px;
+  width: 10px;
+  height: 1.5px;
+  background: var(--lp-accent);
+}
+
+/* ------------------------------------------------------------------ *
+ * 8. Le parcours (chronologie)
+ * ------------------------------------------------------------------ */
+
+.lp-path { margin-top: 34px; }
+
+.lp-path-bloc + .lp-path-bloc { margin-top: 40px; }
+
+.lp-bloc-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.lp-bloc-head h3 {
+  font-family: var(--display);
+  font-size: clamp(18px, 1.8vw, 22px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.lp-bloc-head span {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.lp-chrow {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 120px 168px;
+  gap: 4px 16px;
+  align-items: center;
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--lp-rule);
+  border-radius: var(--lp-radius);
+  color: var(--text);
+  transition: background 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+a.lp-chrow:hover { background: var(--lp-soft); }
+
+.lp-chrow .n {
+  color: var(--ink);
+  font-family: var(--display);
+  font-variant-numeric: tabular-nums;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.lp-chrow.is-locked .n { color: var(--muted); }
+
+.lp-chrow .t {
+  min-width: 0;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 17.5px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.lp-chrow.is-locked .t { color: var(--muted); }
+
+.lp-chrow .i {
+  grid-column: 2;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.lp-chrow .d {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.lp-chrow .s {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  justify-self: end;
+  padding: 5px 12px;
+  border: 1px solid var(--lp-rule-strong);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.lp-chrow .s.open {
+  border-color: var(--orange);
+  color: var(--lp-accent);
+}
+
+.lp-chrow .s svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------------ *
+ * 9. A propos
+ * ------------------------------------------------------------------ */
+
+.lp-about {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+  margin-top: 28px;
+}
+
+/* Le portrait. Coins arrondis à 14 px, et non un cercle : la photo garde son
+   cadrage d'origine (épaules, veste, fond d'atelier) et son bord haut s'aligne
+   sur la première règle du tableau de faits posé à côté. Un filet de 1 px la
+   pose sur le papier sans l'encadrer.                                         */
+.lp-about-photo {
+  display: block;
+  width: 200px;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border: 1px solid var(--line, var(--lp-rule));
+  border-radius: 14px;
+}
+
+.lp-facts { max-width: 68ch; }
+
+.lp-facts li {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 4px 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--lp-rule);
+  color: var(--text);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.lp-facts li > span:first-child {
+  padding-top: 3px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lp-facts li > span + span { color: var(--text); }
+
+.lp-facts a { color: var(--blue); text-decoration: underline; text-underline-offset: 2px; }
+/* Seul lien de la page a n'avoir aucun etat de survol : il en a un maintenant. */
+.lp-facts a:hover { color: var(--lp-accent); text-decoration-thickness: 2px; }
+.lp-facts em { color: var(--muted); font-size: 13px; }
+
+.landing-page p.lp-about-note {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.6;
+  max-width: 68ch;
+}
+
+.institution {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--lp-rule);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.institution img {
+  max-width: 150px;
+  max-height: 54px;
+  width: auto;
+  height: auto;
+  filter: grayscale(1);
+  opacity: 0.72;
+}
+
+/* ------------------------------------------------------------------ *
+ * 9 bis. Panneau de fin
+ * ------------------------------------------------------------------ */
+
+.lp-end-wrap {
+  margin-top: calc(-1 * clamp(18px, 3vw, 42px));
+  padding-bottom: clamp(56px, 7vw, 92px);
+}
+
+.lp-end {
+  padding: clamp(24px, 3vw, 38px) clamp(22px, 3vw, 40px);
+  border: 1px solid var(--lp-rule);
+  border-radius: var(--lp-radius);
+  background: var(--paper-deep);
+}
+
+.lp-end-kicker {
+  color: var(--lp-accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.landing-page a.lp-end-link {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12px 0 10px;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: clamp(27px, 3.5vw, 40px);
+  font-weight: 500;
+  line-height: 1.16;
+  letter-spacing: -0.022em;
+  transition: color 0.16s ease;
+}
+
+.lp-end-link i {
+  flex-shrink: 0;
+  color: var(--lp-accent);
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 27px;
+  transition: transform 0.18s ease;
+}
+
+.landing-page a.lp-end-link:hover { color: var(--lp-accent); }
+.landing-page a.lp-end-link:hover i { transform: translate(4px, -4px); }
+
+.lp-end-note { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+/* ------------------------------------------------------------------ *
+ * 10. Pied de page
+ * ------------------------------------------------------------------ */
+
+.lp-foot {
+  border-top: 1px solid var(--lp-rule);
+  padding-block: 30px 40px;
+}
+
+/* Trois colonnes : la marque et sa phrase, la navigation, le cadre
+   (logo de l'institution s'il a ete depose, contact, licence). */
+.lp-foot-in {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.8fr) minmax(0, 1.1fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.lp-foot-col { min-width: 0; }
+.lp-foot-in .lp-brand { font-size: 20px; }
+
+.landing-page .lp-foot-brand p {
+  max-width: 34ch;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+.lp-foot-nav { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+
+.lp-foot-nav b {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.lp-foot-nav a { color: var(--ink); }
+.lp-foot-nav a:hover { color: var(--blue); }
+
+.lp-foot-card {
+  padding: 16px 18px;
+  border: 1px solid var(--lp-rule);
+  border-radius: var(--lp-radius);
+  background: var(--lp-card);
+}
+
+.landing-page .lp-foot-card p { margin-top: 8px; line-height: 1.6; }
+.lp-foot-card a { color: var(--blue); text-decoration: underline; text-underline-offset: 2px; }
+.lp-foot-card em { font-size: 12px; }
+
+.lp-foot-logo {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lp-foot-logo img {
+  max-width: 140px;
+  max-height: 46px;
+  width: auto;
+  height: auto;
+  filter: grayscale(1);
+  opacity: 0.72;
+}
+
+/* ------------------------------------------------------------------ *
+ * 11. Responsive
+ * ------------------------------------------------------------------ */
+
+@media (max-width: 1100px) {
+  .lp-chrow { grid-template-columns: 48px minmax(0, 1fr) 104px 150px; }
+  .lp-outcomes { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 28px; }
+}
+
+/* Sous 1024 px : liste verticale, trait vertical a gauche. */
+@media (max-width: 1023.98px) {
+  .lp-flow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .lp-flow::before { display: none; }
+  .lp-step {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    column-gap: 16px;
+    padding: 15px 0;
+  }
+  /* Le trait vertical relie le centre d'une pastille a celui de la suivante. */
+  .lp-step::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    left: 19px;
+    top: 40px;
+    bottom: -40px;
+    width: 1px;
+    background: var(--lp-rule-strong);
+  }
+  .lp-step:last-child::before { display: none; }
+  .lp-step .lp-step-ico {
+    position: relative;
+    z-index: 1;
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    align-self: start;
+    margin-bottom: 0;
+  }
+  .lp-step-n { grid-column: 2; height: auto; margin-bottom: 3px; }
+  .lp-step b,
+  .lp-step > span:not(.lp-step-ico) { grid-column: 2; }
+}
+
+@media (max-width: 980px) {
+  .lp-hero-in {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    gap: 34px;
+  }
+  /* Le graphique passe sous le titre, et sa hauteur est bornee : le viewBox
+     fait 560 x 320, donc 420 px de large valent exactement 240 px de haut.
+     (Le SVG porte un style inline `max-height: none` : c'est la largeur du
+     conteneur qui doit plafonner, pas la hauteur du dessin.) */
+  .lp-hero-fig { order: 2; }
+  .lp-sig-plot { max-width: 420px; margin-inline: auto; }
+  .lp-foot-in { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .lp-foot-brand { grid-column: 1 / -1; }
+  .lp-promise { max-width: 46ch; }
+  .lp-lab { grid-template-columns: minmax(0, 1fr); }
+  .lp-notes { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+  .lp-note-figure { height: 168px; }
+  .lp-course { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+  .lp-course-lead { max-width: none; }
+  .lp-about { grid-template-columns: minmax(0, 1fr); }
+  .lp-about-photo { width: 160px; }
+}
+
+@media (max-width: 820px) {
+  .lp-chrow {
+    grid-template-columns: 44px minmax(0, 1fr);
+    row-gap: 6px;
+  }
+  .lp-chrow .d { grid-column: 2; }
+  .lp-chrow .s { grid-column: 2; justify-self: start; }
+}
+
+/* Sous 900 px : la barre garde la marque, le bouton plein « Chapitre 0 » et le
+   bouton de menu ; les quatre ancres passent dans le menu deroulant. */
+@media (max-width: 900px) {
+  .lp-topnav { display: none; }
+  .lp-topacts { margin-left: auto; gap: 10px; }
+  .landing-page a.lp-navbtn { padding: 7px 13px; font-size: 12.5px; }
+}
+
+@media (max-width: 680px) {
+  .lp-proof ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 0; }
+  .lp-proof li { padding-left: 0; border-left: 0; }
+  .lp-facts li { grid-template-columns: minmax(0, 1fr); }
+  .lp-resume { max-width: 9rem; }
+  .lp-foot-in { grid-template-columns: minmax(0, 1fr); }
+  .lp-outcomes { grid-template-columns: minmax(0, 1fr); row-gap: 22px; }
+  .lp-course-stats { gap: 14px 26px; }
+  .lp-dot { width: 34px; height: 34px; font-size: 11px; }
+}
+
+@media (max-width: 460px) {
+  .landing-page { font-size: 15px; }
+  .lp-proof ul { grid-template-columns: minmax(0, 1fr); }
+  .lp-seg { flex-direction: column; }
+  .lp-seg button { border-left: 0; border-top: 1px solid var(--lp-rule-strong); }
+  .lp-seg button:first-child { border-top: 0; }
+  .lp-btn { width: 100%; }
+  .lp-sig-head { flex-direction: column; }
+  .lp-sig-count { text-align: left; white-space: normal; }
+  .lp-resume { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-page * { transition: none !important; animation: none !important; }
+  /* Sans transition, les quatre deplacements au survol devenaient des sauts
+     secs : on les annule aussi. */
+  .lp-sigcard:hover,
+  .lp-lab-plot:hover,
+  a.lp-chrow:hover,
+  .landing-page a.lp-course-more:hover i,
+  .lp-note:hover .lp-note-link i,
+  .landing-page a.lp-end-link:hover i { transform: none; }
+}

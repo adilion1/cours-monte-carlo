@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Le parcours · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Les treize chapitres du cours, du premier calcul en Python jusqu’aux options américaines : ce que chacun installe, et dans quel ordre.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Le parcours · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Les treize chapitres du cours, du premier calcul en Python jusqu’aux options américaines : ce que chacun installe, et dans quel ordre.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Le parcours · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Les treize chapitres du cours, du premier calcul en Python jusqu’aux options américaines : ce que chacun installe, et dans quel ordre.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/landing.css">
+  <link rel="stylesheet" href="../assets/course.css">
+  <link rel="stylesheet" href="../assets/brand.css">
+  <script defer src="../assets/vendor/katex/katex.min.js"></script>
+  <script src="../assets/site.js" defer></script>
+  <script src="../assets/demos.js" defer></script>
+</head>
+<body class="landing-page course-path" data-root="../">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../cours/index.html">Le cours</a>
+        <a href="../cours/index.html#parcours">Parcours</a>
+        <a href="../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../cours/index.html">Le cours</a><a href="../cours/index.html#parcours">Parcours</a><a href="../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <main class="page-wrap" id="main">
+    <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../index.html">Accueil</a><span aria-hidden="true">/</span><span>Parcours</span></nav>
+    <div class="page-head" id="parcours">
+      <p class="eyebrow">Le parcours complet</p>
+      <h1>Optimisation dynamique et simulations de <span class="lp-nb">Monte-Carlo</span> sous Python</h1>
+      <p class="page-lead">Un seul portefeuille traverse les treize chapitres, de la première courbe tracée en Python jusqu’au prix d’une option américaine. Chaque chapitre répond à l’échec du précédent, et chaque unité rend un chiffre que la suivante relit.</p>
+      <div class="path-counter" data-global-units="ch00.u01,ch00.u02,ch00.u03,ch00.u04,ch00.u05,ch00.u06,ch00.u07,ch00.u08,ch01.u01,ch01.u02,ch01.u03,ch01.u04,ch01.u05,ch02.u01,ch02.u02,ch02.u03,ch02.u04,ch02.u05,ch02.u06,ch03.u01,ch03.u02,ch03.u03,ch03.u04,ch03.u05,ch04.u01,ch04.u02,ch04.u03,ch04.u04,ch04.u05,ch05.u01,ch05.u02,ch05.u03,ch05.u04,ch05.u05,ch06.u01,ch06.u02,ch06.u03,ch07.u01,ch07.u02,ch07.u03,ch07.u04,ch08.u01,ch08.u02,ch08.u03,ch09.u01,ch09.u02,ch09.u03,ch09.u04,ch10.u01,ch10.u02,ch10.u03,ch10.u04,ch10.u05,ch11.u01,ch11.u02,ch11.u03,ch11.u04,ch11.u05,ch12.u01,ch12.u02,ch12.u03"><span><b data-global-count>0</b> / <span data-global-total>61</span> unités lues</span><a class="text-link" href="../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a></div>
+    </div>
+    <div class="lp-path">
+    <div class="lp-path-bloc">
+      <div class="lp-bloc-head"><h3>Bloc I · Des outils à un prix</h3><span>00 → 03 · 4 chapitres · 9 h 45 de lecture</span></div>
+      <a class="lp-chrow" href="../cours/ch00/index.html"><span class="n">00</span><span class="t">Outils : Python de zéro, sans rien installer</span><span class="d">8 unités · 3 h 20</span><span class="s open"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg> Ouvert</span><span class="i">Faire apparaître une courbe</span></a>
+      <ul class="path-units"><li><a class="path-unit" href="../cours/ch00/u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="path-unit" href="../cours/ch00/u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="path-unit" href="../cours/ch00/u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="path-unit" href="../cours/ch00/u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="path-unit" href="../cours/ch00/u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="path-unit" href="../cours/ch00/u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="path-unit" href="../cours/ch00/u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="path-unit" href="../cours/ch00/u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <a class="lp-chrow" href="../cours/ch01/index.html"><span class="n">01</span><span class="t">Les objets de la finance qu'on peut observer</span><span class="d">5 unités · 2 h 05</span><span class="s open"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg> Ouvert</span><span class="i">Un prix n&#x27;est pas un rendement</span></a>
+      <ul class="path-units"><li><a class="path-unit" href="../cours/ch01/u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="path-unit" href="../cours/ch01/u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="path-unit" href="../cours/ch01/u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="path-unit" href="../cours/ch01/u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="path-unit" href="../cours/ch01/u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <a class="lp-chrow is-locked" href="../cours/ch02/index.html"><span class="n">02</span><span class="t">Le hasard comme outil</span><span class="d">6 unités · 2 h 15</span><span class="s"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Séance 2</span><span class="i">Une pièce, deux dés : la fréquence se stabilise, l&#x27;objet est l&#x27;histogramme, même graine même résultat, IR 16, 17, 18, 20, 24</span></a>
+      <a class="lp-chrow is-locked" href="../cours/ch03/index.html"><span class="n">03</span><span class="t">Un prix est une espérance, mais pas celle qu'on croit</span><span class="d">5 unités · 2 h 05</span><span class="s"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Séance 2</span><span class="i">L&#x27;espérance actualisée essayée, et mise en échec</span></a>
+    </div>
+    <div class="lp-path-bloc">
+      <div class="lp-bloc-head"><h3>Bloc II · La précision et le chemin</h3><span>04 → 07 · 4 chapitres · 6 h 20 de lecture</span></div>
+      <a class="lp-chrow is-locked" href="../cours/ch04/index.html"><span class="n">04</span><span class="t">L'estimateur est une variable aléatoire</span><span class="d">5 unités · 2 h 05</span><span class="s"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Séance 3</span><span class="i">Erreur standard et IC dès la première simulation</span></a>
+      <a class="lp-chrow is-locked" href="../cours/ch05/index.html"><span class="n">05</span><span class="t">Simuler des marchés</span><span class="d">5 unités · 1 h 50</span><span class="s"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Séance 3</span><span class="i">La planche de Galton fait une cloche : de la marche aléatoire au brownien</span></a>
+      <a class="lp-chrow is-locked" href="../cours/ch06/index.html"><span class="n">06</span><span class="t">Des produits qui dépendent du chemin</span><span class="d">3 unités · 60 min</span><span class="s"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Séance 4</span><span class="i">L&#x27;option asiatique</span></a>
+      <a class="lp-chrow is-locked" href="../cours/ch07/index.html"><span class="n">07</span><span class="t">Payer moins cher la même précision</span><span class="d">4 unités · 85 min</span><span class="s"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Séance 4</span><span class="i">Antithétiques</span></a>
+    </div>
+    <div class="lp-path-bloc">
+      <div class="lp-bloc-head"><h3>Bloc III · Se couvrir et décider</h3><span>08 → 12 · 5 chapitres · 7 h 20 de lecture</span></div>
+      <a class="lp-chrow is-locked" href="../cours/ch08/index.html"><span class="n">08</span><span class="t">Se couvrir : les grecques par simulation</span><span class="d">3 unités · 65 min</span><span class="s"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Séance 5</span><span class="i">Différences finies et nombres aléatoires communs</span></a>
+      <a class="lp-chrow is-locked" href="../cours/ch09/index.html"><span class="n">09</span><span class="t">Décider dans le temps</span><span class="d">4 unités · 85 min</span><span class="s"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Séance 5</span><span class="i">La fiche à six cases</span></a>
+      <a class="lp-chrow is-locked" href="../cours/ch10/index.html"><span class="n">10</span><span class="t">Décider sous incertitude</span><span class="d">5 unités · 1 h 45</span><span class="s"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Séance 6</span><span class="i">Cake eating : formule fermée contre VFI sur grille</span></a>
+      <a class="lp-chrow is-locked" href="../cours/ch11/index.html"><span class="n">11</span><span class="t">Exercer au bon moment : Longstaff-Schwartz</span><span class="d">5 unités · 1 h 55</span><span class="s"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Séance 6</span><span class="i">Huit trajectoires à la main</span></a>
+      <a class="lp-chrow is-locked" href="../cours/ch12/index.html"><span class="n">12</span><span class="t">Entretiens, projet, et ce qui vient après</span><span class="d">3 unités · 70 min</span><span class="s"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Séance 7</span><span class="i">Les questions qu&#x27;on vous posera</span></a>
+    </div>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Parcours · 13 chapitres<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../index.html">Accueil</a>
+        <a href="../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

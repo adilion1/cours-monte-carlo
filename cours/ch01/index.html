@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chapitre 01 · Les objets de la finance qu'on peut observer · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Chapitre 01 · Les objets de la finance qu’on peut observer · À quoi ai-je droit, et quand ?">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch01/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Chapitre 01 · Les objets de la finance qu&#x27;on peut observer · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Chapitre 01 · Les objets de la finance qu’on peut observer · À quoi ai-je droit, et quand ?">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch01/">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Chapitre 01 · Les objets de la finance qu&#x27;on peut observer · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Chapitre 01 · Les objets de la finance qu’on peut observer · À quoi ai-je droit, et quand ?">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="chapter-page" data-root="../../">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 01 · Les objets de la finance qu&#x27;on…</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Chapitre 01">Carte du chapitre</span></nav>
+      <span class="cb-short">Ch. 01 · 5 unités</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch01" data-progress-units="u01,u02,u03,u04,u05" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/5 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Un prix n&#x27;est pas un rendement"><b>01</b><span>Un prix n&#x27;est pas un rendement</span></a><a href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs"><b>02</b><span>La volatilité mesure l&#x27;écart au centre</span></a><a href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner"><b>03</b><span>Diversifier, ce n&#x27;est pas moyenner</span></a><a href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui"><b>04</b><span>Un euro demain ne vaut…</span></a><a href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine"><b>05</b><span>Une option, c&#x27;est d&#x27;abord un…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <main class="page-wrap" id="main">
+    <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><span>Chapitre 01</span></nav>
+    <div class="page-head">
+      <p class="eyebrow">Chapitre 01 · bloc I · séance 1</p>
+      <h1>Les objets de la finance qu’on peut observer</h1>
+      <p class="chapter-question">À quoi ai-je droit, et quand ?</p>
+      <ul class="chapter-meta"><li>Bloc I</li><li>Séance <b>1</b></li><li><b>5</b> unités</li><li>Lecture guidée <b>2 h 05</b></li><li>Travail complet <b>4 h 35</b></li></ul>
+      <div class="hero-actions"><a class="button primary" href="u01.html" data-chapter-start data-ch="ch01" data-units="u01,u02,u03,u04,u05"><span data-chapter-start-label>Commencer l’unité 01</span></a><a class="text-link" href="../../cours/index.html">Voir le parcours complet</a></div>
+      <div class="chapter-progress cb-prog" data-progress-ch="ch01" data-progress-units="u01,u02,u03,u04,u05" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/5 lues</span></div>
+    </div>
+    <p class="section-title">La carte des unités</p>
+    <ul class="unit-list">
+      <li><a class="unit-row" href="u01.html" data-read-key="ch01.u01"><span class="unit-num">01</span><span><span class="unit-title">Un prix n'est pas un rendement</span><span class="unit-idea">Un rendement compte la variation <strong>et</strong> les revenus ; les log-rendements s'additionnent dans le temps, les rendements simples se pondèrent entre actifs.</span><span class="unit-state"><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg> Lue</span></span><span class="unit-times">lecture guidée <b>20 min</b><br>travail complet <b>40 min</b></span></a></li>
+      <li><a class="unit-row" href="u02.html" data-read-key="ch01.u02"><span class="unit-num">02</span><span><span class="unit-title">La volatilité mesure l'écart au centre, pas entre les valeurs</span><span class="unit-idea">La volatilité est un écart-type annualisé par <span class="math">\sqrt{252}</span> ; la fenêtre d'estimation fait partie du chiffre.</span><span class="unit-state"><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg> Lue</span></span><span class="unit-times">lecture guidée <b>35 min</b><br>travail complet <b>55 min</b></span></a></li>
+      <li><a class="unit-row" href="u03.html" data-read-key="ch01.u03"><span class="unit-num">03</span><span><span class="unit-title">Diversifier, ce n'est pas moyenner</span><span class="unit-idea">Le risque d'un mélange dépend des mouvements communs des lignes, que la corrélation mesure.</span><span class="unit-state"><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg> Lue</span></span><span class="unit-times">lecture guidée <b>25 min</b><br>travail complet <b>45 min</b></span></a></li>
+      <li><a class="unit-row" href="u04.html" data-read-key="ch01.u04"><span class="unit-num">04</span><span><span class="unit-title">Un euro demain ne vaut pas un euro aujourd'hui</span><span class="unit-idea">Une somme certaine et datée a une valeur d'aujourd'hui : <span class="math">D(0,T) = e^{-rT}</span>.</span><span class="unit-state"><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg> Lue</span></span><span class="unit-times">lecture guidée <b>20 min</b><br>travail complet <b>55 min</b></span></a></li>
+      <li><a class="unit-row" href="u05.html" data-read-key="ch01.u05"><span class="unit-num">05</span><span><span class="unit-title">Une option, c'est d'abord un besoin qu'on dessine</span><span class="unit-idea">Le dessin du besoin suffit à donner point mort, parité et bornes, sans aucun modèle du futur.</span><span class="unit-state"><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg> Lue</span></span><span class="unit-times">lecture guidée <b>25 min</b><br>travail complet <b>80 min</b></span></a></li>
+    </ul>
+    <p class="section-title">À la fin, vous saurez faire</p>
+    <ol class="skills-list"><li><strong>Convertir</strong> un rendement simple en log-rendement et retour, et dire lequel s'agrège dans le temps, lequel entre actifs.</li><li><strong>Calculer</strong> une volatilité annualisée en nommant sa fenêtre et sa convention, et dire ce que vaut la règle en <span class="math">\sqrt{t}</span> sur des données réelles.</li><li><strong>Expliquer chiffrément</strong> pourquoi la volatilité d'un portefeuille passe sous celle de sa ligne la plus prudente.</li><li><strong>Actualiser</strong> un flux certain, pricer une obligation à trois flux, et prédire le sens de sa variation quand le taux bouge.</li><li><strong>Remplir</strong> un tableau de payoff à huit cases, tracer payoff <strong>et</strong> profit, calculer un point mort, et vérifier parité et bornes <strong>sans modèle</strong>.</li></ol>
+    <p class="section-title">Travail dirigé</p>
+    <div class="card-row"><a class="chapter-card" href="td.html"><span class="ch-num">TRAVAUX DIRIGÉS</span><h3>L’énoncé du TD</h3><p>Les exercices du chapitre, sans corrigé.</p><span class="state state-open"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg> Ouvrir l’énoncé</span></a></div>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 01 · Les objets de la finance qu'on peut observer<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

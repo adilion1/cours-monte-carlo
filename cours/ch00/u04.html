@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Une boucle parcourt, une condition choisit : la pire année sort en dix lignes · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Répéter un geste sur chaque élément en gardant au passage la meilleure (ou la pire) réponse : l’accumulateur.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u04.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Répéter un geste sur chaque élément en gardant au passage la meilleure (ou la pire) réponse : l’accumulateur.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u04.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Répéter un geste sur chaque élément en gardant au passage la meilleure (ou la pire) réponse : l’accumulateur.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script defer src="../../assets/data/fil_rouge.js"></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch00" data-unit="u04" data-unit-title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-ch-title="Outils : Python de zéro, sans rien installer" data-unit-url="cours/ch00/u04.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 00 · Outils</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes">Unité 4/8 · Une boucle parcourt</span></nav>
+      <span class="cb-short">Ch. 00 · 4/8</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch00" data-progress-units="u01,u02,u03,u04,u05,u06,u07,u08" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/8 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Six lignes suffisent pour voir seize ans de marché"><b>01</b><span>Six lignes suffisent pour voir…</span></a><a href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque"><b>02</b><span>Un nom retient un résultat…</span></a><a href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom"><b>03</b><span>Une liste range des prix dans l&#x27;ordre</span></a><a href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" aria-current="page"><b>04</b><span>Une boucle parcourt</span></a><a href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu"><b>05</b><span>Une fonction nomme un calcul</span></a><a href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une"><b>06</b><span>Un tableau numpy remplace la boucle</span></a><a href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours"><b>07</b><span>Votre machine devient l&#x27;ordinateur du cours</span></a><a href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours"><b>08</b><span>Huit fiches d&#x27;une page suffisent…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Outils : Python de zéro, sans rien installer">Chapitre 00 · Outils : Python de zéro…</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04" aria-current="page"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open is-here" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 00 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#la-question">La question</a></li>
+        <li><a href="#on-essaie-dabord">On essaie d&#x27;abord</a></li>
+        <li><a href="#lidee">L&#x27;idée</a></li>
+        <li><a href="#le-piege-laccumulateur-ecrase">Le piège : l&#x27;accumulateur écrasé</a></li>
+        <li><a href="#verifiez-vous">Vérifiez-vous</a></li>
+        <li><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 25 min<br>Travail complet 40 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 4 sur 8</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04" aria-current="page"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#la-question">La question</a><a href="#on-essaie-dabord">On essaie d&#x27;abord</a><a href="#lidee">L&#x27;idée</a><a href="#le-piege-laccumulateur-ecrase">Le piège : l&#x27;accumulateur écrasé</a><a href="#verifiez-vous">Vérifiez-vous</a><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 00</a><span aria-hidden="true">/</span><span>Unité 04</span></nav>
+        <p class="lesson-kicker">Outils : Python de zéro, sans rien installer</p>
+        <h1>Une boucle parcourt, une condition choisit : la pire année sort en dix lignes</h1>
+        <p class="lesson-question">Répéter un geste sur chaque élément en gardant au passage la meilleure (ou la pire) réponse : l'accumulateur.</p>
+        <div class="lesson-meta"><span>Lecture guidée 25 min</span><span>Travail complet 40 min</span><span>Une idée</span><span>Unité 04 sur 08</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><blockquote>
+<p><strong>Durée</strong> 25 min · <strong>Prérequis</strong> u01, u02, u03 · <strong>Idée unique</strong> : répéter un geste sur chaque élément d'une suite en gardant au passage la meilleure (ou la pire) réponse rencontrée. Cette variable qui retient s'appelle un <strong>accumulateur</strong>.</p>
+</blockquote></section>
+<section class="lesson-section reveal" id="la-question" data-section><span class="section-number">01</span><h2 id="la-question">La question</h2>
+<p>Le fil rouge du cours est un <strong>portefeuille</strong> : un mélange d'actifs détenus en proportions fixées. Celui-ci place 40 % de sa valeur sur le S&amp;P 500, 20 % sur le CAC 40, et 10 % sur chacun des quatre autres : AAPL, LVMH, GLD (or), TLT (obligations d'État américaines à long terme). Ces proportions sont maintenues jour après jour, et ce portefeuille sert de sujet à tous les chapitres qui suivent.</p>
+<p>Depuis 2010, il a traversé <strong>dix-sept années civiles</strong>. La performance d'une année, c'est la variation d'une <strong>fin d'année à la suivante</strong> : de la dernière clôture de l'année précédente à la dernière clôture de l'année, de sorte que les variations quotidiennes de janvier, celles qui séparent l'année de la précédente, ne tombent dans aucun trou. Pour le portefeuille, les six proportions sont ramenées à 40/20/10/10/10/10 <strong>chaque jour</strong> : on calcule donc la variation quotidienne du mélange, puis on compose les quelque 250 variations de l'année. Deux années sont incomplètes : 2010 démarre à la clôture du 4 janvier 2010, la première du fichier, et 2026 s'arrête au 4 septembre.</p>
+<p><strong>Quelle a été la pire de ces dix-sept années, et de combien ?</strong> Vous avez les données, mais les comparer une par une à l'œil demande dix-sept lectures et une mémoire de ce qu'on a vu passer. C'est exactement le travail qu'on délègue à une machine.</p>
+<aside class="pred-card" data-pred="ch00.u04" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch00-u04">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch00-u04" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="on-essaie-dabord" data-section><span class="section-number">02</span><h2 id="on-essaie-dabord">On essaie d’abord</h2>
+<p>Écrivez deux choses avant de coder : <strong>l'année</strong> que vous croyez la pire, et <strong>le pourcentage</strong> que vous lui attribuez.</p>
+<p>La réponse est <strong>2022, à −15,28 %</strong>. La meilleure année est <strong>2019, à +34,68 %</strong>. Deux points valent d'être notés tout de suite. D'abord, beaucoup de lecteurs proposent 2020 : le décrochage de mars 2020 est spectaculaire sur la courbe d'u01, mais l'année civile 2020 s'est terminée à <strong>+21,16 %</strong> pour ce portefeuille. Ensuite, l'asymétrie : la pire année coûte 15 points, la meilleure en rapporte 35.</p>
+<p>Les dix-sept performances, arrondies au dix-millième, sont fournies :</p>
+<div class="code-block" data-lang="python"><pre><code>annees = [<span class="number">2010</span>, <span class="number">2011</span>, <span class="number">2012</span>, <span class="number">2013</span>, <span class="number">2014</span>, <span class="number">2015</span>, <span class="number">2016</span>, <span class="number">2017</span>, <span class="number">2018</span>,
+          <span class="number">2019</span>, <span class="number">2020</span>, <span class="number">2021</span>, <span class="number">2022</span>, <span class="number">2023</span>, <span class="number">2024</span>, <span class="number">2025</span>, <span class="number">2026</span>]
+perfs = [<span class="number">0.1771</span>, <span class="number">0.0307</span>, <span class="number">0.1505</span>, <span class="number">0.1241</span>, <span class="number">0.1140</span>, <span class="number">0.0298</span>, <span class="number">0.0973</span>, <span class="number">0.2036</span>, -<span class="number">0.0411</span>,
+         <span class="number">0.3468</span>, <span class="number">0.2116</span>, <span class="number">0.2347</span>, -<span class="number">0.1528</span>, <span class="number">0.2079</span>, <span class="number">0.1248</span>, <span class="number">0.1740</span>, <span class="number">0.0374</span>]
+<span class="name">print</span>(<span class="name">len</span>(annees), <span class="name">len</span>(perfs))     <span class="comment"># 17 17</span>
+</code></pre></div>
+</section>
+<section class="lesson-section reveal" id="lidee" data-section><span class="section-number">03</span><h2 id="lidee">L’idée</h2>
+<h3 id="repeter-la-boucle-for">Répéter : la boucle <code>for</code></h3>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">for</span> perf <span class="keyword">in</span> perfs:
+    <span class="name">print</span>(f<span class="string">&quot;{perf:+.2%}&quot;</span>)
+</code></pre></div>
+<p>Cette <strong>boucle <code>for</code></strong> se lit littéralement : « pour chaque <code>perf</code> dans <code>perfs</code>, fais ceci ». La machine prend le premier élément de la liste, le range sous le nom <code>perf</code>, exécute la ligne décalée, puis recommence avec le suivant, jusqu'au dernier. Une suite qu'on peut ainsi parcourir élément par élément s'appelle un <strong>itérable</strong> ; une liste en est un, un dictionnaire aussi.</p>
+<p>Deux points de syntaxe, non négociables : les <strong>deux-points</strong> en fin de première ligne, et le <strong>décalage</strong> des lignes suivantes vers la droite (quatre espaces). Le décalage est ce qui dit à la machine « ceci est à l'intérieur de la boucle ». C'est le même décalage qui, écrit sans raison, produisait l'<code>IndentationError</code> d'u02 ; ici il a un sens.</p>
+<h3 id="retenir-laccumulateur-a-la-main-dabord">Retenir : l’accumulateur, à la main d’abord</h3>
+<p>Avant de coder, faites-le à la main sur les quatre premières valeurs (0,1771 · 0,0307 · 0,1505 · 0,1241) avec une seule case mémoire nommée <code>pire</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Valeur lue</th>
+<th><code>pire</code> avant</th>
+<th>Est-elle plus petite ?</th>
+<th><code>pire</code> après</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>départ</td>
+<td>aucune</td>
+<td>0,1771</td>
+<td>sans objet</td>
+<td>0,1771</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0,0307</td>
+<td>0,1771</td>
+<td>oui</td>
+<td><strong>0,0307</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>0,1505</td>
+<td>0,0307</td>
+<td>non</td>
+<td>0,0307</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0,1241</td>
+<td>0,0307</td>
+<td>non</td>
+<td>0,0307</td>
+</tr>
+</tbody>
+</table></div>
+<p>Le procédé tient en trois décisions : on <strong>part d'une valeur observée</strong>, on <strong>compare</strong>, on <strong>remplace seulement si c'est mieux</strong>. La variable <code>pire</code> est un <strong>accumulateur</strong> : une variable mise à jour à chaque tour pour retenir un résultat partiel. Vous en rencontrerez d'autres formes (une somme, un compteur) dans tout le cours.</p>
+<h3 id="retenir-aussi-lannee-zip">Retenir aussi l’année : <code>zip</code></h3>
+<div class="code-block" data-lang="python"><pre><code>pire = perfs[<span class="number">0</span>]
+annee_pire = annees[<span class="number">0</span>]
+<span class="keyword">for</span> annee, perf <span class="keyword">in</span> <span class="name">zip</span>(annees, perfs):
+    <span class="keyword">if</span> perf &lt; pire:
+        pire = perf
+        annee_pire = annee
+<span class="name">print</span>(annee_pire, f<span class="string">&quot;{pire:+.2%}&quot;</span>)     <span class="comment"># 2022 -15.28%</span>
+</code></pre></div>
+<p><code>zip(annees, perfs)</code> parcourt les deux listes <strong>en parallèle</strong> et rend à chaque tour un <strong>couple</strong>, c'est-à-dire deux valeurs tenues ensemble, ici l'année et sa performance, que la ligne <code>for annee, perf in ...</code> range d'un coup sous deux noms, dans l'ordre ; c'est la forme retenue par le cours pour ce besoin. La ligne <code>if perf &lt; pire:</code> ouvre une <strong>condition</strong> : les deux lignes décalées en dessous ne s'exécutent que si la comparaison est vraie. Notez que les deux mises à jour sont à l'intérieur du <code>if</code> : l'année et la performance doivent bouger ensemble, sinon on affiche la performance de 2022 avec l'étiquette d'une autre année.</p>
+<figure class="unit-figure"><img src="figures/fig_ch00_u04_pire_annee.png" alt="Les dix-sept performances annuelles du portefeuille du cours. Ce qu&#x27;il faut voir : deux barres seulement passent sous zéro (2018 et 2022), 2022 est nettement plus profonde que 2018, et la meilleure année (2019, +34,68 %) est plus de deux fois plus haute que la pire n&#x27;est basse. Les deux barres hachurées sont les années civiles incomplètes." width="1400" height="902" loading="lazy"><figcaption>Les dix-sept performances annuelles du portefeuille du cours. Ce qu&#x27;il faut voir : deux barres seulement passent sous zéro (2018 et 2022), 2022 est nettement plus profonde que 2018, et la meilleure année (2019, +34,68 %) est plus de deux fois plus haute que la pire n&#x27;est basse. Les deux barres hachurées sont les années civiles incomplètes.</figcaption></figure>
+<blockquote>
+<p><strong>Fabriquer un couple, et le défaire.</strong> Vous venez d'en <em>recevoir</em> un de <code>zip</code>. On peut aussi en <strong>fabriquer</strong> un, simplement en séparant deux valeurs par une virgule, et le <strong>défaire</strong> en écrivant autant de noms à gauche du <code>=</code> qu'il y a de valeurs à droite :</p>
+<div class="code-block" data-lang="python"><pre><code>resultat = annee_pire, pire       <span class="comment"># un couple, dans cet ordre</span>
+<span class="name">print</span>(resultat)                   <span class="comment"># (2022, -0.1528)</span>
+quelle_annee, quelle_perf = resultat
+<span class="name">print</span>(quelle_annee)               <span class="comment"># 2022</span>
+</code></pre></div>
+<p>Les parenthèses de l'affichage sont la marque du couple. <strong>L'ordre est celui que vous avez tapé, et rien ne vous préviendra si vous l'inversez</strong> : <code>pire, annee_pire</code> rend <code>(-0.1528, 2022)</code>, un couple parfaitement valide et faux. Le TD et le TP vous demanderont d'en rendre un ; l'ordre attendu sera écrit dans la documentation de la fonction.</p>
+</blockquote>
+<h3 id="choisir-entre-plusieurs-cas-if-elif-else">Choisir entre plusieurs cas : <code>if</code> / <code>elif</code> / <code>else</code></h3>
+<p>Classons chaque année en quatre catégories, pour compter au lieu de regarder.</p>
+<div class="code-block" data-lang="python"><pre><code>compte = {<span class="string">&quot;perte&quot;</span>: <span class="number">0</span>, <span class="string">&quot;faible&quot;</span>: <span class="number">0</span>, <span class="string">&quot;ordinaire&quot;</span>: <span class="number">0</span>, <span class="string">&quot;forte&quot;</span>: <span class="number">0</span>}
+<span class="keyword">for</span> perf <span class="keyword">in</span> perfs:
+    <span class="keyword">if</span> perf &lt; <span class="number">0.0</span>:
+        compte[<span class="string">&quot;perte&quot;</span>] += <span class="number">1</span>
+    <span class="keyword">elif</span> perf &lt; <span class="number">0.05</span>:
+        compte[<span class="string">&quot;faible&quot;</span>] += <span class="number">1</span>
+    <span class="keyword">elif</span> perf &lt; <span class="number">0.15</span>:
+        compte[<span class="string">&quot;ordinaire&quot;</span>] += <span class="number">1</span>
+    <span class="keyword">else</span>:
+        compte[<span class="string">&quot;forte&quot;</span>] += <span class="number">1</span>
+<span class="name">print</span>(compte)   <span class="comment"># {&#x27;perte&#x27;: 2, &#x27;faible&#x27;: 3, &#x27;ordinaire&#x27;: 4, &#x27;forte&#x27;: 8}</span>
+</code></pre></div>
+<p><code>elif</code> (contraction de <em>else if</em>) n'est testé que si tout ce qui précède a été faux ; <code>else</code> ramasse ce qui reste. L'ordre compte donc : la première condition vraie gagne, et une seule branche s'exécute. <code>compte["perte"] += 1</code> se lit « ajoute 1 à ce qui est rangé sous cette clé » : le signe <code>+=</code> s'appelle une <strong>affectation augmentée</strong>, et <code>x += 1</code> est simplement une façon courte d'écrire <code>x = x + 1</code>. C'est un accumulateur, encore, mais rangé dans le dictionnaire d'u03.</p>
+<p>Le verdict : <strong>2 années négatives sur 17</strong> (2018 à −4,11 % et 2022 à −15,28 %), contre 8 années au-delà de +15 %.</p>
+<aside class="callout callout-note">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.7v.2"/></svg>À essayer vous-même</p>
+<p><strong>À essayer vous-même.</strong> Relancez la même boucle sur les dix-sept performances du <strong>S&amp;P 500 seul</strong> (le TP vous les donne sous le nom <code>PERFS_SP500</code>) : même année, 2022, mais à <strong>−19,44 %</strong>. La pire année du portefeuille à six lignes est nettement moins mauvaise que celle de l'indice seul. Pourquoi, c'est <strong>ch01 u03</strong>.</p>
+</aside>
+</section>
+<section class="lesson-section reveal" id="le-piege-laccumulateur-ecrase" data-section><span class="section-number">04</span><h2 id="le-piege-laccumulateur-ecrase">Le piège : l’accumulateur écrasé</h2>
+<p>C'est le bug muet le plus fréquent de ce motif, et il existe en deux formes.</p>
+<p><strong>Forme 1 : la mise à jour sort de la condition.</strong></p>
+<div class="code-block" data-lang="python"><pre><code>pire = perfs[<span class="number">0</span>]
+<span class="keyword">for</span> perf <span class="keyword">in</span> perfs:
+    pire = perf                <span class="comment"># le `if` a disparu : on garde la derniere, pas la pire</span>
+<span class="name">print</span>(f<span class="string">&quot;{pire:+.2%}&quot;</span>)          <span class="comment"># +3.74%</span>
+</code></pre></div>
+<p>Le résultat, <code>+3,74 %</code>, est la performance de 2026, la dernière de la liste. Aucun message d'erreur : un nombre plausible, faux.</p>
+<p><strong>Forme 2 : l'initialisation à zéro.</strong></p>
+<div class="code-block" data-lang="python"><pre><code>pire = <span class="number">0.0</span>
+<span class="keyword">for</span> perf <span class="keyword">in</span> perfs:
+    <span class="keyword">if</span> perf &lt; pire:
+        pire = perf
+<span class="name">print</span>(f<span class="string">&quot;{pire:+.2%}&quot;</span>)          <span class="comment"># -15.28%  &lt;- juste ici, et pourtant faux</span>
+</code></pre></div>
+<p>Sur ces données, la réponse est bonne : 2022 est négative, donc plus petite que 0. Testez la même boucle sur une suite où toutes les années montent :</p>
+<div class="code-block" data-lang="python"><pre><code>hausses = [<span class="number">0.05</span>, <span class="number">0.02</span>]
+pire = <span class="number">0.0</span>
+<span class="keyword">for</span> perf <span class="keyword">in</span> hausses:
+    <span class="keyword">if</span> perf &lt; pire:
+        pire = perf
+<span class="name">print</span>(f<span class="string">&quot;{pire:+.2%}&quot;</span>)          <span class="comment"># +0.00%  &lt;- une annee qui n&#x27;existe pas</span>
+</code></pre></div>
+<p>La bonne réponse serait +2,00 %. Partir de 0 revient à ajouter en secret une année à 0 % dans les données. <strong>On part toujours d'une valeur observée</strong> : <code>perfs[0]</code>.</p>
+<p><strong>Un piège d'une ligne, pour finir.</strong> Pour parcourir dix-sept éléments, on écrit <code>range(17)</code>, qui produit 0, 1, …, 16.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">for</span> i <span class="keyword">in</span> <span class="name">range</span>(<span class="number">1</span>, <span class="number">18</span>):
+    <span class="name">print</span>(perfs[i])            <span class="comment"># IndexError: list index out of range</span>
+</code></pre></div>
+<p><code>range(1, 18)</code> produit 1, 2, …, 17 : le premier élément est sauté et le dernier tour demande <code>perfs[17]</code>, qui n'existe pas (u03). C'est le même décalage qu'en u03, sous un autre déguisement.</p>
+<blockquote>
+<p><strong><code>NameError</code> de notebook.</strong> Exécutez, dans un notebook, la cellule de la boucle <strong>avant</strong> celle qui définit <code>perfs</code>. Vous obtenez <code>NameError: name 'perfs' is not defined</code> alors que la liste est écrite juste au-dessus, sous vos yeux.</p>
+<p>La raison : le <strong>noyau</strong> (<em>kernel</em>) est le programme qui exécute vos cellules et garde vos variables. Il les garde <strong>dans l'ordre où vous avez lancé les cellules</strong>, pas dans l'ordre où elles sont écrites sur la page. Un notebook n'est pas lu de haut en bas : il est joué dans l'ordre de vos clics.</p>
+<p>La parade professionnelle est un réflexe : <em>Kernel → Restart &amp; Run All</em>, qui vide la mémoire et rejoue tout de haut en bas. Un notebook qui ne fonctionne que dans votre ordre de clics n'est pas un résultat. Ce message ne figure dans aucun livre de Python, parce qu'il n'existe pas hors des notebooks, et c'est celui qui bloque le plus souvent en salle.</p>
+</blockquote>
+</section>
+<section class="lesson-section reveal" id="verifiez-vous" data-section><span class="section-number">05</span><h2 id="verifiez-vous">Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch00.u04" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<p><strong>(a)</strong> Pourquoi initialiser <code>pire</code> à <code>perfs[0]</code> plutôt qu'à <code>0</code> ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Parce qu'une série peut ne contenir aucune valeur négative : partir de 0 revient à insérer une année fictive à 0 % qui gagnera la comparaison, et la fonction rendra une année inexistante. Partir d'une valeur observée garantit que la réponse est l'une des données. Le même raisonnement vaut pour un maximum, une somme minimale, ou n'importe quel accumulateur.
+</div></details>
+
+<p><strong>(b)</strong> Combien d'années sur les dix-sept sont négatives, et lesquelles ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Deux sur dix-sept : 2018 à −4,11 % et 2022 à −15,28 %. Le comptage vient du `if / elif / else`, qui rend `{'perte': 2, 'faible': 3, 'ordinaire': 4, 'forte': 8}`, et <span class="math">2+3+4+8 = 17</span>, ce qui vérifie au passage qu'aucune année n'a été oubliée ni comptée deux fois.
+</div></details>
+
+<p><strong>(c) (rétrospective)</strong> Votre prédiction du début : aviez-vous nommé 2020 ? Pourquoi la courbe d'u01 et le tableau de cette unité ne disent-ils pas la même chose ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+La courbe d'u01 montre le **chemin** : le trou de mars 2020 y est le plus visible de toute la période. Le tableau ne retient que **deux clôtures par année** : celle qui l'ouvre, la dernière de décembre précédent, et celle qui la ferme. 2020 a perdu puis repris, et se referme à +21,16 %. Deux mesures différentes du même objet ; aucune n'est fausse, et il faut dire laquelle on lit.
+</div></details>
+
+<p><strong>(d) (rétrospective)</strong> Vous obtenez <code>NameError: name 'perfs' is not defined</code> alors que la cellule qui définit <code>perfs</code> est deux cellules plus bas. Que faites-vous ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Soit on exécute d'abord la cellule qui définit `perfs`, soit, mieux, *Kernel → Restart & Run All*. En u02, un `NameError` venait d'une faute d'orthographe ; ici le nom est correctement écrit, et c'est l'**ordre d'exécution** qui est en cause. Même message, deux causes : lire le message ne suffit pas, il faut aussi savoir où l'on est.
+</div></details>
+
+<p><strong>(e)</strong> Que rend <code>range(17)</code>, et pourquoi est-ce le bon choix pour parcourir <code>perfs</code> par indice ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Les entiers 0, 1, …, 16 : dix-sept valeurs, la borne droite étant exclue comme pour les tranches d'u03. Ce sont exactement les indices valides de `perfs`. Cela dit, `for perf in perfs:` (ou `zip` quand il faut deux listes) évite complètement la question de l'indice, et c'est la forme à préférer.
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">06</span><h2 id="ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Parcourir une liste avec <code>for</code>, et deux listes en parallèle avec <code>zip</code>.</li>
+<li>Écrire un accumulateur correct : initialisation sur une valeur observée, comparaison, mise à jour <strong>dans</strong> la condition.</li>
+<li>Classer et compter avec <code>if</code> / <code>elif</code> / <code>else</code>, et diagnostiquer un <code>NameError</code> dû à l'ordre d'exécution des cellules.</li>
+</ul>
+<p><strong>Unité suivante.</strong> Ce calcul de « la pire », vous voudrez le refaire sur le S&amp;P 500 seul, puis sur chacun des six actifs, puis sur d'autres séries. Le recopier six fois serait une faute. L'unité u05 lui donne un nom, et un test qui le met à l'épreuve sur un cas connu.</p></section><div class="demo" data-demo="ch00-u04"></div>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue et continuer" data-mark-next="u05.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue et continuer</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom"><small>Unité précédente</small><strong>03 · Une liste range des prix dans l&#x27;ordre</strong></a><a class="unit-nav-card next" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu"><small>Unité suivante</small><strong>05 · Une fonction nomme un calcul</strong></a></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 00</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 00 · unité 04<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

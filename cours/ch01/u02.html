@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La volatilité mesure l'écart au centre, pas entre les valeurs · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="La volatilité est un écart-type annualisé par racine de 252 ; la fenêtre d’estimation fait partie du chiffre.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch01/u02.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="La volatilité est un écart-type annualisé par racine de 252 ; la fenêtre d’estimation fait partie du chiffre.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch01/u02.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="La volatilité est un écart-type annualisé par racine de 252 ; la fenêtre d’estimation fait partie du chiffre.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script defer src="../../assets/data/fil_rouge.js"></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch01" data-unit="u02" data-unit-title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-ch-title="Les objets de la finance qu&#x27;on peut observer" data-unit-url="cours/ch01/u02.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 01 · Les objets de la finance qu&#x27;on…</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs">Unité 2/5 · La volatilité mesure l&#x27;écart au centre</span></nav>
+      <span class="cb-short">Ch. 01 · 2/5</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch01" data-progress-units="u01,u02,u03,u04,u05" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/5 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Un prix n&#x27;est pas un rendement"><b>01</b><span>Un prix n&#x27;est pas un rendement</span></a><a href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" aria-current="page"><b>02</b><span>La volatilité mesure l&#x27;écart au centre</span></a><a href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner"><b>03</b><span>Diversifier, ce n&#x27;est pas moyenner</span></a><a href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui"><b>04</b><span>Un euro demain ne vaut…</span></a><a href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine"><b>05</b><span>Une option, c&#x27;est d&#x27;abord un…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Les objets de la finance qu&#x27;on peut observer">Chapitre 01 · Les objets de la finance qu&#x27;on peut observer</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02" aria-current="page"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open is-here" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 01 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#1-la-question">1. La question</a></li>
+        <li><a href="#2-on-essaie-dabord-la-tache-puis-la-prediction">2. On essaie d&#x27;abord : la tâche, puis la prédiction</a></li>
+        <li><a href="#3-ce-que-votre-mesure-a-trouve">3. Ce que votre mesure a trouvé</a></li>
+        <li><a href="#4-le-piege-dintuition-a-corriger-dabord">4. Le piège d&#x27;intuition à corriger d&#x27;abord</a></li>
+        <li><a href="#5-le-chiffre-du-fil-rouge-et-sa-fenetre">5. Le chiffre du fil rouge, et sa fenêtre</a></li>
+        <li><a href="#6-la-regle-en-racine-de-formule-verifiee-avant-detre-crue">6. La règle en racine de t, vérifiée avant d&#x27;être crue</a></li>
+        <li><a href="#7-le-piege-classique-252-ou-365">7. Le piège classique : 252 ou 365 ?</a></li>
+        <li><a href="#8-verifiez-vous">8. Vérifiez-vous</a></li>
+        <li><a href="#9-ce-que-vous-savez-faire-maintenant">9. Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 35 min<br>Travail complet 55 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 2 sur 5</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02" aria-current="page"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#1-la-question">1. La question</a><a href="#2-on-essaie-dabord-la-tache-puis-la-prediction">2. On essaie d&#x27;abord : la tâche, puis la prédiction</a><a href="#3-ce-que-votre-mesure-a-trouve">3. Ce que votre mesure a trouvé</a><a href="#4-le-piege-dintuition-a-corriger-dabord">4. Le piège d&#x27;intuition à corriger d&#x27;abord</a><a href="#5-le-chiffre-du-fil-rouge-et-sa-fenetre">5. Le chiffre du fil rouge, et sa fenêtre</a><a href="#6-la-regle-en-racine-de-formule-verifiee-avant-detre-crue">6. La règle en racine de t, vérifiée avant d&#x27;être crue</a><a href="#7-le-piege-classique-252-ou-365">7. Le piège classique : 252 ou 365 ?</a><a href="#8-verifiez-vous">8. Vérifiez-vous</a><a href="#9-ce-que-vous-savez-faire-maintenant">9. Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 01</a><span aria-hidden="true">/</span><span>Unité 02</span></nav>
+        <p class="lesson-kicker">Les objets de la finance qu'on peut observer</p>
+        <h1>La volatilité mesure l’écart au centre, pas entre les valeurs</h1>
+        <p class="lesson-question">La volatilité est un écart-type annualisé par <span class="math">\sqrt{252}</span> ; la fenêtre d'estimation fait partie du chiffre.</p>
+        <div class="lesson-meta"><span>Lecture guidée 35 min</span><span>Travail complet 55 min</span><span>Une idée</span><span>Unité 02 sur 05</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><p><strong>Durée : 35 min</strong> · <strong>Prérequis : u01</strong> (rendement simple et log-rendement), <strong>ch00 u06</strong> (<code>np.std</code>, <code>ddof</code>, tranches).</p>
+<aside class="callout callout-idee">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8.5v7M8.5 12h7"/></svg>L'idée unique</p>
+<p><strong>L'idée unique de cette unité.</strong> La volatilité est l'écart-type des log-rendements, une distance <strong>au centre</strong>, ramenée à l'année par <span class="math">\sqrt{252}</span> ; et la fenêtre sur laquelle on la calcule fait partie du chiffre.</p>
+</aside>
+<hr /></section>
+<section class="lesson-section reveal" id="1-la-question" data-section><span class="section-number">01</span><h2 id="1-la-question">1. La question</h2>
+<p>Trois fonds, six années de rendements annuels, en pour-cent :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>A1</th>
+<th>A2</th>
+<th>A3</th>
+<th>A4</th>
+<th>A5</th>
+<th>A6</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alpha</strong></td>
+<td>−8</td>
+<td>5</td>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>18</td>
+</tr>
+<tr>
+<td><strong>Bêta</strong></td>
+<td>−8</td>
+<td>0</td>
+<td>4</td>
+<td>10</td>
+<td>12</td>
+<td>18</td>
+</tr>
+<tr>
+<td><strong>Gamma</strong></td>
+<td>−8</td>
+<td>−6</td>
+<td>4</td>
+<td>12</td>
+<td>16</td>
+<td>18</td>
+</tr>
+</tbody>
+</table></div>
+<p>Les trois ont <strong>la même moyenne</strong> (6,00 %), <strong>le même minimum</strong> (−8) et <strong>le même maximum</strong> (+18). Aucun résumé habituel ne les sépare.</p>
+<aside class="pred-card" data-pred="ch01.u02" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch01-u02">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch01-u02" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="2-on-essaie-dabord-la-tache-puis-la-prediction" data-section><span class="section-number">02</span><h2 id="2-on-essaie-dabord-la-tache-puis-la-prediction">2. On essaie d’abord : la tâche, puis la prédiction</h2>
+<p><strong>La tâche (10 min, sans aide).</strong> Inventez une mesure de régularité qui s'applique aux trois, calculez-la, et classez les fonds du plus régulier au moins régulier. Plusieurs réponses sont acceptables : l'écart moyen, l'écart médian, le nombre d'années sous la moyenne. Écrivez votre mesure avant de continuer, car ce que vous inventerez ressemblera à ce que fait la finance.</p>
+<p><strong>La prédiction, à écrire aussi</strong> : <strong>lequel des trois fonds a fait le plus d'argent sur les six ans ?</strong> Ils ont la même moyenne, donc la réponse « c'est pareil » est tentante.</p>
+</section>
+<section class="lesson-section reveal" id="3-ce-que-votre-mesure-a-trouve" data-section><span class="section-number">03</span><h2 id="3-ce-que-votre-mesure-a-trouve">3. Ce que votre mesure a trouvé</h2>
+<p>La mesure retenue par la finance est l'<em>écart-type</em> : l'écart de chaque valeur <strong>à la moyenne</strong>, élevé au carré, moyenné (en divisant par <span class="math">n-1</span>, ce qu'écrit <code>ddof=1</code> en numpy), puis la racine. Sur nos trois fonds : <strong>8,32</strong>, <strong>9,30</strong>, <strong>11,17</strong>.</p>
+<blockquote>
+<p><strong>Une phrase d'autorisation, valable pour tout le chapitre.</strong> « Écart-type », « médiane », « corrélation » et « histogramme » sont employés ici au sens <strong>descriptif</strong> : des résumés calculés sur des nombres déjà observés, qui ne supposent aucun modèle et ne disent rien de demain. Le chapitre 2 leur donnera un second sens.</p>
+</blockquote>
+<p>Et l'argent ? 100 € placés dans chacun deviennent <strong>139,63 €</strong>, <strong>139,10 €</strong> et <strong>137,88 €</strong>, soit TCAC 5,72 %, 5,65 % et 5,50 %. Même moyenne, trois capitaux, et <strong>l'ordre suit exactement la dispersion</strong> : le plus régulier est le plus riche. Une moyenne arithmétique de 6 % n'est pas ce que le fonds a rapporté : ce qu'il a rapporté est la <em>moyenne géométrique</em>, le taux constant qui, appliqué six fois, donne le même capital final, le TCAC de u01, soit 5,72 % pour Alpha. Elle est plus petite d'environ la moitié du carré de l'écart-type : <span class="math">\tfrac12 \times 0{,}0832^2 = 0{,}35</span> point ici, contre 0,28 réellement observé, et « environ » est le mot juste. Ce carré s'écrira <span class="math">\sigma^2</span> au §5, et nous le vérifions au §6.</p>
+</section>
+<section class="lesson-section reveal" id="4-le-piege-dintuition-a-corriger-dabord" data-section><span class="section-number">04</span><h2 id="4-le-piege-dintuition-a-corriger-dabord">4. Le piège d’intuition à corriger d’abord</h2>
+<p>Un détour avant d'appliquer cette mesure à seize ans de données : elle se lit de travers par une personne sur deux.</p>
+<aside class="callout callout-piege">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4.5M12 17.4v.2"/></svg>Piège classique</p>
+<p><strong>Piège classique : les blocs de Loosen.</strong> Deux séries : <span class="math">A = 10, 20, 30, 40, 50, 60</span> et <span class="math">B = 10, 10, 10, 60, 60, 60</span>. Laquelle est la plus variable ? Dans l'étude de Batanero et coauteurs, <strong>50 % des sujets répondent A</strong>, 36 % répondent B, 14 % « identiques ». La mesure tranche : écart-type de A = <strong>18,71</strong>, de B = <strong>27,39</strong>. Ceux qui répondent A regardent les écarts <strong>entre valeurs voisines</strong> (10 partout dans A) ; la volatilité regarde les écarts <strong>au centre</strong> (35 dans les deux cas), et dans B toutes les valeurs en sont loin. C'est l'erreur que le titre de cette unité corrige.</p>
+</aside>
+<figure class="unit-figure fig-wide"><img src="figures/fig02_volatilite_fenetre.png" alt="Panneau (a) : l&#x27;histogramme des 4 151 log-rendements quotidiens du S&amp;P 500 en 100 classes, la moyenne en trait noir et les bornes ±1 écart-type en tirets rouges. Ce qu&#x27;il faut voir : la flèche mesure une distance au centre, pas un écart entre deux séances voisines. Panneau (b) : la volatilité annualisée calculée sur les 252 séances précédant chaque date, de 2011 à 2026. Ce qu&#x27;il faut voir : la courbe passe de 6,7 % à 34,8 % sans que l&#x27;actif change." width="2197" height="876" loading="lazy"><figcaption>Panneau (a) : l&#x27;histogramme des 4 151 log-rendements quotidiens du S&amp;P 500 en 100 classes, la moyenne en trait noir et les bornes ±1 écart-type en tirets rouges. Ce qu&#x27;il faut voir : la flèche mesure une distance au centre, pas un écart entre deux séances voisines. Panneau (b) : la volatilité annualisée calculée sur les 252 séances précédant chaque date, de 2011 à 2026. Ce qu&#x27;il faut voir : la courbe passe de 6,7 % à 34,8 % sans que l&#x27;actif change.</figcaption></figure>
+</section>
+<section class="lesson-section reveal" id="5-le-chiffre-du-fil-rouge-et-sa-fenetre" data-section><span class="section-number">05</span><h2 id="5-le-chiffre-du-fil-rouge-et-sa-fenetre">5. Le chiffre du fil rouge, et sa fenêtre</h2>
+<p>Sur le S&amp;P 500, l'écart-type des log-rendements quotidiens vaut <strong>1,0903 %</strong> par séance sur toute la période, et <strong>0,8090 %</strong> sur les 252 dernières séances. Ces chiffres par séance ne se comparent à rien : on les ramène à l'année.</p>
+<aside class="callout callout-formule">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h6M8 20V6a2 2 0 0 1 2-2h1M5 11h6M14 10l5 8M19 10l-5 8"/></svg>Formule</p>
+<p><strong>Formule : la volatilité annualisée.</strong>
+<span class="math math-display">\sigma = \hat\sigma_{\text{jour}} \times \sqrt{252}</span>
+<strong><span class="math">\hat\sigma_{\text{jour}}</span></strong> : écart-type empirique des log-rendements quotidiens (<code>ddof=1</code>) · <strong>252</strong> : nombre de séances de bourse dans une année · <strong><span class="math">\sigma</span></strong> : volatilité annualisée. Corollaire sur un horizon <span class="math">t</span> exprimé en années : <span class="math">\sigma\sqrt{t}</span>. La racine vient de ce que ce sont les <strong>variances</strong> qui s'additionnent quand on empile des périodes, pas les écarts-types.</p>
+</aside>
+<p>Trois fenêtres, trois réponses sur le même actif :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fenêtre</th>
+<th>252 dernières séances</th>
+<th>1 260 dernières (5 ans)</th>
+<th>les 4 151 séances</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math">\sigma</span> annualisée</td>
+<td><strong>12,84 %</strong></td>
+<td><strong>16,96 %</strong></td>
+<td><strong>17,31 %</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Quatre points d'écart entre les deux premières. Et si l'on calcule la volatilité sur chaque <em>fenêtre glissante</em> d'un an (252 séances qu'on fait glisser le long de la série, ici de cinq en cinq, ce qui en donne 780), on obtient un <strong>minimum de 6,68 %</strong> (fenêtre finissant le 9 janvier 2018), un <strong>maximum de 34,84 %</strong> (4 février 2021) et une <strong>médiane de 15,00 %</strong>. Un facteur cinq, sous le même nom, pour le même indice.</p>
+<aside class="callout callout-demo">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18.5 8 11l4 4 3-5 6 8.5Z"/><circle cx="7" cy="5.5" r="2"/></svg>Démo interactive</p>
+<p><strong>Démo interactive</strong> : <em>La fenêtre.</em> Curseurs longueur (60 à 1 260 séances) et date de fin (2011 → 2026) ; affiche <span class="math">\sigma</span> et surligne la fenêtre sur la courbe des prix. On voit : le même actif donne de 6,7 % à 34,8 %.</p>
+</aside><div class="demo" data-demo="ch01-u02"></div>
+<p><strong>Conséquence pratique : « la volatilité du S&amp;P 500 » n'est pas un nombre.</strong> « La volatilité du S&amp;P 500 sur les 252 dernières séances est de 12,84 % » en est un. Un chiffre sans sa fenêtre est incomplet, comme un rendement annualisé sans sa convention (u01).</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> sys; sys.path.<span class="name">insert</span>(<span class="number">0</span>, <span class="string">&quot;..&quot;</span>)
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> mcdp_utils <span class="keyword">import</span> charger_fil_rouge
+
+ell = <span class="name">charger_fil_rouge</span>()[<span class="string">&quot;rendements_log&quot;</span>][<span class="string">&quot;SP500&quot;</span>]
+sigma_1an = ell[-<span class="number">252</span>:].<span class="name">std</span>(ddof=<span class="number">1</span>) * np.<span class="name">sqrt</span>(<span class="number">252</span>)     <span class="comment"># 0.12842136190643647</span>
+sigma_5ans = ell[-<span class="number">1260</span>:].<span class="name">std</span>(ddof=<span class="number">1</span>) * np.<span class="name">sqrt</span>(<span class="number">252</span>)   <span class="comment"># 0.16955986527904043</span>
+sigma_tot = ell.<span class="name">std</span>(ddof=<span class="number">1</span>) * np.<span class="name">sqrt</span>(<span class="number">252</span>)            <span class="comment"># 0.1730738737956197</span>
+<span class="keyword">assert</span> sigma_1an &lt; sigma_5ans &lt; sigma_tot
+</code></pre></div>
+<p><code>ell[-252:]</code> est la tranche « les 252 dernières cases » ; <code>ddof=1</code> divise par <span class="math">n-1</span>. L'<code>assert</code> final est un contrôle : s'il tombe un jour, c'est que la fenêtre ou les données ont changé.</p>
+</section>
+<section class="lesson-section reveal" id="6-la-regle-en-racine-de-formule-verifiee-avant-detre-crue" data-section><span class="section-number">06</span><h2 id="6-la-regle-en-racine-de-formule-verifiee-avant-detre-crue">6. La règle en racine de <span class="math">t</span>, vérifiée avant d’être crue</h2>
+<p><strong>Prédiction, à écrire.</strong> Sur toute la période, <span class="math">\hat\sigma_{\text{jour}} = 1,090 \%</span>. Quel écart-type prévoyez-vous pour les rendements cumulés sur <strong>21 séances</strong> (un mois de bourse) ?</p>
+<p>La règle annonce <span class="math">1{,}090 \times \sqrt{21} = 4{,}996\,\%</span>. La mesure directe, sur toutes les fenêtres de 21 séances, donne <strong>4,368 %</strong>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Horizon <span class="math">h</span> (séances)</th>
+<th>1</th>
+<th>5</th>
+<th>21</th>
+<th>63</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>écart-type <strong>mesuré</strong></td>
+<td>1,090 %</td>
+<td>2,256 %</td>
+<td><strong>4,368 %</strong></td>
+<td><strong>6,475 %</strong></td>
+</tr>
+<tr>
+<td>règle <span class="math">\hat\sigma_{\text{jour}}\sqrt{h}</span></td>
+<td>1,090 %</td>
+<td>2,438 %</td>
+<td>4,996 %</td>
+<td>8,654 %</td>
+</tr>
+</tbody>
+</table></div>
+<figure class="unit-figure"><img src="figures/fig03_racine_de_t.png" alt="Le même tableau, en échelle logarithmique sur les deux axes. Ce qu&#x27;il faut voir : les deux séries partent du même point à h = 1 ; la règle (tirets rouges) est une droite de pente 0,50, la mesure (trait bleu) une droite de pente 0,44 qui décroche après un mois : à 63 jours, 6,47 % mesurés contre 8,65 % annoncés." width="1517" height="916" loading="lazy"><figcaption>Le même tableau, en échelle logarithmique sur les deux axes. Ce qu&#x27;il faut voir : les deux séries partent du même point à h = 1 ; la règle (tirets rouges) est une droite de pente 0,50, la mesure (trait bleu) une droite de pente 0,44 qui décroche après un mois : à 63 jours, 6,47 % mesurés contre 8,65 % annoncés.</figcaption></figure>
+<p>La règle tient à 7-13 % près jusqu'à un mois, puis se dégrade. En échelles logarithmiques, la règle est une droite de <strong>pente 0,50</strong> exactement, puisque <span class="math">\log(\hat\sigma_{\text{jour}}\sqrt h) = \log\hat\sigma_{\text{jour}} + 0{,}50\log h</span> ; la mesure, elle, donne <strong>0,44</strong> sur les sept horizons de la figure (<span class="math">h = 1, 2, 5, 10, 21, 42, 63</span>, dont quatre repris dans le tableau), <strong>0,43</strong> sur ces quatre seuls, <strong>0,46</strong> en s'arrêtant à <span class="math">h = 21</span>. <strong><span class="math">\sqrt{t}</span> est une convention de calcul, pas une propriété des marchés</strong> ; le cours l'emploiera partout, et cette figure dit ce qu'elle coûte.</p>
+<p>Dernier chiffre, celui qui referme le §3 : sur le S&amp;P 500, la moyenne annualisée des rendements <strong>simples</strong> vaut <strong>13,15 %</strong>, celle des <strong>log</strong>-rendements <strong>11,65 %</strong>, soit un écart de <strong>1,50 point</strong>, pour <span class="math">\tfrac12\sigma^2 = \tfrac12 \times 0{,}1731^2 = 1{,}498</span>. Sur AAPL, 4,01 pour 4,00 ; sur TLT, 1,12 pour 1,12. Ce demi-carré est le prix de la dispersion : Gamma finit avec 1,75 € de moins qu'Alpha.</p>
+</section>
+<section class="lesson-section reveal" id="7-le-piege-classique-252-ou-365" data-section><span class="section-number">07</span><h2 id="7-le-piege-classique-252-ou-365">7. Le piège classique : 252 ou 365 ?</h2>
+<aside class="callout callout-piege">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4.5M12 17.4v.2"/></svg>Piège classique</p>
+<p><strong>Piège classique : changer de convention en route.</strong> La même série, annualisée en <span class="math">\sqrt{365}</span> au lieu de <span class="math">\sqrt{252}</span>, donne <strong>15,45 %</strong> au lieu de 12,84 % : <strong>+20,4 % en relatif</strong>, pour un caractère changé. <em>(15,4555 % si l'on repart de <span class="math">\hat\sigma_{\text{jour}}</span> non arrondi ; le TD 2 explique ce centième de point.)</em> Aucune n'est « fausse » en soi ; la faute est de les mélanger dans un même calcul. La règle : la <strong>volatilité</strong> s'annualise sur le <strong>nombre d'observations</strong> (252 séances, un week-end ne produisant aucun rendement observable), tandis qu'une <strong>durée de contrat</strong> se compte en <strong>années calendaires</strong>. Son effet sur le prix d'un produit dérivé (+13,9 % sur un contrat à un an) est chiffré au chapitre 3 ; retenez qu'un caractère déplace la volatilité d'un cinquième.</p>
+</aside>
+</section>
+<section class="lesson-section reveal" id="8-verifiez-vous" data-section><span class="section-number">08</span><h2 id="8-verifiez-vous">8. Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch01.u02" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<ol>
+<li><strong>(★)</strong> <span class="math">\hat\sigma_{\text{jour}} = 0{,}8090\,\%</span>. Quelle volatilité annualisée ? Et sur un mois (un douzième d'année) ?</li>
+<li><strong>(★)</strong> Deux fonds de même moyenne 6 %, d'écarts-types 8,32 et 11,17. Lequel finit avec le plus gros capital, et d'environ combien par an ?</li>
+<li><strong>(★★)</strong> On vous donne « volatilité du S&amp;P 500 : 16,96 % ». Que manque-t-il pour que ce soit un résultat complet ?</li>
+<li><strong>(★, retour sur u01)</strong> Pourquoi la volatilité se calcule-t-elle sur des log-rendements et non sur des rendements simples ?</li>
+<li><strong>(★★, retour sur ch00 u06)</strong> Que change <code>ddof=1</code> dans <code>np.std</code>, et pourquoi le cours l'impose-t-il partout ?</li>
+</ol>
+<details class="check"><summary>Réponses</summary><div>
+
+1. <span class="math">0{,}8090\,\% \times \sqrt{252} = \mathbf{12{,}84\,\%}</span>. Sur un mois : <span class="math">12{,}84\,\% \times \sqrt{1/12} = \mathbf{3{,}71\,\%}</span>.
+2. Celui à 8,32 : **139,63 €** contre 137,88 € au bout de six ans. L'écart annuel est d'environ <span class="math">\tfrac12(0{,}1117^2 - 0{,}0832^2) = 0{,}28</span> point.
+3. **La fenêtre.** 16,96 % est la volatilité sur les 1 260 dernières séances ; sur les 252 dernières, 12,84 % ; sur les 780 fenêtres d'un an, de 6,68 % à 34,84 %. Sans fenêtre, le chiffre n'est pas reproductible.
+4. Parce qu'une volatilité annualisée **empile des périodes** : on passe d'une séance à une année, et c'est l'échelle log qui s'additionne dans le temps (u01). Entre actifs, à l'inverse, on pondère des rendements simples, et c'est l'objet de u03.
+5. `ddof=1` divise la somme des carrés par <span class="math">n-1</span> au lieu de <span class="math">n</span>. Sur 252 observations l'écart est de 0,2 % sur <span class="math">\sigma</span>, invisible ; le cours l'impose pour que **tous** les chiffres du support, des `assert` du TP à `stats_summary.md`, soient produits par la même convention.
+
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="9-ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">09</span><h2 id="9-ce-que-vous-savez-faire-maintenant">9. Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Calculer une volatilité annualisée à partir de prix, en nommant la fenêtre et la convention (<code>ddof=1</code>, <span class="math">\sqrt{252}</span>).</li>
+<li>Expliquer, avec les blocs de Loosen, pourquoi la volatilité mesure une distance au centre et non entre valeurs voisines.</li>
+<li>Dire ce que la règle en <span class="math">\sqrt{t}</span> vaut sur des données réelles (bonne à un mois, pente mesurée 0,44) et chiffrer l'écart entre moyenne arithmétique et moyenne géométrique, <span class="math">\tfrac12\sigma^2</span>.</li>
+</ul>
+<p><strong>Unité suivante.</strong> Un chiffre par ligne, six lignes : reste à savoir ce que devient le risque quand on les met ensemble. Ce n'est pas la moyenne.</p>
+<hr />
+<p><strong>Sources.</strong> M. Kapur, <em>Productive Failure</em>, APA Division 2, <a class="url-plain" href="https://boldscience.org/wp-content/uploads/2025/04/Productive-Failure.pdf">https://boldscience.org/wp-content/uploads/2025/04/Productive-Failure.pdf</a> · Batanero <em>et al.</em> 1994, p. 527-547 (blocs de Loosen), <a class="url-plain" href="https://www.ugr.es/~batanero/pages/ARTICULOS/errors.PDF">https://www.ugr.es/~batanero/pages/ARTICULOS/errors.PDF</a> · M. Kitces, <em>Volatility Drag</em>, 27 décembre 2017, <a class="url-plain" href="https://www.kitces.com/blog/volatility-drag-variance-drain-mean-arithmetic-vs-geometric-average-investment-returns/">https://www.kitces.com/blog/volatility-drag-variance-drain-mean-arithmetic-vs-geometric-average-investment-returns/</a> · Macroption, <em>Why Is Volatility Proportional to the Square Root of Time?</em>, <a class="url-plain" href="https://www.macroption.com/why-is-volatility-proportional-to-square-root-of-time/">https://www.macroption.com/why-is-volatility-proportional-to-square-root-of-time/</a> · K. Abdelmessih (Moontower), 10 avril 2024, <a class="url-plain" href="https://moontowermeta.com/if-you-annualize-volatility-with-252-days-can-you-use-that-number-in-a-365-day-option-model/">https://moontowermeta.com/if-you-annualize-volatility-with-252-days-can-you-use-that-number-in-a-365-day-option-model/</a></p></section>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue et continuer" data-mark-next="u03.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue et continuer</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="u01.html" title="Un prix n&#x27;est pas un rendement"><small>Unité précédente</small><strong>01 · Un prix n&#x27;est pas un rendement</strong></a><a class="unit-nav-card next" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner"><small>Unité suivante</small><strong>03 · Diversifier, ce n&#x27;est pas moyenner</strong></a></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 01</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 01 · unité 02<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

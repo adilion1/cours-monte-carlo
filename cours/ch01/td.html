@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TD du chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Travaux dirigés du chapitre 01 · Les objets de la finance qu’on peut observer · À quoi ai-je droit, et quand ?">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch01/td.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="TD du chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Travaux dirigés du chapitre 01 · Les objets de la finance qu’on peut observer · À quoi ai-je droit, et quand ?">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch01/td.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TD du chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Travaux dirigés du chapitre 01 · Les objets de la finance qu’on peut observer · À quoi ai-je droit, et quand ?">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 01 · Les objets de la finance qu&#x27;on…</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Travaux dirigés">Travaux dirigés</span></nav>
+      <span class="cb-short">Ch. 01 · 5 unités</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch01" data-progress-units="u01,u02,u03,u04,u05" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/5 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Un prix n&#x27;est pas un rendement"><b>01</b><span>Un prix n&#x27;est pas un rendement</span></a><a href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs"><b>02</b><span>La volatilité mesure l&#x27;écart au centre</span></a><a href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner"><b>03</b><span>Diversifier, ce n&#x27;est pas moyenner</span></a><a href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui"><b>04</b><span>Un euro demain ne vaut…</span></a><a href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine"><b>05</b><span>Une option, c&#x27;est d&#x27;abord un…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Les objets de la finance qu&#x27;on peut observer">Chapitre 01 — Les objets de la finance qu&#x27;on peut observer</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <p class="outline-label">Dans ce TD</p>
+      <ol>
+        <li><a href="#le-fil-rouge-en-un-tableau">Le fil rouge, en un tableau</a></li>
+        <li><a href="#exercice-1-les-huit-cases-et-le-point-mort">Exercice 1 ★ : Les huit cases et le point mort</a></li>
+        <li><a href="#exercice-2-trois-fenetres-deux-conventions">Exercice 2 ★★ : Trois fenêtres, deux conventions</a></li>
+        <li><a href="#exercice-3-question-dentretien-cinq-lignes-au-lieu-de-six">Exercice 3 ★★★ : Question d&#x27;entretien : cinq lignes au lieu de six</a></li>
+        <li><a href="#exercice-4-ouvert-trois-facons-de-ne-pas-perdre-plus-de-10">Exercice 4 ★★★★ : Ouvert : trois façons de ne pas perdre plus de 10 %</a></li>
+      </ol>
+      <p class="outline-meta">Énoncé seul.<br>Aucun corrigé n’est publié ici.</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Dans ce TD <span>5 parties</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans ce TD</p><nav aria-label="Sommaire mobile"><a href="#le-fil-rouge-en-un-tableau">Le fil rouge, en un tableau</a><a href="#exercice-1-les-huit-cases-et-le-point-mort">Exercice 1 ★ : Les huit cases et le point mort</a><a href="#exercice-2-trois-fenetres-deux-conventions">Exercice 2 ★★ : Trois fenêtres, deux conventions</a><a href="#exercice-3-question-dentretien-cinq-lignes-au-lieu-de-six">Exercice 3 ★★★ : Question d&#x27;entretien : cinq lignes au lieu de six</a><a href="#exercice-4-ouvert-trois-facons-de-ne-pas-perdre-plus-de-10">Exercice 4 ★★★★ : Ouvert : trois façons de ne pas perdre plus de 10 %</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 01</a><span aria-hidden="true">/</span><span>TD</span></nav>
+        <p class="lesson-kicker">Les objets de la finance qu'on peut observer</p>
+        <h1>Travaux dirigés du chapitre 01</h1>
+        <p class="lesson-question">L’énoncé seul : les corrigés restent entre les mains de l’enseignant.</p>
+      </header>
+<section class="lesson-section reveal" data-section><p>Quatre exercices, du plus mécanique au plus ouvert. Les trois premiers ont <strong>une</strong> réponse chiffrée ; le quatrième a une réponse argumentée, et ses critères d'évaluation sont écrits dans l'énoncé.</p>
+<p><strong>Comment travailler.</strong> Chaque énoncé est autonome : tous les paramètres y sont recopiés, vous n'avez pas à rouvrir les unités pour commencer. Les exercices 1, 2 et 4 vous demandent d'<strong>écrire une prédiction avant de calculer</strong> : c'est une consigne de travail, pas une politesse : un chiffre écrit à l'avance transforme un résultat en information. Les exercices 1 et 3 se font <strong>à la main d'abord</strong> (une calculatrice suffit) ; Python vient vérifier.</p>
+<p><strong>Ce chapitre ne contient aucun énoncé sur les chances que quelque chose arrive</strong>, et ce TD non plus. Si une de vos réponses commence par « ça dépend des chances que… », c'est le signe qu'il vous manque un outil (celui du chapitre 2) et non que la question est mal posée. L'exercice 4 revient là-dessus explicitement.</p>
+<p><strong>Vérification.</strong> Toutes les valeurs des énoncés et du corrigé sont recalculées par <code>td_check.py</code> :</p>
+<div class="code-block" data-lang="text"><pre><code>cd &quot;cours_v2/ch01&quot;
+py -3 td_check.py
+</code></pre></div>
+<hr />
+<h2 id="le-fil-rouge-en-un-tableau">Le fil rouge, en un tableau</h2>
+<p>Panel aligné de <strong>4 151 séances</strong>, du 5 janvier 2010 au 4 septembre 2026 (<code>charger_fil_rouge()</code>, autorité <code>data/stats_summary.md</code>).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Symbole</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prix du S&amp;P 500 aujourd'hui (clôture du 2026-09-04)</td>
+<td><span class="math">S_0</span></td>
+<td>7 718,60</td>
+</tr>
+<tr>
+<td>Taux sans risque, <strong>continu</strong>, annualisé (DTB3 du 2026-09-03)</td>
+<td><span class="math">r</span></td>
+<td>3,75 %</td>
+</tr>
+<tr>
+<td>Facteur d'actualisation à un an</td>
+<td><span class="math">e^{-rT}</span></td>
+<td>0,963194</td>
+</tr>
+<tr>
+<td>Facteur de capitalisation à un an</td>
+<td><span class="math">e^{rT}</span></td>
+<td>1,038212</td>
+</tr>
+<tr>
+<td>Taux annuel équivalent</td>
+<td><span class="math">e^{r} - 1</span></td>
+<td>3,8212 %</td>
+</tr>
+<tr>
+<td>Volatilité du S&amp;P 500, fenêtre 252 séances</td>
+<td><span class="math">\sigma_{1\text{an}}</span></td>
+<td>12,84 %</td>
+</tr>
+<tr>
+<td>Volatilité du S&amp;P 500, fenêtre 1 260 séances</td>
+<td><span class="math">\sigma_{5\text{ans}}</span></td>
+<td>16,96 %</td>
+</tr>
+<tr>
+<td>Volatilité du S&amp;P 500, panel complet</td>
+<td><span class="math">\sigma_{\text{tot}}</span></td>
+<td>17,31 %</td>
+</tr>
+<tr>
+<td>Portefeuille</td>
+<td><span class="math">w</span></td>
+<td>SP500 40 % · CAC40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %</td>
+</tr>
+<tr>
+<td>Volatilité du portefeuille (log-rendements, code du cours)</td>
+<td><span class="math">\sigma_{\text{ptf}}</span></td>
+<td>13,42 %</td>
+</tr>
+<tr>
+<td>Rendement annualisé du portefeuille (TCAC calendaire)</td>
+<td></td>
+<td>11,82 %</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Deux conventions, deux chiffres, jamais l'un sans l'autre.</strong> <code>vol_portefeuille()</code>, la fonction qu'utilisent ce TD et le TP, calcule l'écart-type des <strong>log</strong>-rendements du portefeuille et rend <strong>13,42 %</strong>. <code>data/stats_summary.md</code>, l'autorité du fil rouge, publie <strong>13,40 %</strong>, obtenu sur les rendements <strong>simples</strong> pondérés. Aucun des deux n'est faux ; l'écart de deux points de base est exactement celui qu'explique u01. Les exercices ci-dessous font tourner le code, donc affichent 13,42 %, et le disent.</p>
+<p>Les primes d'options utilisées ci-dessous (call <strong>546,2794</strong>, put <strong>262,1918</strong>, protection à −10 % <strong>61,67</strong>) sont les <strong>primes de référence du cours</strong> : des données du problème, comme <span class="math">S_0</span> ou <span class="math">r</span>. Le chapitre 3 dira d'où elles viennent ; ici on ne les explique pas, on s'en sert.</p>
+<hr />
+<h2 id="exercice-1-les-huit-cases-et-le-point-mort">Exercice 1 ★ : Les huit cases et le point mort</h2>
+<blockquote>
+<p><strong>Difficulté</strong> ★ (application directe) · <strong>Temps</strong> 20 min · <strong>En séance</strong> (questions 0 à 3 ; les questions 4 et 5 se terminent à la maison) · <strong>Unité</strong> u05 (avec u04 pour la capitalisation) · À la main, puis Python pour vérifier.</p>
+</blockquote>
+<p>Le S&amp;P 500 cote <span class="math">S_0 = 7\,718{,}60</span>. Deux contrats d'échéance un an, de même prix d'exercice <span class="math">K = 7\,718{,}60</span>, sont affichés :</p>
+<ul>
+<li>le <strong>call</strong>, le droit d'acheter une unité d'indice à <span class="math">K</span> dans un an, à <strong>546,2794</strong> ;</li>
+<li>le <strong>put</strong>, le droit de vendre une unité d'indice à <span class="math">K</span> dans un an, à <strong>262,1918</strong>.</li>
+</ul>
+<p>Le taux sans risque continu est <span class="math">r = 3{,}75\,\%</span>, donc <span class="math">e^{rT} = 1{,}038212</span> et <span class="math">e^{-rT} = 0{,}963194</span> pour <span class="math">T = 1</span> an.</p>
+<p><strong>0. Prédiction, à écrire avant tout calcul.</strong> Deux lignes dans votre cahier : (i) à partir de quel niveau du S&amp;P 500 l'acheteur du call gagne-t-il de l'argent ? (ii) l'acheteur du call qui se retrouve à <span class="math">S_T = 7\,900</span> exerce-t-il son droit ? <em>(Vous relirez ces deux lignes à la question 5.)</em></p>
+<ol>
+<li><strong>Le tableau de payoff.</strong> Quatre positions (call long, call court, put long, put court) et quatre scénarios : <span class="math">S_T \in \{6\,800\ ;\ 7\,718{,}60\ ;\ 7\,900\ ;\ 8\,500\}</span>. Remplissez les seize cases. Ajoutez une ligne « somme des quatre positions » et dites en une phrase pourquoi elle vaut ce qu'elle vaut.</li>
+<li><strong>Le même tableau en profit.</strong> Capitalisez d'abord chaque prime à l'échéance, puis refaites les seize cases. Donnez les deux primes capitalisées avec deux décimales.</li>
+<li><strong>Les deux points morts.</strong> Calculez le point mort du call long et celui du put long. Pour chacun, donnez aussi le chiffre qu'on obtient en oubliant de capitaliser la prime, et l'écart en points d'indice. Dites, pour le put, <strong>dans quel sens</strong> l'oubli trompe l'acheteur.</li>
+<li><strong>Parité et bornes, sans aucun modèle.</strong> (a) Vérifiez sur votre tableau de payoff que la ligne « call long + put court » vaut <span class="math">S_T - K</span> dans <strong>chacune</strong> des quatre colonnes. (b) Calculez <span class="math">C - P</span> et <span class="math">S_0 - Ke^{-rT}</span> ; donnez les deux nombres à quatre décimales. (c) Écrivez l'encadrement <span class="math">\max(S_0 - Ke^{-rT},\,0) \le C \le S_0</span> avec les trois nombres, puis celui du put, <span class="math">\max(Ke^{-rT} - S_0,\,0) \le P \le Ke^{-rT}</span> (u05 §6), avec les siens.</li>
+<li><strong>Le scénario qui pique.</strong> À <span class="math">S_T = 7\,900</span> : quel est le payoff du call long, quel est son profit, et exerce-t-on ? Répondez en trois phrases, puis relisez votre prédiction du point 0.</li>
+</ol>
+<hr />
+<h2 id="exercice-2-trois-fenetres-deux-conventions">Exercice 2 ★★ : Trois fenêtres, deux conventions</h2>
+<blockquote>
+<p><strong>Difficulté</strong> ★★ (variante) · <strong>Temps</strong> 25 min · <strong>À la maison</strong> · <strong>Unités</strong> u02, u01 · Python obligatoire (les séries font 4 151 valeurs).</p>
+</blockquote>
+<p>On travaille sur la série des log-rendements quotidiens du S&amp;P 500, <span class="math">\ell_t = \ln(S_t/S_{t-1})</span>, telle que la rend <code>charger_fil_rouge()["rendements_log"]["SP500"]</code> : <strong>4 151 valeurs</strong>, du 5 janvier 2010 au 4 septembre 2026.</p>
+<p><strong>0. Prédiction, à écrire avant de lancer quoi que ce soit.</strong> L'écart-type d'un log-rendement quotidien du S&amp;P 500 vaut <strong>1,090 %</strong> sur l'ensemble du panel. Quel écart-type prévoyez-vous pour le rendement <strong>cumulé sur 21 séances</strong> (un mois de bourse) ? Écrivez un pourcentage avec trois décimales.</p>
+<p>Le squelette de départ :</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> sys
+sys.path.<span class="name">insert</span>(<span class="number">0</span>, <span class="string">&quot;..&quot;</span>)
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> mcdp_utils <span class="keyword">import</span> charger_fil_rouge
+
+ell = <span class="name">charger_fil_rouge</span>()[<span class="string">&quot;rendements_log&quot;</span>][<span class="string">&quot;SP500&quot;</span>]
+<span class="keyword">assert</span> ell.size == <span class="number">4151</span>, <span class="string">&quot;le panel du fil rouge compte 4 151 seances&quot;</span>
+sigma_jour_252 = ell[-<span class="number">252</span>:].<span class="name">std</span>(ddof=<span class="number">1</span>)        <span class="comment"># a completer : les deux autres fenetres</span>
+sigma_jour_tout = ell.<span class="name">std</span>(ddof=<span class="number">1</span>)              <span class="comment"># celui qu&#x27;attend la question 3</span>
+cumul = np.<span class="name">cumsum</span>(ell)                         <span class="comment"># fenetres chevauchantes sur h seances :</span>
+<span class="comment">#   agrege = cumul[h-1:] - np.concatenate(([0.0], cumul[:-h]))</span>
+<span class="comment">#   le 0.0 en tete sert a la toute premiere fenetre, qui n&#x27;a rien avant elle</span>
+<span class="comment"># fourni pour la question 3, vous n&#x27;avez pas a le retenir :</span>
+<span class="comment">#   pente = float(np.polyfit(np.log(horizons), np.log(mesures), 1)[0])</span>
+<span class="keyword">assert</span> <span class="name">abs</span>(sigma_jour_252 * np.<span class="name">sqrt</span>(<span class="number">252</span>) - <span class="number">0.1284</span>) &lt; <span class="number">5e-4</span>, <span class="string">&quot;fenetre 252 seances : 12,84 %&quot;</span>
+</code></pre></div>
+<ol>
+<li><strong>Trois fenêtres.</strong> Calculez <span class="math">\hat\sigma_{\text{jour}}</span> (<code>ddof=1</code>) puis la volatilité annualisée <span class="math">\hat\sigma_{\text{jour}}\sqrt{252}</span> sur les <strong>252 dernières</strong> séances, les <strong>1 260 dernières</strong>, et <strong>toutes</strong> les séances. Présentez les six nombres dans un tableau. Quelle est, des trois, « la » volatilité du S&amp;P 500 ?</li>
+<li><strong>Deux conventions.</strong> Recalculez les trois volatilités en remplaçant <span class="math">\sqrt{252}</span> par <span class="math">\sqrt{365}</span>. Donnez l'écart <strong>relatif</strong> entre les deux conventions, et expliquez en deux phrases pourquoi ce même écart relatif se retrouve sur les trois fenêtres.</li>
+<li><strong>La règle en <span class="math">\sqrt{h}</span>, mesurée.</strong> Pour <span class="math">h \in \{1, 5, 21, 63\}</span>, calculez l'écart-type des rendements cumulés sur <span class="math">h</span> séances, sur <strong>toutes</strong> les fenêtres glissantes du panel (fenêtres chevauchantes : <code>cumul[h-1:] - np.concatenate(([0.0], cumul[:-h]))</code>, une fenêtre par date de départ possible). Comparez chaque valeur à <span class="math">\hat\sigma_{\text{jour}}\sqrt{h}</span>, où <span class="math">\hat\sigma_{\text{jour}}</span> est calculé sur le <strong>panel complet</strong>, c'est <code>sigma_jour_tout</code>, pas <code>sigma_jour_252</code>. Donnez le rapport mesuré/prédit pour chaque <span class="math">h</span>, puis la <strong>pente</strong> de la droite qui passe au mieux par les quatre points en échelle log-log : <code>np.polyfit</code> est <strong>fourni</strong> dans le squelette, le cours ne l'introduira qu'au ch07 et vous n'avez pas à le retenir. Relisez votre prédiction du point 0.</li>
+<li><strong>La phrase à retenir.</strong> En trois lignes au plus : qu'annualise-t-on avec 252, et que compte-t-on en jours calendaires ? Donnez un exemple de calcul où mélanger les deux fausse le résultat, et dites de combien.</li>
+</ol>
+<hr />
+<h2 id="exercice-3-question-dentretien-cinq-lignes-au-lieu-de-six">Exercice 3 ★★★ : Question d’entretien : cinq lignes au lieu de six</h2>
+<blockquote>
+<p><strong>Difficulté</strong> ★★★ (type entretien) · <strong>Temps</strong> 30 min · <strong>À la maison</strong> · <strong>Unité</strong> u03 · Les questions (a) et (c) se répondent <strong>à l'oral, sans machine</strong> ; la question (b) demande un calcul.</p>
+</blockquote>
+<p><em>Mise en situation.</em> Entretien pour un poste de gérant junior. On vous met sous les yeux un tableau (celui du portefeuille du cours) et on vous laisse trente secondes pour le lire.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ligne</th>
+<th>SP500</th>
+<th>CAC40</th>
+<th>AAPL</th>
+<th>LVMH</th>
+<th>GLD</th>
+<th>TLT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>poids <span class="math">w</span></td>
+<td>40 %</td>
+<td>20 %</td>
+<td>10 %</td>
+<td>10 %</td>
+<td>10 %</td>
+<td>10 %</td>
+</tr>
+<tr>
+<td>volatilité annualisée <span class="math">\sigma</span></td>
+<td>17,31 %</td>
+<td>19,61 %</td>
+<td>28,27 %</td>
+<td>28,00 %</td>
+<td>16,85 %</td>
+<td><strong>14,98 %</strong></td>
+</tr>
+<tr>
+<td>rendement annualisé (TCAC)</td>
+<td>12,18 %</td>
+<td>4,44 %</td>
+<td>26,45 %</td>
+<td>12,90 %</td>
+<td>8,18 %</td>
+<td><strong>2,39 %</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Corrélations utiles, calculées sur les 4 151 séances : <span class="math">\rho(\text{SP500},\text{AAPL}) = +0{,}677</span> · <span class="math">\rho(\text{SP500},\text{CAC40}) = +0{,}584</span> · <span class="math">\rho(\text{CAC40},\text{LVMH}) = +0{,}773</span> · <span class="math">\rho(\text{SP500},\text{GLD}) = +0{,}076</span> · <span class="math">\rho(\text{SP500},\text{TLT}) = -0{,}290</span> · <span class="math">\rho(\text{GLD},\text{TLT}) = +0{,}206</span>.</p>
+<p>Le portefeuille complet a une volatilité annualisée de <strong>13,42 %</strong> (log-rendements, <code>vol_portefeuille</code>) et un rendement annualisé de <strong>11,82 %</strong>.</p>
+<p><em>Les rendements de la troisième ligne sont des TCAC calendaires recalculés sur les 4 151 séances du panel. <code>stats_summary.md</code>, qui part d'une séance plus tôt, publie 2,43 % pour TLT et 12,20 % pour le SP500 : quelques centièmes de point d'écart, sans effet sur les conclusions de cet exercice.</em></p>
+<p><strong>a) La réponse orale, en trois phrases.</strong> <em>« Aucune de vos six lignes n'est en dessous de 14,98 %, et vous m'annoncez 13,42 % pour le mélange (convention log ; 13,40 % en rendements simples). Expliquez-moi ça. »</em> Préparez <strong>trois phrases, pas quatre</strong>, et <strong>sans écrire une seule formule</strong> : la première dit ce qui est mesuré, la deuxième nomme le mécanisme, la troisième donne un chiffre qui le prouve. Écrivez ces trois phrases telles quelles.</p>
+<p><strong>b) Le développement, avec un calcul.</strong> <em>« On m'impose cinq lignes. Laquelle sautez-vous, et laquelle je ne dois surtout pas toucher ? »</em> Retirez chaque ligne à tour de rôle, <strong>renormalisez les poids des cinq restantes</strong> (leur somme doit refaire 1) et recalculez la volatilité avec <code>vol_portefeuille</code>. Rendez :
+   - le tableau des six volatilités obtenues, classé du plus petit au plus grand ;
+   - le rendement annualisé de chacun de ces six portefeuilles à cinq lignes ;
+   - votre réponse, avec <strong>la ligne à retirer</strong> et <strong>les deux lignes à ne pas toucher</strong>, chacune justifiée par un nombre.</p>
+<p><em>Attention au piège de cette question : deux lignes différentes donnent la même volatilité à deux décimales près. Le tableau ne vous dira pas laquelle retirer : il faut la deuxième colonne.</em></p>
+<p>Le rendement annualisé d'un <strong>mélange</strong> ne se lit nulle part dans les unités : la fonction qui le calcule vous est donc <strong>fournie</strong>, comme <code>vol_portefeuille</code>. Vous l'appelez, vous ne la réécrivez pas.</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> sys
+sys.path.<span class="name">insert</span>(<span class="number">0</span>, <span class="string">&quot;..&quot;</span>)
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> mcdp_utils <span class="keyword">import</span> charger_fil_rouge, vol_portefeuille
+
+d = <span class="name">charger_fil_rouge</span>()
+lignes = [<span class="string">&quot;SP500&quot;</span>, <span class="string">&quot;CAC40&quot;</span>, <span class="string">&quot;AAPL&quot;</span>, <span class="string">&quot;LVMH&quot;</span>, <span class="string">&quot;GLD&quot;</span>, <span class="string">&quot;TLT&quot;</span>]
+ANS = (d[<span class="string">&quot;dates&quot;</span>][-<span class="number">1</span>] - d[<span class="string">&quot;dates&quot;</span>][<span class="number">0</span>]).<span class="name">astype</span>(<span class="string">&quot;timedelta64[D]&quot;</span>).<span class="name">astype</span>(float) / <span class="number">365.25</span>
+
+<span class="keyword">def</span> <span class="name">tcac_portefeuille</span>(poids, rlog):        <span class="comment"># FOURNI : appelez-le, ne le reecrivez pas</span>
+    <span class="string">&quot;&quot;&quot;Rendement annualise d&#x27;un portefeuille rebalance chaque jour.&quot;&quot;&quot;</span>
+    simple = <span class="name">sum</span>(w * np.<span class="name">expm1</span>(rlog[k]) <span class="keyword">for</span> k, w <span class="keyword">in</span> poids.<span class="name">items</span>())   <span class="comment"># entre actifs : du SIMPLE</span>
+    <span class="keyword">return</span> <span class="name">float</span>(np.<span class="name">exp</span>(np.<span class="name">log1p</span>(simple).<span class="name">sum</span>() / ANS) - <span class="number">1</span>)          <span class="comment"># dans le temps : du LOG</span>
+
+<span class="comment"># a completer : retirer chaque ligne a tour de role, renormaliser les cinq poids</span>
+<span class="comment"># restants, puis appeler vol_portefeuille(...) et tcac_portefeuille(...).</span>
+</code></pre></div>
+<p><strong>c) La relance.</strong> <em>« Mon collègue veut sortir TLT : cette ligne n'a rapporté que 2,4 % par an depuis 2010, c'est un boulet. Répondez-lui. »</em> Donnez <strong>deux chiffres</strong> : ce que le retrait de TLT fait à la volatilité, et ce qu'il fait au rendement. Concluez en une phrase qui nomme l'erreur de raisonnement du collègue.</p>
+<p><strong>d) La dernière pique.</strong> <em>« Vous mesurez tout ça sur seize ans de données qui ne contiennent que des sociétés encore cotées aujourd'hui. Et alors ? »</em> Répondez en deux phrases, dont une qui cite un chiffre extérieur à notre panel.</p>
+<hr />
+<h2 id="exercice-4-ouvert-trois-facons-de-ne-pas-perdre-plus-de-10">Exercice 4 ★★★★ : Ouvert : trois façons de ne pas perdre plus de 10 %</h2>
+<blockquote>
+<p><strong>Difficulté</strong> ★★★★ (ouvert) · <strong>Temps</strong> 45 min · <strong>À la maison</strong> · <strong>Unités</strong> u04, u05 · Une page rendue, critères d'évaluation ci-dessous.</p>
+</blockquote>
+<p>Vous gérez le portefeuille du cours : <span class="math">X_0 = 100\,000</span> €, horizon <strong>un an</strong>, taux sans risque continu <span class="math">r = 3{,}75\,\%</span>. Votre client pose une contrainte et une seule : <strong>ne pas perdre plus de 10 %</strong> sur l'année. Trois montages vous sont proposés.</p>
+<ul>
+<li><strong>(A) Ne rien faire.</strong> Le portefeuille reste investi à 100 %.</li>
+<li><strong>(B) Vendre 10 % du portefeuille</strong> aujourd'hui et placer les 10 000 € au taux sans risque jusqu'à l'échéance. Les 90 000 € restants suivent le portefeuille.</li>
+<li><strong>(C) Tout garder et acheter une protection.</strong> Un contrat versant à l'échéance de quoi ramener la valeur du portefeuille à 90 000 € s'il est passé en dessous, et rien sinon, est affiché à <strong>0,80 % de la valeur du portefeuille</strong>, soit <strong>800 € payés aujourd'hui</strong>. <em>(Ce chiffre vient du put de prix d'exercice <span class="math">K = 0{,}90 \times 7\,718{,}60 = 6\,946{,}74</span> affiché à 61,67, soit 0,7990 % de <span class="math">S_0</span>, la prime de référence du cours. Le contrat est écrit sur </em><em>le portefeuille lui-même</em><em> ; on lui emprunte le prix du put de l'indice, ce qui suppose que le portefeuille suit l'indice, approximation assumée, annoncée en u05 §1, et dont l'écart est le sujet du ch08.)</em></li>
+</ul>
+<p><strong>0. Prédiction, à écrire avant tout calcul.</strong> Lequel des trois recommandez-vous, et pourquoi, en deux lignes ? <em>(Vous relirez ces deux lignes en conclusion, et la confrontation fait partie de la note.)</em></p>
+<p><strong>a) Le tableau.</strong> Pour cinq scénarios de rendement du portefeuille sur l'année (<strong>−30 %, −10 %, 0 %, +10 %, +30 %</strong>) donnez la valeur finale des trois montages, à l'euro près. <strong>Toutes les sommes doivent être comparées à la même date, l'échéance</strong> : ce qui est payé ou placé aujourd'hui se capitalise au taux sans risque (u04). Dites en une phrase ce que devient chaque chiffre si l'on oublie de capitaliser, et de combien d'euros.</p>
+<p><strong>b) Les trois profils.</strong> Tracez les trois valeurs finales en fonction du rendement du portefeuille, sur <span class="math">[-50\,\%,\ +50\,\%]</span>, dans un seul graphique. Décrivez chaque courbe en une phrase : sa forme, et ce qui la distingue des deux autres.</p>
+<p><strong>c) Les croisements.</strong> Votre figure montre des intersections. Calculez-les :
+   - <strong>au-dessus</strong> de quel rendement (A) passe-t-il devant (B) ? Le nombre que vous trouverez porte un nom en u04 : dites lequel ;
+   - <strong>en dessous</strong> de quel rendement (C) passe-t-il devant (A) ?
+   - (C) bat (B) sur <strong>deux</strong> intervalles séparés. Donnez les deux bornes, et expliquez en deux lignes pourquoi il y en a deux et non une.</p>
+<p><strong>d) Le scénario qui tranche.</strong> Ajoutez une sixième colonne à votre tableau : <strong>−50 %</strong>. Que valent (A), (B) et (C) ? Puis répondez précisément : <strong>la contrainte « ne pas perdre plus de 10 % » est-elle réellement tenue par le montage (C) ?</strong> Donnez la perte maximale exacte de (C), en euros et en pour-cent, et dites ce qu'il faudrait changer pour tenir la contrainte à la lettre.</p>
+<p><strong>e) La recommandation, et ce qu'on ne peut pas encore dire.</strong> Recommandez un montage en cinq lignes. Vous devez y répondre à deux objections :
+   - <em>« (C) coûte cher pour rien si le marché monte. »</em> Chiffrez ce que coûte (C) dans le meilleur scénario du tableau, puis ce que coûte (B) dans ce même scénario, et comparez.
+   - <em>« Tout ça dépend des chances de baisse. »</em> Cette phrase est hors sujet <strong>à ce stade du cours</strong>, et votre réponse doit dire pourquoi en une phrase, sans esquiver : dites précisément quel outil manque et où il arrive.</p>
+<p>Le squelette de départ :</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+X0, r, T = <span class="number">100_000.0</span>, <span class="number">0.0375</span>, <span class="number">1.0</span>
+scenarios = np.<span class="name">array</span>([-<span class="number">0.30</span>, -<span class="number">0.10</span>, <span class="number">0.0</span>, <span class="number">0.10</span>, <span class="number">0.30</span>])
+profil_a = X0 * (<span class="number">1</span> + scenarios)
+<span class="comment"># B : 10 % vendus et places au taux sans risque, 90 % laisses investis</span>
+<span class="comment"># C : tout reste investi, la protection coute 800 EUR payes aujourd&#x27;hui</span>
+plancher = <span class="number">0.90</span> * X0
+<span class="keyword">assert</span> profil_a[<span class="number">2</span>] == X0 <span class="keyword">and</span> plancher == <span class="number">90_000.0</span>
+</code></pre></div>
+<h3 id="livrable-et-criteres-devaluation">Livrable et critères d’évaluation</h3>
+<p>Une page : le tableau, la figure, dix lignes de code au plus, et vos réponses en français. Le barème, sur 20 :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Critère</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prédiction écrite <strong>avant</strong> le tableau, puis confrontée explicitement au résultat</td>
+<td>3</td>
+</tr>
+<tr>
+<td>(a) tableau juste <strong>et</strong> capitalisation faite pour (B) et (C), écart de la version naïve chiffré</td>
+<td>5</td>
+</tr>
+<tr>
+<td>(b) figure lisible, trois profils décrits (linéaire / linéaire décalé / coudé)</td>
+<td>3</td>
+</tr>
+<tr>
+<td>(c) les trois croisements calculés, le premier reconnu comme le taux annuel équivalent</td>
+<td>4</td>
+</tr>
+<tr>
+<td>(d) scénario −50 % traité, contrainte du client tranchée</td>
+<td>2</td>
+</tr>
+<tr>
+<td>(e) les deux objections chiffrées, et l'outil manquant nommé sans esquive</td>
+<td>3</td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Trois réponses valent zéro quel que soit le reste</em> : comparer des sommes d'aujourd'hui et des sommes de l'échéance dans un même tableau ; écrire que (C) « garantit » 90 000 € alors qu'il garantit 90 000 € <strong>moins la prime capitalisée</strong> ; et conclure par « ça dépend des chances de baisse » sans dire quel outil manque.</p></section>
+      <div class="hero-actions"><a class="text-link" href="index.html">Carte du chapitre</a></div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Sans corrigé</strong>Le site publie les énoncés. Les corrigés, quiz commentés et notebooks de solution ne sont pas mis en ligne.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 01 · TD<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Un euro demain ne vaut pas un euro aujourd'hui · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Une somme certaine et datée a une valeur d’aujourd’hui : D(0,T) = e^(-rT).">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch01/u04.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Un euro demain ne vaut pas un euro aujourd&#x27;hui · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Une somme certaine et datée a une valeur d’aujourd’hui : D(0,T) = e^(-rT).">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch01/u04.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Un euro demain ne vaut pas un euro aujourd&#x27;hui · chapitre 01 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Une somme certaine et datée a une valeur d’aujourd’hui : D(0,T) = e^(-rT).">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch01" data-unit="u04" data-unit-title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-ch-title="Les objets de la finance qu&#x27;on peut observer" data-unit-url="cours/ch01/u04.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 01 · Les objets de la finance qu&#x27;on…</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui">Unité 4/5 · Un euro demain ne vaut…</span></nav>
+      <span class="cb-short">Ch. 01 · 4/5</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch01" data-progress-units="u01,u02,u03,u04,u05" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/5 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Un prix n&#x27;est pas un rendement"><b>01</b><span>Un prix n&#x27;est pas un rendement</span></a><a href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs"><b>02</b><span>La volatilité mesure l&#x27;écart au centre</span></a><a href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner"><b>03</b><span>Diversifier, ce n&#x27;est pas moyenner</span></a><a href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" aria-current="page"><b>04</b><span>Un euro demain ne vaut…</span></a><a href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine"><b>05</b><span>Une option, c&#x27;est d&#x27;abord un…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Les objets de la finance qu&#x27;on peut observer">Chapitre 01 · Les objets de la finance qu&#x27;on peut observer</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04" aria-current="page"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open is-here" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 01 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#1-la-question">1. La question</a></li>
+        <li><a href="#2-on-essaie-dabord">2. On essaie d&#x27;abord</a></li>
+        <li><a href="#3-le-facteur-qui-ramene-le-futur-a-aujourdhui">3. Le facteur qui ramène le futur à aujourd&#x27;hui</a></li>
+        <li><a href="#4-le-piege-classique-linteret-compose-lu-comme-de-linteret-simple">4. Le piège classique : l&#x27;intérêt composé lu comme de l&#x27;intérêt simple</a></li>
+        <li><a href="#5-premiere-consequence-une-obligation-est-une-somme-de-flux-actualises">5. Première conséquence : une obligation est une somme de flux actualisés</a></li>
+        <li><a href="#6-seconde-consequence-nominal-nest-pas-reel">6. Seconde conséquence : nominal n&#x27;est pas réel</a></li>
+        <li><a href="#7-verifiez-vous">7. Vérifiez-vous</a></li>
+        <li><a href="#8-ce-que-vous-savez-faire-maintenant">8. Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 20 min<br>Travail complet 55 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 4 sur 5</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Un prix n&#x27;est pas un rendement" data-read-key="ch01.u01"><span class="n">01</span><span class="t">Un prix n&#x27;est pas un rendement</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="La volatilité mesure l&#x27;écart au centre, pas entre les valeurs" data-read-key="ch01.u02"><span class="n">02</span><span class="t">La volatilité mesure l&#x27;écart au centre</span><span class="d">35 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner" data-read-key="ch01.u03"><span class="n">03</span><span class="t">Diversifier, ce n&#x27;est pas moyenner</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u04.html" title="Un euro demain ne vaut pas un euro aujourd&#x27;hui" data-read-key="ch01.u04" aria-current="page"><span class="n">04</span><span class="t">Un euro demain ne vaut…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine" data-read-key="ch01.u05"><span class="n">05</span><span class="t">Une option, c&#x27;est d&#x27;abord un…</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#1-la-question">1. La question</a><a href="#2-on-essaie-dabord">2. On essaie d&#x27;abord</a><a href="#3-le-facteur-qui-ramene-le-futur-a-aujourdhui">3. Le facteur qui ramène le futur à aujourd&#x27;hui</a><a href="#4-le-piege-classique-linteret-compose-lu-comme-de-linteret-simple">4. Le piège classique : l&#x27;intérêt composé lu comme de l&#x27;intérêt simple</a><a href="#5-premiere-consequence-une-obligation-est-une-somme-de-flux-actualises">5. Première conséquence : une obligation est une somme de flux actualisés</a><a href="#6-seconde-consequence-nominal-nest-pas-reel">6. Seconde conséquence : nominal n&#x27;est pas réel</a><a href="#7-verifiez-vous">7. Vérifiez-vous</a><a href="#8-ce-que-vous-savez-faire-maintenant">8. Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 01</a><span aria-hidden="true">/</span><span>Unité 04</span></nav>
+        <p class="lesson-kicker">Les objets de la finance qu'on peut observer</p>
+        <h1>Un euro demain ne vaut pas un euro aujourd’hui</h1>
+        <p class="lesson-question">Une somme certaine et datée a une valeur d'aujourd'hui : <span class="math">D(0,T) = e^{-rT}</span>.</p>
+        <div class="lesson-meta"><span>Lecture guidée 20 min</span><span>Travail complet 55 min</span><span>Une idée</span><span>Unité 04 sur 05</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><p><strong>Durée : 20 min</strong> · <strong>Prérequis : u01</strong> (passage <span class="math">\ell \leftrightarrow R</span> par <span class="math">\exp</span> et <span class="math">\ln</span>), <strong>ch00 u05</strong> (fonctions), <strong>ch00 u06</strong> (<code>np.exp</code>).</p>
+<aside class="callout callout-idee">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8.5v7M8.5 12h7"/></svg>L'idée unique</p>
+<p><strong>L'idée unique de cette unité.</strong> Une somme <strong>certaine</strong> et datée a une valeur d'aujourd'hui : on la multiplie par un facteur inférieur à 1. Ce calcul ne fait intervenir aucune incertitude.</p>
+</aside>
+<hr /></section>
+<section class="lesson-section reveal" id="1-la-question" data-section><span class="section-number">01</span><h2 id="1-la-question">1. La question</h2>
+<p>On vous propose deux choses, et vous devez en choisir une :</p>
+<ul>
+<li><strong>A</strong> : 9 500 € versés aujourd'hui ;</li>
+<li><strong>B</strong> : 10 000 € versés dans un an, <strong>certains</strong>, et non « probables », certains : l'émetteur est l'État américain et le versement est garanti.</li>
+</ul>
+<p>Le <em>taux sans risque</em>, noté <span class="math">r</span>, est ce que rapporte par an un placement dont on est certain d'être remboursé. Dans tout le cours il vaut <strong>3,75 %</strong>, le taux des bons du Trésor américain à trois mois (<code>DTB3</code>) relevé le 3 septembre 2026, exprimé en composition <strong>continue</strong> et en décimal : <span class="math">r = 0{,}0375</span>.</p>
+<p><strong>Une simplification à poser tout de suite.</strong> Ce taux à trois mois servira pour <strong>toutes</strong> les échéances, jusqu'à dix ans : le cours travaille avec une courbe des taux <strong>plate</strong>, ce qui coûte une dizaine de points de base à l'horizon d'un an (le parcours avancé §C9 mesure l'écart). Comme la fenêtre de volatilité en u02, la convention fait partie du chiffre.</p>
+<aside class="pred-card" data-pred="ch01.u04" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch01-u04">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch01-u04" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="2-on-essaie-dabord" data-section><span class="section-number">02</span><h2 id="2-on-essaie-dabord">2. On essaie d’abord</h2>
+<p>Écrivez deux choses : <strong>(a)</strong> ce que vous choisissez, A ou B ; <strong>(b)</strong> le montant versé aujourd'hui qui vous rendrait exactement indifférent entre les deux offres.</p>
+</section>
+<section class="lesson-section reveal" id="3-le-facteur-qui-ramene-le-futur-a-aujourdhui" data-section><span class="section-number">03</span><h2 id="3-le-facteur-qui-ramene-le-futur-a-aujourdhui">3. Le facteur qui ramène le futur à aujourd’hui</h2>
+<p><strong>D'où vient ce <span class="math">e</span> ?</strong> 100 € à 3,75 % versés une fois par an font 103,75 ; versés chaque mois, 103,8151 ; versés chaque jour, 103,8210. Plus on verse souvent, plus le capital final monte, mais il ne monte pas indéfiniment : il s'approche de <span class="math">100 \times e^{0{,}0375} = 103{,}8212</span>. Cette limite, c'est la <strong>composition continue</strong>, et c'est la convention du cours partout où apparaît un taux. Le §4 ci-dessous, lui, compose <strong>une fois par an</strong> : c'est pourquoi il écrit <span class="math">1{,}02^n</span> et non <span class="math">e^{0{,}02n}</span>.</p>
+<p>Placer une somme <span class="math">V_0</span> pendant un an au taux continu <span class="math">r</span> la transforme en <span class="math">V_0 e^{r}</span>. Pour faire le chemin inverse (savoir quelle somme d'aujourd'hui donnerait 10 000 € dans un an) on divise, c'est-à-dire qu'on multiplie par <span class="math">e^{-r}</span> :</p>
+<div class="math math-display">10\,000 \times e^{-0{,}0375} = 10\,000 \times 0{,}963194 = \mathbf{9\,631{,}94}\ \text{€}.</div>
+<p>L'offre B vaut donc <strong>9 631,94 €</strong> d'aujourd'hui : elle bat l'offre A de <strong>131,94 €</strong>. Et le montant qui rend indifférent, réponse au (b), est exactement 9 631,94 €.</p>
+<aside class="callout callout-formule">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h6M8 20V6a2 2 0 0 1 2-2h1M5 11h6M14 10l5 8M19 10l-5 8"/></svg>Formule</p>
+<p><strong>Formule : la valeur actuelle d'un flux certain.</strong>
+<span class="math math-display">V_0 = D(0,T)\, F_T \qquad\text{avec}\qquad D(0,T) = e^{-rT}</span>
+<strong><span class="math">F_T</span></strong> : le flux, <strong>certain</strong>, payé à la date <span class="math">T</span> · <strong><span class="math">r</span></strong> : le taux sans risque continu annualisé, en décimal · <strong><span class="math">T</span></strong> : la durée en années · <strong><span class="math">D(0,T)</span></strong> : le <em>facteur d'actualisation</em>, c'est-à-dire ce que vaut aujourd'hui la promesse certaine d'un euro à la date <span class="math">T</span> · <strong><span class="math">V_0</span></strong> : la <em>valeur actuelle</em>.</p>
+</aside>
+<p>Trois valeurs de ce facteur, à <span class="math">r = 3{,}75\,\%</span> : <span class="math">D(0;0{,}5) = 0{,}981425</span>, <span class="math">D(0,1) = 0{,}963194</span>, <span class="math">D(0,10) = \mathbf{0{,}687289}</span>. <strong>Dix ans coûtent 31 % de la valeur</strong>, et c'est un calcul, pas une opinion. <em>(Dans <span class="math">D(0,10)</span> la virgule sépare les </em><em>deux dates</em><em>, 0 et 10 ans ; ce n'est pas un séparateur décimal.)</em></p>
+<p>Un même taux s'écrit de deux façons, et il faut savoir passer de l'une à l'autre : « 3,75 % en continu » et « 3,8212 % une fois par an » désignent le <strong>même</strong> placement, puisque <span class="math">e^{0{,}0375} - 1 = 3{,}8212\,\%</span>. Ce <em>taux annuel équivalent</em> est la conversion <span class="math">\ell \to R</span> de u01, appliquée à un taux au lieu d'un rendement observé. Sept points de base d'écart : invisibles dans un exercice, coûteux dans un contrat.</p>
+</section>
+<section class="lesson-section reveal" id="4-le-piege-classique-linteret-compose-lu-comme-de-linteret-simple" data-section><span class="section-number">04</span><h2 id="4-le-piege-classique-linteret-compose-lu-comme-de-linteret-simple">4. Le piège classique : l’intérêt composé lu comme de l’intérêt simple</h2>
+<aside class="callout callout-piege">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4.5M12 17.4v.2"/></svg>Piège classique</p>
+<p><strong>Piège classique : le biais de croissance exponentielle.</strong> Levy et Tasoff mesurent qu'environ <strong>un tiers</strong> des sujets traitent une croissance composée comme une croissance linéaire et, c'est le point qui compte pour nous, que <strong>montrer un graphique ne corrige pas le biais</strong>. On ne le corrige qu'en faisant calculer.</p>
+<p>Calculez donc. 100 € placés à 2 % par an :</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Durée</th>
+<th>lecture linéaire (<span class="math">100 + 2 \times n</span>)</th>
+<th>calcul exact (<span class="math">100 \times 1{,}02^n</span>)</th>
+<th>écart</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 ans</td>
+<td>110,00 €</td>
+<td><strong>110,41 €</strong></td>
+<td>0,41 €</td>
+</tr>
+<tr>
+<td>30 ans</td>
+<td>160,00 €</td>
+<td><strong>181,14 €</strong></td>
+<td><strong>21,14 €</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><em>(Ici on compose </em><em>une fois par an</em><em>, d'où <span class="math">1{,}02^n</span> : c'est la convention de l'énoncé, pas celle du taux sans risque du §1.)</em> À cinq ans, l'erreur vaut 41 centimes : voilà pourquoi le biais survit : il ne se fait jamais punir sur les horizons courts. À trente ans, elle vaut <strong>21,14 € sur 100 € placés</strong>, soit un cinquième de la mise et 12 % du montant réellement obtenu. C'est la première question du diagnostic d'ouverture du chapitre, et la raison pour laquelle on ne peut pas « estimer de tête » un effet de taux sur une retraite.</p>
+</aside>
+</section>
+<section class="lesson-section reveal" id="5-premiere-consequence-une-obligation-est-une-somme-de-flux-actualises" data-section><span class="section-number">05</span><h2 id="5-premiere-consequence-une-obligation-est-une-somme-de-flux-actualises">5. Première conséquence : une obligation est une somme de flux actualisés</h2>
+<p>Une <em>obligation</em> est un titre qui promet des versements datés : un <em>coupon</em> chaque année, puis le remboursement du <em>nominal</em> à l'échéance. Prenons le plus simple possible : nominal 100, coupon 3 %, trois ans. Les flux sont 3, 3, et 103. Chacun est certain ; chacun se ramène à aujourd'hui par son propre facteur :</p>
+<div class="math math-display">V_0 = 3\,D(0,1) + 3\,D(0,2) + 103\,D(0,3).</div>
+<p>À <span class="math">r = 3{,}75\,\%</span>, cela fait <strong>97,71</strong>. Trois flux, trente secondes. Et si <span class="math">r</span> monte d'un point, à 4,75 % ? Chaque facteur d'actualisation diminue, donc chaque flux vaut moins : <strong>94,91</strong>. Si <span class="math">r</span> descend à 2,75 % : <strong>100,60</strong>.</p>
+<p><strong>Quand les taux montent, le prix des obligations baisse.</strong> Ici, <strong>−2,80 points, soit −2,87 %, pour +100 points de base</strong> de taux. Ce n'est pas une régularité empirique, c'est une conséquence arithmétique de <span class="math">e^{-rT}</span> : rien d'autre n'a bougé dans le calcul. C'est la troisième question du diagnostic d'ouverture.</p>
+<figure class="unit-figure fig-wide"><img src="figures/fig05_actualisation.png" alt="Panneau (a) : la valeur d&#x27;aujourd&#x27;hui de 1 000 € certains, selon la date de versement, de 0 à 20 ans. Ce qu&#x27;il faut voir : la courbe descend sans jamais atteindre zéro : 963,19 € à un an, 687,29 € à dix ans, 472,37 € à vingt ans. Panneau (b) : le prix du titre à trois flux selon le taux, de 1 % à 7 %. Ce qu&#x27;il faut voir : la courbe **descend** quand r monte, et elle croise 100 un peu en dessous de 3 %, c&#x27;est-à-dire là où le taux continu équivaut au coupon annuel de 3 %." width="2197" height="876" loading="lazy"><figcaption>Panneau (a) : la valeur d&#x27;aujourd&#x27;hui de 1 000 € certains, selon la date de versement, de 0 à 20 ans. Ce qu&#x27;il faut voir : la courbe descend sans jamais atteindre zéro : 963,19 € à un an, 687,29 € à dix ans, 472,37 € à vingt ans. Panneau (b) : le prix du titre à trois flux selon le taux, de 1 % à 7 %. Ce qu&#x27;il faut voir : la courbe **descend** quand r monte, et elle croise 100 un peu en dessous de 3 %, c&#x27;est-à-dire là où le taux continu équivaut au coupon annuel de 3 %.</figcaption></figure>
+<aside class="callout callout-demo">
+<p class="callout-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18.5 8 11l4 4 3-5 6 8.5Z"/><circle cx="7" cy="5.5" r="2"/></svg>Démo interactive</p>
+<p><strong>Démo interactive</strong> : <em>Le tiroir.</em> Curseurs <span class="math">r</span> (0-8 %), <span class="math">T</span> (0-30 ans), coupon (0-8 %) ; affiche <span class="math">D(0,T)</span>, la valeur actuelle de 1 000 € et le prix de l'obligation. On voit : le prix traverse 100 exactement quand le taux égale le coupon, et l'effet d'un point de taux grandit avec la maturité.</p>
+</aside>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="keyword">def</span> <span class="name">actualiser</span>(flux: float, r: float, T: float) -&gt; float:
+    <span class="string">&quot;&quot;&quot;Present value of a single certain cash flow paid at date T (in years).&quot;&quot;&quot;</span>
+    <span class="keyword">return</span> flux * np.<span class="name">exp</span>(-r * T)
+
+<span class="keyword">def</span> <span class="name">prix_obligation</span>(coupon: float, nominal: float, r: float, n: int) -&gt; float:
+    <span class="string">&quot;&quot;&quot;Price of an n-year bond: `coupon * nominal` yearly, then `nominal` back.&quot;&quot;&quot;</span>
+    flux = np.<span class="name">full</span>(n, coupon * nominal)
+    flux[-<span class="number">1</span>] += nominal
+    <span class="keyword">return</span> <span class="name">float</span>((flux * np.<span class="name">exp</span>(-r * np.<span class="name">arange</span>(<span class="number">1</span>, n + <span class="number">1</span>))).<span class="name">sum</span>())
+
+<span class="keyword">assert</span> <span class="name">abs</span>(<span class="name">actualiser</span>(<span class="number">10_000.0</span>, <span class="number">0.0375</span>, <span class="number">1.0</span>) - <span class="number">9631.94</span>) &lt; <span class="number">0.01</span>
+<span class="keyword">assert</span> <span class="name">abs</span>(<span class="name">prix_obligation</span>(<span class="number">0.03</span>, <span class="number">100.0</span>, <span class="number">0.0375</span>, <span class="number">3</span>) - <span class="number">97.71</span>) &lt; <span class="number">0.01</span>
+<span class="keyword">assert</span> <span class="name">prix_obligation</span>(<span class="number">0.03</span>, <span class="number">100</span>., <span class="number">0.0475</span>, <span class="number">3</span>) &lt; <span class="name">prix_obligation</span>(<span class="number">0.03</span>, <span class="number">100</span>., <span class="number">0.0375</span>, <span class="number">3</span>)
+</code></pre></div>
+<p><code>np.full(n, ...)</code> fabrique un tableau de trois coupons identiques ; <code>flux[-1] += nominal</code> ajoute le remboursement au dernier flux seulement ; <code>np.arange(1, n + 1)</code> donne les dates <code>[1, 2, 3]</code>, et la multiplication case à case actualise chaque flux par son propre facteur. La dernière ligne écrit le résultat de ce paragraphe sous forme de test : quand <span class="math">r</span> monte, le prix baisse.</p>
+</section>
+<section class="lesson-section reveal" id="6-seconde-consequence-nominal-nest-pas-reel" data-section><span class="section-number">06</span><h2 id="6-seconde-consequence-nominal-nest-pas-reel">6. Seconde conséquence : nominal n’est pas réel</h2>
+<p>Trois questions différentes, trois nombres. Ils ne se combinent pas : chacun répond à une question.</p>
+<p><strong>Que vaut aujourd'hui la promesse de 1 000 € dans dix ans ?</strong> C'est l'actualisation : <span class="math">1\,000\,e^{-0{,}0375 \times 10} = \mathbf{687{,}29}</span> €.</p>
+<p><strong>Qu'achèteront ces 1 000 € ?</strong> Avec une inflation de 2 % par an (écrite ici <strong>en composition continue</strong>, comme <span class="math">r</span>, pour que les deux taux se retranchent), ils achèteront ce qu'achètent <span class="math">1\,000\,e^{-0{,}02 \times 10} = \mathbf{818{,}73}</span> € d'aujourd'hui. <em>(En composition annuelle, comme au §4, on trouverait 820,35 : un euro et demi d'écart pour le même énoncé.)</em></p>
+<p><strong>Et le contrôle qui empêche de les mélanger.</strong> Un flux <strong>réel</strong> s'actualise au taux <strong>réel</strong>, un flux <strong>nominal</strong> au taux <strong>nominal</strong>, et les deux chemins donnent le même nombre : <span class="math">818{,}73 \times e^{-0{,}0175 \times 10} = \mathbf{687{,}29}</span> €, exactement le premier. Appliquer le <em>taux réel</em> <span class="math">r - i = 1{,}75\,\%</span> aux 1 000 € <strong>nominaux</strong> donne 839,46 € : ce n'est pas une troisième lecture, c'est <strong>la faute</strong> classique. Ce nombre-là n'a de sens que pour une <strong>autre</strong> promesse : 1 000 € indexés sur l'inflation, c'est-à-dire <span class="math">1\,000\,e^{0{,}02 \times 10} = 1\,221{,}40</span> € nominaux dans dix ans, qui valent bien <span class="math">1\,221{,}40 \times 0{,}687289 = \mathbf{839{,}46}</span> € aujourd'hui.</p>
+<p>D'où la deuxième question du diagnostic d'ouverture : avec 1 % d'intérêt et 2 % d'inflation, on pourra acheter <strong>moins</strong> dans un an qu'aujourd'hui. Un compte qui « rapporte » peut appauvrir.</p>
+<p><strong>Un chiffre à retenir pour la suite.</strong> Placer le S&amp;P 500 d'aujourd'hui au taux sans risque pendant un an donne <span class="math">S_0 e^{rT} = 7\,718{,}60 \times 1{,}038212 = \mathbf{8\,013{,}54}</span>. Notez-le : au chapitre 3, ce nombre départagera deux réponses possibles au prix d'un produit dérivé, et il n'a demandé aucune hypothèse sur l'avenir.</p>
+</section>
+<section class="lesson-section reveal" id="7-verifiez-vous" data-section><span class="section-number">07</span><h2 id="7-verifiez-vous">7. Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch01.u04" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<ol>
+<li><strong>(★)</strong> Combien valent aujourd'hui 1 000 € certains dans 5 ans, à <span class="math">r = 3{,}75\,\%</span> ?</li>
+<li><strong>(★)</strong> Le titre à trois flux vaut 97,71 à <span class="math">r = 3{,}75\,\%</span>. À <span class="math">r = 3\,\%</span>, sera-t-il au-dessus ou en dessous de 100 ?</li>
+<li><strong>(★★)</strong> Vous devez 100 000 € dans deux ans. Quelle somme placer aujourd'hui au taux sans risque pour être tranquille ?</li>
+<li><strong>(★, retour sur u01)</strong> Quelle opération de u01 a exactement la forme de <span class="math">e^{r} - 1</span> ?</li>
+<li><strong>(★★, retour sur u02)</strong> Un collègue actualise un flux à 18 mois en écrivant <span class="math">e^{-r \times 18}</span>. Que lui répondez-vous, et quelle règle de u02 rappelle cette faute ?</li>
+</ol>
+<details class="check"><summary>Réponses</summary><div>
+
+1. <span class="math">1\,000 \times e^{-0{,}0375 \times 5} = 1\,000 \times 0{,}829029 = \mathbf{829{,}03}</span> €.
+2. **En dessous**, à **99,87**, de peu. Le coupon de 3 % est versé une fois par an, alors que le taux de 3 % est continu, donc équivalent à 3,0455 % annuels : le titre rapporte légèrement moins que le marché, il cote donc légèrement sous le pair.
+3. <span class="math">100\,000 \times e^{-0{,}0375 \times 2} = \mathbf{92\,774{,}35}</span> €. Cette somme, placée sans risque, redonne exactement 100 000 € dans deux ans.
+4. La conversion d'un log-rendement en rendement simple, <span class="math">R = e^{\ell} - 1</span>. Le taux continu joue le rôle du log-rendement, le taux annuel équivalent celui du rendement simple : mêmes deux échelles, appliquées à un taux au lieu d'un prix.
+5. <span class="math">T</span> **se compte en années**, pas en mois : il faut écrire <span class="math">e^{-r \times 1{,}5}</span>. C'est la même règle qu'en u02 sur <span class="math">\sqrt{252}</span> contre <span class="math">\sqrt{365}</span> : une durée de contrat se compte en **années calendaires**, et une convention d'unité qu'on n'écrit pas est une convention qu'on finit par mélanger.
+
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="8-ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">08</span><h2 id="8-ce-que-vous-savez-faire-maintenant">8. Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Actualiser un flux certain, et dire ce que vaut aujourd'hui une somme datée (<span class="math">D(0,10) = 0{,}687289</span>).</li>
+<li>Pricer une obligation à trois flux et prédire le sens de sa variation quand le taux bouge (97,71 → 94,91 pour +100 pb).</li>
+<li>Distinguer taux continu et taux annuel équivalent, montant nominal et pouvoir d'achat.</li>
+</ul>
+<p><strong>Unité suivante.</strong> Nous savons évaluer une promesse <strong>certaine</strong>. La dernière famille d'objets du chapitre ne promet rien de certain : elle promet quelque chose <strong>si</strong>.</p>
+<hr />
+<p><strong>Sources.</strong> GFLEC (A. Lusardi &amp; O. Mitchell), <em>Questions that indicate financial literacy</em>, <a class="url-plain" href="https://gflec.org/education/questions-that-indicate-financial-literacy/">https://gflec.org/education/questions-that-indicate-financial-literacy/</a> · M. Levy &amp; J. Tasoff, <em>Exponential-Growth Bias and Lifecycle Consumption</em>, <em>Journal of the European Economic Association</em>, <a class="url-plain" href="https://personal.lse.ac.uk/levymr/papers/LevyTasoff.pdf">https://personal.lse.ac.uk/levymr/papers/LevyTasoff.pdf</a> · J. Hull, <em>Options, Futures, and Other Derivatives</em>, 11ᵉ éd., chapitre 4 « Interest rates », <a class="url-plain" href="https://www.pearson.com/en-us/subject-catalog/p/options-futures-and-other-derivatives/P200000005938/9780136939917">https://www.pearson.com/en-us/subject-catalog/p/options-futures-and-other-derivatives/P200000005938/9780136939917</a> · A. Damodaran, <em>Foundations of Finance</em>, sessions 6 et 7, <a class="url-plain" href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/webcastfoundationsonline.htm">https://pages.stern.nyu.edu/~adamodar/New_Home_Page/webcastfoundationsonline.htm</a> · taux <code>DTB3</code> : <code>cours_v2/data/rates.csv</code>, relevé du 2026-09-03.</p></section>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue et continuer" data-mark-next="u05.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue et continuer</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="u03.html" title="Diversifier, ce n&#x27;est pas moyenner"><small>Unité précédente</small><strong>03 · Diversifier, ce n&#x27;est pas moyenner</strong></a><a class="unit-nav-card next" href="u05.html" title="Une option, c&#x27;est d&#x27;abord un besoin qu&#x27;on dessine"><small>Unité suivante</small><strong>05 · Une option, c&#x27;est d&#x27;abord un…</strong></a></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 01</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 01 · unité 04<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

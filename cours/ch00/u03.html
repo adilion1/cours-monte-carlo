@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Une liste range des prix dans l'ordre, un dictionnaire les range par nom · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python</title>
+  <meta name="description" content="Deux façons de garder plusieurs valeurs, une seule règle : on compte à partir de 0.">
+  <meta name="author" content="Adil">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1524" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u03.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta property="og:description" content="Deux façons de garder plusieurs valeurs, une seule règle : on compte à partir de 0.">
+  <meta property="og:url" content="https://adilion1.github.io/cours-monte-carlo/cours/ch00/u03.html">
+  <meta property="og:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Treize trajectoires simulées d’un portefeuille, dont une en ocre, à côté du titre « Apprendre à simuler, et à décider, de zéro. »">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom · chapitre 00 · Optimisation dynamique et simulations de Monte-Carlo sous Python">
+  <meta name="twitter:description" content="Deux façons de garder plusieurs valeurs, une seule règle : on compte à partir de 0.">
+  <meta name="twitter:image" content="https://adilion1.github.io/cours-monte-carlo/assets/og.png">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/inter-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-500-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../assets/fonts/fraunces-latin-400-normal.woff2">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("adil-site-theme");
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+      } catch (_) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <link rel="stylesheet" href="../../assets/course.css">
+  <link rel="stylesheet" href="../../assets/brand.css">
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/site.js" defer></script>
+  <script src="../../assets/demos.js" defer></script>
+</head>
+<body class="lesson-page" data-root="../../" data-ch="ch00" data-unit="u03" data-unit-title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-ch-title="Outils : Python de zéro, sans rien installer" data-unit-url="cours/ch00/u03.html">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <header class="site-header is-sticky">
+    <div class="header-inner">
+      <a class="brand" href="../../index.html" aria-label="Adil, accueil"><span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span></a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="../../cours/index.html">Le cours</a>
+        <a href="../../cours/index.html#parcours">Parcours</a>
+        <a href="../../index.html#a-propos">À propos</a>
+        <a class="nav-resume" href="../../cours/index.html" data-resume hidden>Reprendre <span data-resume-label></span></a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activer le thème sombre" aria-pressed="false">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8a8.5 8.5 0 1 0 11.9 11.9Z"/></svg>
+        </button>
+      </nav>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile" hidden>
+        <a href="../../cours/index.html">Le cours</a><a href="../../cours/index.html#parcours">Parcours</a><a href="../../index.html#a-propos">À propos</a>
+      </nav>
+    </div>
+  </header>
+  <div class="coursebar">
+    <div class="coursebar-in">
+      <nav class="cb-trail" aria-label="Repérage dans le cours"><span>Bloc I</span><span class="cb-sep" aria-hidden="true">›</span><a href="index.html">Chapitre 00 · Outils</a><span class="cb-sep" aria-hidden="true">›</span><span class="cb-here" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom">Unité 3/8 · Une liste range des prix dans l&#x27;ordre</span></nav>
+      <span class="cb-short">Ch. 00 · 3/8</span>
+      <div class="cb-right">
+        <div class="cb-prog" data-progress-ch="ch00" data-progress-units="u01,u02,u03,u04,u05,u06,u07,u08" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" aria-label="Unités lues dans ce chapitre"><span class="cb-bar"><i data-progress-bar></i></span><span data-progress-text>0/8 lues</span></div>
+        <details class="cb-menu"><summary>Unités</summary><nav aria-label="Unités du chapitre"><a href="u01.html" title="Six lignes suffisent pour voir seize ans de marché"><b>01</b><span>Six lignes suffisent pour voir…</span></a><a href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque"><b>02</b><span>Un nom retient un résultat…</span></a><a href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" aria-current="page"><b>03</b><span>Une liste range des prix dans l&#x27;ordre</span></a><a href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes"><b>04</b><span>Une boucle parcourt</span></a><a href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu"><b>05</b><span>Une fonction nomme un calcul</span></a><a href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une"><b>06</b><span>Un tableau numpy remplace la boucle</span></a><a href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours"><b>07</b><span>Votre machine devient l&#x27;ordinateur du cours</span></a><a href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours"><b>08</b><span>Huit fiches d&#x27;une page suffisent…</span></a></nav></details>
+      </div>
+    </div>
+  </div>
+  <div class="lesson-wrap">
+    <aside class="lesson-outline" aria-label="Repérage dans le chapitre">
+      <p class="ol-chap"><a href="index.html" title="Outils : Python de zéro, sans rien installer">Chapitre 00 · Outils : Python de zéro…</a></p>
+      <ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03" aria-current="page"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul>
+      <div class="ol-map">
+        <p>Vous êtes ici</p>
+        <ul class="ol-map-dots" aria-label="Les treize chapitres"><li class="is-open is-here" title="chapitre 00 (ouvert)"><span class="sr-only">chapitre 00 (ouvert)</span></li><li class="is-open" title="chapitre 01 (ouvert)"><span class="sr-only">chapitre 01 (ouvert)</span></li><li title="chapitre 02 (verrouillé)"><span class="sr-only">chapitre 02 (verrouillé)</span></li><li title="chapitre 03 (verrouillé)"><span class="sr-only">chapitre 03 (verrouillé)</span></li><li title="chapitre 04 (verrouillé)"><span class="sr-only">chapitre 04 (verrouillé)</span></li><li title="chapitre 05 (verrouillé)"><span class="sr-only">chapitre 05 (verrouillé)</span></li><li title="chapitre 06 (verrouillé)"><span class="sr-only">chapitre 06 (verrouillé)</span></li><li title="chapitre 07 (verrouillé)"><span class="sr-only">chapitre 07 (verrouillé)</span></li><li title="chapitre 08 (verrouillé)"><span class="sr-only">chapitre 08 (verrouillé)</span></li><li title="chapitre 09 (verrouillé)"><span class="sr-only">chapitre 09 (verrouillé)</span></li><li title="chapitre 10 (verrouillé)"><span class="sr-only">chapitre 10 (verrouillé)</span></li><li title="chapitre 11 (verrouillé)"><span class="sr-only">chapitre 11 (verrouillé)</span></li><li title="chapitre 12 (verrouillé)"><span class="sr-only">chapitre 12 (verrouillé)</span></li></ul>
+        <p class="ol-map-legend">Chapitre 00 sur 13 · 2 chapitres ouverts</p>
+      </div>
+      <p class="outline-label">Dans cette unité</p>
+      <ol>
+        <li><a href="#la-question">La question</a></li>
+        <li><a href="#on-essaie-dabord">On essaie d&#x27;abord</a></li>
+        <li><a href="#lidee">L&#x27;idée</a></li>
+        <li><a href="#le-piege-copie-prix-ne-copie-rien">Le piège : copie = prix ne copie rien</a></li>
+        <li><a href="#verifiez-vous">Vérifiez-vous</a></li>
+        <li><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></li>
+      </ol>
+      <p class="outline-meta">Lecture guidée 20 min<br>Travail complet 25 min</p>
+    </aside>
+    <main class="lesson-main" id="main">
+      <details class="mobile-outline"><summary>Où suis-je ? <span>unité 3 sur 8</span></summary><p class="panel-label">Les unités du chapitre</p><ul class="ol-units"><li><a class="ol-unit" href="u01.html" title="Six lignes suffisent pour voir seize ans de marché" data-read-key="ch00.u01"><span class="n">01</span><span class="t">Six lignes suffisent pour voir…</span><span class="d">15 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque" data-read-key="ch00.u02"><span class="n">02</span><span class="t">Un nom retient un résultat…</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit is-current" href="u03.html" title="Une liste range des prix dans l&#x27;ordre, un dictionnaire les range par nom" data-read-key="ch00.u03" aria-current="page"><span class="n">03</span><span class="t">Une liste range des prix dans l&#x27;ordre</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes" data-read-key="ch00.u04"><span class="n">04</span><span class="t">Une boucle parcourt</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u05.html" title="Une fonction nomme un calcul, un assert le met à l&#x27;épreuve sur un cas connu" data-read-key="ch00.u05"><span class="n">05</span><span class="t">Une fonction nomme un calcul</span><span class="d">20 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u06.html" title="Un tableau numpy remplace la boucle : 10 000 valeurs pour le prix d&#x27;une" data-read-key="ch00.u06"><span class="n">06</span><span class="t">Un tableau numpy remplace la boucle</span><span class="d">25 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u07.html" title="Votre machine devient l&#x27;ordinateur du cours" data-read-key="ch00.u07"><span class="n">07</span><span class="t">Votre machine devient l&#x27;ordinateur du cours</span><span class="d">30 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li><li><a class="ol-unit" href="u08.html" title="Huit fiches d&#x27;une page suffisent pour les probabilités du cours" data-read-key="ch00.u08"><span class="n">08</span><span class="t">Huit fiches d&#x27;une page suffisent…</span><span class="d">45 min</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg></a></li></ul><p class="panel-label">Dans cette unité</p><nav aria-label="Sommaire mobile"><a href="#la-question">La question</a><a href="#on-essaie-dabord">On essaie d&#x27;abord</a><a href="#lidee">L&#x27;idée</a><a href="#le-piege-copie-prix-ne-copie-rien">Le piège : copie = prix ne copie rien</a><a href="#verifiez-vous">Vérifiez-vous</a><a href="#ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</a></nav></details>
+      <header class="lesson-hero">
+        <nav class="breadcrumbs" aria-label="Fil d’Ariane"><a href="../../index.html">Accueil</a><span aria-hidden="true">/</span><a href="../../cours/index.html">Parcours</a><span aria-hidden="true">/</span><a href="index.html">Chapitre 00</a><span aria-hidden="true">/</span><span>Unité 03</span></nav>
+        <p class="lesson-kicker">Outils : Python de zéro, sans rien installer</p>
+        <h1>Une liste range des prix dans l’ordre, un dictionnaire les range par nom</h1>
+        <p class="lesson-question">Deux façons de garder plusieurs valeurs, une seule règle : on compte à partir de 0.</p>
+        <div class="lesson-meta"><span>Lecture guidée 20 min</span><span>Travail complet 25 min</span><span>Une idée</span><span>Unité 03 sur 08</span></div>
+      </header>
+<section class="lesson-section reveal" data-section><blockquote>
+<p><strong>Durée</strong> 20 min · <strong>Prérequis</strong> u01, u02 · <strong>Idée unique</strong> : deux façons de garder plusieurs valeurs, une seule règle : on compte à partir de 0.</p>
+</blockquote></section>
+<section class="lesson-section reveal" id="la-question" data-section><span class="section-number">01</span><h2 id="la-question">La question</h2>
+<p>Voici les six dernières clôtures du S&amp;P 500 du fichier du cours, dans l'ordre des séances, du 28 août au 4 septembre 2026 :</p>
+<p>7 711,76 · 7 686,14 · 7 631,47 · 7 666,60 · 7 747,71 · 7 718,60</p>
+<p>Trois besoins apparaissent immédiatement. <strong>Le dernier prix</strong> : c'est lui qui sert de point de départ à tous les calculs du cours, et il change chaque jour, on ne veut pas le retaper. <strong>Les trois derniers</strong> : pour regarder une tendance courte sans relire tout le fichier. Et un besoin d'une autre nature : quand on manipule six actifs à la fois, on veut écrire « le prix d'AAPL », pas « le quatrième élément ». Six variables <code>prix_1</code>, <code>prix_2</code>, … tiendraient encore ; 4 151, non.</p>
+<aside class="pred-card" data-pred="ch00.u03" hidden><p class="pred-eyebrow">Votre prédiction</p><label class="pred-hint" for="pred-ch00-u03">Avant d’essayer, écrivez ce que vous attendez : un chiffre, une phrase.</label><div class="pred-form" data-pred-form><textarea id="pred-ch00-u03" class="pred-input" data-pred-input rows="2" placeholder="Ma prédiction…"></textarea><button class="pred-save" type="button" data-pred-save>Noter</button></div><div class="pred-noted" data-pred-noted hidden><p class="pred-quote">« <span data-pred-text></span> »</p><p class="pred-when"><span data-pred-when></span> · <button class="pred-modify" type="button" data-pred-modify>modifier</button></p></div></aside></section>
+<section class="lesson-section reveal" id="on-essaie-dabord" data-section><span class="section-number">02</span><h2 id="on-essaie-dabord">On essaie d’abord</h2>
+<p>On range ces six nombres, dans l'ordre, sous le nom <code>prix</code>. Puis on demande à la machine <code>prix[1]</code>.</p>
+<p>Écrivez votre réponse <strong>avant</strong> de lire la suite : <code>prix[1]</code> vaut-il 7 711,76 ou 7 686,14 ?</p>
+<p>La réponse est <strong>7 686,14</strong>, le deuxième. En Python, comme dans la plupart des langages de calcul, <strong>on compte à partir de 0</strong> : le premier élément est <code>prix[0]</code>. Si vous avez répondu 7 711,76, vous venez de commettre en trois secondes l'erreur que ce cours vous évitera de commettre pendant un an. C'est le décalage le plus fréquent chez le débutant, et il ne lève aucun message : il rend simplement un nombre faux.</p>
+</section>
+<section class="lesson-section reveal" id="lidee" data-section><span class="section-number">03</span><h2 id="lidee">L’idée</h2>
+<h3 id="une-liste-des-valeurs-dans-lordre">Une liste : des valeurs dans l’ordre</h3>
+<div class="code-block" data-lang="python"><pre><code>prix = [<span class="number">7711.76</span>, <span class="number">7686.14</span>, <span class="number">7631.47</span>, <span class="number">7666.60</span>, <span class="number">7747.71</span>, <span class="number">7718.60</span>]
+<span class="name">print</span>(prix[<span class="number">0</span>])     <span class="comment"># 7711.76   -&gt; le premier</span>
+<span class="name">print</span>(prix[<span class="number">1</span>])     <span class="comment"># 7686.14   -&gt; le deuxieme</span>
+<span class="name">print</span>(prix[-<span class="number">1</span>])    <span class="comment"># 7718.6    -&gt; le dernier</span>
+<span class="name">print</span>(<span class="name">len</span>(prix))   <span class="comment"># 6         -&gt; combien il y en a</span>
+</code></pre></div>
+<p>Une <strong>liste</strong> s'écrit entre crochets, valeurs séparées par des virgules ; c'est une suite <strong>ordonnée</strong>, et l'ordre est celui que vous avez tapé. L'<strong>indexation</strong> <code>prix[i]</code> extrait l'élément de position <code>i</code>, en comptant à partir de 0. L'<strong>indice négatif</strong> compte depuis la fin : <code>prix[-1]</code> est le dernier, <code>prix[-2]</code> l'avant-dernier. <code>len</code> (pour <em>length</em>) compte les éléments.</p>
+<p>Les deux dernières lignes se lisent ensemble : il y a 6 éléments, donc les indices vont de <strong>0 à 5</strong>, et le dernier s'écrit <code>prix[5]</code> ou, plus sûrement, <code>prix[-1]</code>. La seconde écriture continue de fonctionner quand le fichier gagne une séance ; c'est celle du cours.</p>
+<h3 id="une-tranche-plusieurs-elements-dun-coup">Une tranche : plusieurs éléments d’un coup</h3>
+<div class="code-block" data-lang="python"><pre><code><span class="name">print</span>(prix[-<span class="number">3</span>:])   <span class="comment"># [7666.6, 7747.71, 7718.6]</span>
+<span class="name">print</span>(prix[<span class="number">0</span>:<span class="number">2</span>])   <span class="comment"># [7711.76, 7686.14]</span>
+</code></pre></div>
+<p>Une <strong>tranche</strong> <code>prix[i:j]</code> extrait les éléments de la position <code>i</code> <strong>incluse</strong> à la position <code>j</code> <strong>exclue</strong>. C'est cette asymétrie qu'il faut retenir : <code>prix[0:2]</code> rend deux éléments, pas trois, et <code>j - i</code> donne toujours le nombre d'éléments obtenus. Une borne peut être omise : <code>prix[-3:]</code> signifie « à partir de l'avant-avant-dernier, jusqu'au bout ».</p>
+<figure class="unit-figure"><img src="figures/fig_ch00_u03_tranche.png" alt="Les six dernières clôtures du S&amp;P 500 rangées en liste. Ce qu&#x27;il faut voir : sous chaque point, la position dans la liste (prix[0] à prix[5]) et la date de la séance correspondante ; entourés en rouge, les trois éléments que rend la tranche prix[-3:]. La forme de la courbe n&#x27;est pas le sujet : la correspondance position ↔ valeur l&#x27;est." width="1317" height="819" loading="lazy"><figcaption>Les six dernières clôtures du S&amp;P 500 rangées en liste. Ce qu&#x27;il faut voir : sous chaque point, la position dans la liste (prix[0] à prix[5]) et la date de la séance correspondante ; entourés en rouge, les trois éléments que rend la tranche prix[-3:]. La forme de la courbe n&#x27;est pas le sujet : la correspondance position ↔ valeur l&#x27;est.</figcaption></figure>
+<h3 id="ajouter-et-sortir-des-bornes">Ajouter, et sortir des bornes</h3>
+<div class="code-block" data-lang="python"><pre><code>prix.<span class="name">append</span>(<span class="number">7730.00</span>)
+<span class="name">print</span>(<span class="name">len</span>(prix))   <span class="comment"># 7</span>
+<span class="name">print</span>(prix[<span class="number">7</span>])     <span class="comment"># IndexError: list index out of range</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Le point, et les deux façons d'écrire un outil.</strong> <code>prix.append(7730.00)</code> se lit « demande à <code>prix</code> de faire <code>append</code> » : l'objet devant, le point, puis le geste. <code>len(prix)</code> s'écrit dans l'autre sens : l'outil devant, l'objet entre parenthèses. Les deux formes font le même genre de travail, et c'est l'outil qui décide de la sienne, et vous verrez les deux côte à côte en u06 (<code>rendements.mean()</code> d'un côté, <code>np.maximum(...)</code> de l'autre), et l'aide (<code>prix.append?</code>, u01) vous dit toujours laquelle écrire. Une faute sur cette forme lève un <code>AttributeError</code> (u01), jamais un résultat faux : c'est la bonne nouvelle.</p>
+</blockquote>
+<p><code>append</code> ajoute un élément <strong>à la fin</strong> ; la liste s'allonge, rien n'est perdu. Après l'ajout il y a sept éléments, donc les indices vont de 0 à 6 : <code>prix[7]</code> n'existe pas. L'<strong><code>IndexError</code></strong> est le message le plus utile du chapitre, parce qu'il attrape précisément l'erreur du « je compte à partir de 1 ». Le message dit <code>out of range</code> : hors des bornes.</p>
+<h3 id="un-dictionnaire-des-valeurs-par-nom">Un dictionnaire : des valeurs par nom</h3>
+<p>L'ordre n'a aucun sens pour six actifs différents. On veut les nommer.</p>
+<div class="code-block" data-lang="python"><pre><code>derniers = {<span class="string">&quot;SP500&quot;</span>: <span class="number">7718.60</span>, <span class="string">&quot;AAPL&quot;</span>: <span class="number">319.97</span>, <span class="string">&quot;GLD&quot;</span>: <span class="number">406.77</span>}
+<span class="name">print</span>(derniers[<span class="string">&quot;AAPL&quot;</span>])    <span class="comment"># 319.97</span>
+<span class="name">print</span>(derniers[<span class="string">&quot;Apple&quot;</span>])   <span class="comment"># KeyError: &#x27;Apple&#x27;</span>
+</code></pre></div>
+<p>Un <strong>dictionnaire</strong> s'écrit entre accolades et contient des couples <strong>clé → valeur</strong> : à gauche des deux-points le nom (ici un texte), à droite la valeur. L'accès se fait par la clé, jamais par une position. Une clé absente lève une <strong><code>KeyError</code></strong>, dont le message contient la clé fautive : ici, l'orthographe attendue est <code>"AAPL"</code>, le code de cotation, pas <code>"Apple"</code>.</p>
+<h3 id="ce-que-rend-charger_fil_rouge">Ce que rend <code>charger_fil_rouge()</code></h3>
+<p>L'outil d'u01 rend précisément ces deux formes :</p>
+<div class="code-block" data-lang="python"><pre><code><span class="keyword">from</span> mcdp_utils <span class="keyword">import</span> charger_fil_rouge
+fil = <span class="name">charger_fil_rouge</span>()
+<span class="name">print</span>(<span class="name">sorted</span>(fil[<span class="string">&quot;prix&quot;</span>]))            <span class="comment"># [&#x27;AAPL&#x27;, &#x27;CAC40&#x27;, &#x27;GLD&#x27;, &#x27;LVMH&#x27;, &#x27;SP500&#x27;, &#x27;SPY&#x27;, &#x27;TLT&#x27;, &#x27;TTE&#x27;]</span>
+<span class="name">print</span>(fil[<span class="string">&quot;prix&quot;</span>][<span class="string">&quot;SP500&quot;</span>][-<span class="number">1</span>])       <span class="comment"># 7718.600098  &lt;- le format de stockage du fichier (u02)</span>
+<span class="name">print</span>(<span class="name">len</span>(fil[<span class="string">&quot;prix&quot;</span>][<span class="string">&quot;SP500&quot;</span>]))      <span class="comment"># 4151</span>
+</code></pre></div>
+<p><code>fil</code> est un dictionnaire ; <code>fil["prix"]</code> en est un aussi ; et <code>fil["prix"]["SP500"]</code> est une suite ordonnée de 4 151 clôtures, dont on prend la dernière par <code>[-1]</code>. Les crochets d'u01 n'étaient donc rien d'autre que ces deux gestes enchaînés. Une nuance à garder pour plus tard : ce que rend <code>fil["prix"]["SP500"]</code> n'est pas tout à fait une liste, c'est un <strong>tableau</strong>, l'objet d'u06. L'indexation et les tranches s'y écrivent exactement de la même façon.</p>
+</section>
+<section class="lesson-section reveal" id="le-piege-copie-prix-ne-copie-rien" data-section><span class="section-number">04</span><h2 id="le-piege-copie-prix-ne-copie-rien">Le piège : <code>copie = prix</code> ne copie rien</h2>
+<div class="code-block" data-lang="python"><pre><code>prix = [<span class="number">7711.76</span>, <span class="number">7686.14</span>, <span class="number">7631.47</span>, <span class="number">7666.60</span>, <span class="number">7747.71</span>, <span class="number">7718.60</span>]
+copie = prix
+copie[<span class="number">0</span>] = <span class="number">0.0</span>
+<span class="name">print</span>(prix[<span class="number">0</span>])     <span class="comment"># 0.0     &lt;- prix a change !</span>
+</code></pre></div>
+<p>Vous n'avez pourtant touché qu'à <code>copie</code>. L'explication tient en une phrase : <code>=</code> colle un <strong>nom</strong> à une valeur (u02), et ici la valeur est la liste elle-même. Après <code>copie = prix</code>, il y a <strong>deux noms et une seule liste</strong>. On appelle cela un <strong>alias</strong>, et la modification <code>copie[0] = 0.0</code> est une <strong>mutation en place</strong> : elle change le contenu de la liste, que les deux noms voient.</p>
+<p>La réparation demande une copie explicite :</p>
+<div class="code-block" data-lang="python"><pre><code>prix = [<span class="number">7711.76</span>, <span class="number">7686.14</span>, <span class="number">7631.47</span>, <span class="number">7666.60</span>, <span class="number">7747.71</span>, <span class="number">7718.60</span>]
+copie = prix.<span class="name">copy</span>()
+copie[<span class="number">0</span>] = <span class="number">0.0</span>
+<span class="name">print</span>(prix[<span class="number">0</span>])     <span class="comment"># 7711.76  &lt;- intact</span>
+</code></pre></div>
+<p>Ce piège ne lève <strong>aucun message</strong>. Le symptôme, en pratique, est un résultat qui change quand on réexécute deux fois la même cellule. Il revient en u06, sur les tableaux, sous le nom de <strong>vue contre copie</strong>, avec une nuance de plus : sur un tableau, même une simple tranche partage la mémoire de l'original. Les cours d'introduction à la programmation les plus solides y consacrent une leçon entière : ce n'est pas un détail de syntaxe.</p>
+</section>
+<section class="lesson-section reveal" id="verifiez-vous" data-section><span class="section-number">05</span><h2 id="verifiez-vous">Vérifiez-vous</h2><aside class="pred-recall" data-pred-recall="ch00.u03" hidden><div class="pred-recall-card" data-pred-quote hidden><p class="pred-eyebrow">Votre prédiction</p><p class="pred-quote">Vous aviez écrit : « <span data-pred-text></span> »</p></div><p class="pred-empty" data-pred-empty hidden>Aucune prédiction notée pour cette unité.</p></aside>
+<p><strong>(a)</strong> Sur une liste de six éléments, que rend <code>prix[6]</code> ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+`IndexError: list index out of range`. Six éléments, indices 0 à 5 : le dernier est `prix[5]`, ou `prix[-1]`.
+</div></details>
+
+<p><strong>(b)</strong> Combien d'éléments rend <code>prix[1:3]</code>, et lesquels ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Deux : `[7686.14, 7631.47]`. La borne de gauche est incluse, celle de droite exclue, et <span class="math">3 - 1 = 2</span> donne le compte sans réfléchir.
+</div></details>
+
+<p><strong>(c)</strong> Le portefeuille du cours a six poids : SP500 40 %, CAC 40 20 %, AAPL 10 %, LVMH 10 %, GLD 10 %, TLT 10 %. Liste ou dictionnaire ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Dictionnaire : `{"SP500": 0.40, "CAC40": 0.20, ...}`. Ces six nombres sont **nommés**, pas numérotés ; leur ordre n'a aucun sens, et écrire `poids[1]` obligerait à se souvenir de quel actif occupe la position 1. C'est d'ailleurs la forme que rend `charger_fil_rouge()` sous la clé `"poids"`.
+</div></details>
+
+<p><strong>(d) (rétrospective)</strong> En u02, <code>prix = 7718.60</code> puis <code>prix = 7747.71</code> faisait perdre la première valeur. Est-ce que <code>prix.append(7730.00)</code> fait perdre quelque chose ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Non : `append` ajoute sans remplacer, et `len` passe de 6 à 7. La différence est entre **réaffecter un nom** (l'ancienne valeur est lâchée) et **modifier l'objet** que le nom désigne (l'objet est le même, plus long). C'est cette seconde opération qui rend le piège de l'alias possible.
+</div></details>
+
+<p><strong>(e) (rétrospective)</strong> Après <code>copie = prix</code> puis <code>copie[0] = 0.0</code>, combien de listes existe-t-il en mémoire ? Et après <code>copie = prix.copy()</code> ?</p>
+<details class="check"><summary>Réponse</summary><div>
+
+Une seule dans le premier cas : deux noms sur un même objet, d'où la contamination. Deux dans le second, indépendantes. La règle de travail du cours en découle : on ne modifie jamais en place un objet reçu de quelqu'un d'autre ; on en fait une copie, ou on rend un objet neuf (u05).
+</div></details>
+
+</section>
+<section class="lesson-section reveal" id="ce-que-vous-savez-faire-maintenant" data-section><span class="section-number">06</span><h2 id="ce-que-vous-savez-faire-maintenant">Ce que vous savez faire maintenant</h2>
+<ul>
+<li>Ranger des prix dans une liste, en extraire le premier, le dernier, une tranche, et compter avec <code>len</code>.</li>
+<li>Ranger des valeurs par nom dans un dictionnaire, y accéder par clé, et lire un <code>IndexError</code> ou un <code>KeyError</code>.</li>
+<li>Reconnaître un alias, et le désamorcer par <code>.copy()</code>.</li>
+</ul>
+<p><strong>Unité suivante.</strong> Extraire un prix à la main va encore ; en extraire 4 151 pour les comparer un par un, non. L'unité u04 fait parcourir toute une suite à la machine et lui fait retenir, au passage, la pire année du portefeuille.</p></section>      <div class="unit-end" data-unit-end>
+        <div class="unit-end-actions">
+          <button class="mark-read" type="button" aria-pressed="false" data-mark-read="Marquer comme lue et continuer" data-mark-next="u04.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.6 4.5L19 7"/></svg><span data-mark-label>Marquer comme lue et continuer</span></button>
+        </div>
+        <div class="unit-nav"><a class="unit-nav-card prev" href="u02.html" title="Un nom retient un résultat ; un message d&#x27;erreur dit lequel manque"><small>Unité précédente</small><strong>02 · Un nom retient un résultat…</strong></a><a class="unit-nav-card next" href="u04.html" title="Une boucle parcourt, une condition choisit : la pire année sort en dix lignes"><small>Unité suivante</small><strong>04 · Une boucle parcourt</strong></a></div>
+        <p class="unit-end-back"><a href="index.html">Retour au chapitre 00</a> · <a href="../../cours/index.html">le parcours complet</a></p>
+      </div>
+    </main>
+    <aside class="lesson-margin" aria-label="Note de marge">
+      <div class="margin-note"><strong>Fil rouge</strong>4 151 séances alignées du 5 janvier 2010 au 4 septembre 2026. Portefeuille S&amp;P 500 40 % · CAC 40 20 % · AAPL 10 % · LVMH 10 % · GLD 10 % · TLT 10 %.</div>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="wordmark"><svg class="wordmark-sign" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25 10 6 16 21 22 10 27 25"/><path d="m4 23 6-5 6 3 6-8 5 1"/></svg><span class="wordmark-name">Adil<i aria-hidden="true">.</i></span></span>
+        <span>Chapitre 00 · unité 03<br>Cours préparé pour les Masters MBFA · Université Sorbonne Paris Nord<br>Site statique, aucune donnée collectée. · © Adil</span>
+      </div>
+      <nav aria-label="Navigation de pied de page">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../cours/index.html">Parcours</a>
+        <a href="#main">Haut de page</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>
