@@ -331,35 +331,46 @@ a.lp-chrow:hover {
   border-bottom: 1px solid var(--lp-rule);
 }
 
-/* Le ruban signature : un dos de livre. Bande pleine, ni ombre, ni degrade,
-   ni animation. `z-index: 1` la place au-dessus du fond du hero et sous la
-   barre collante (z-index 30) ; sa largeur (44 px au maximum) reste toujours
-   en deca de la gouttiere, donc elle ne mord jamais sur le texte. */
+/* Passe 11 : la bande pleine a gauche paraissait lourde a l'auteur. La
+   signature devient un dos de livre discret, a droite, sans fond : le texte
+   en ocre, lu de haut en bas, entre deux filets verticaux fins. Elle vit dans
+   la gouttiere droite (largeur toujours inferieure a la gouttiere), donc elle
+   ne mord jamais sur la carte graphique. Ni ombre, ni degrade, ni animation. */
 .lp-ribbon {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 0;
+  right: 0;
   z-index: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 18px;
   width: clamp(32px, 3.1vw, 44px);
-  background: var(--lp-ribbon-bg);
-  color: var(--lp-ribbon-ink);
+  padding-block: 28px;
+  color: var(--lp-accent);
   overflow: hidden;
   -webkit-user-select: none;
   user-select: none;
 }
 
-/* Lu de bas en haut : `vertical-rl` couche le texte, la rotation le retourne. */
+.lp-ribbon::before,
+.lp-ribbon::after {
+  content: "";
+  flex: 1 1 auto;
+  width: 1px;
+  background: var(--lp-rule-strong);
+  opacity: 0.7;
+}
+
+/* Lu de haut en bas, comme un dos de livre vu a droite d'une page. */
 .lp-ribbon span {
   writing-mode: vertical-rl;
-  transform: rotate(180deg);
   font-family: var(--display);
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.32em;
   line-height: 1;
   text-transform: uppercase;
   white-space: nowrap;
