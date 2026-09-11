@@ -191,7 +191,7 @@ m[<span class="number">0</span>] = <span class="number">40.0</span>
 <span class="name">print</span>(liste)  <span class="comment"># [10.0, 2.0, 3.0, 4.0, 5.0, 6.0]  &lt;- la liste, elle, est intacte</span>
 </code></pre></div>
 <p>Sur une <strong>liste</strong>, une tranche fabrique une nouvelle liste (u03). Sur un <strong>tableau</strong>, <code>a[3:]</code> est une <strong>vue</strong> : un second nom sur la même mémoire, comme l'alias <code>copie = prix</code> d'u03, mais ici il suffit de découper. Parade identique : <code>b = a[3:].copy()</code>.</p>
-<p>Une nuance utile : un <strong>masque</strong> booléen, lui, fabrique une copie : <code>a[a &gt; 3]</code> se modifie sans danger, <code>a[3:]</code> non. Le symptôme n'est jamais un message : c'est un résultat qui change quand on réexécute la même cellule.</p>
+<p>Une nuance utile : un <strong>masque</strong> booléen, lui, fabrique une copie, et <code>a[a &gt; 3]</code> se modifie sans danger, <code>a[3:]</code> non. Le symptôme n'est jamais un message : c'est un résultat qui change quand on réexécute la même cellule.</p>
 <h3 id="ii-ddof-lecart-type-qui-nest-pas-le-meme-selon-la-bibliotheque">(ii) <code>ddof</code>, l’écart-type qui n’est pas le même selon la bibliothèque</h3>
 <div class="code-block" data-lang="python"><pre><code>echantillon = np.random.<span class="name">default_rng</span>(<span class="number">42</span>).<span class="name">standard_normal</span>(<span class="number">20</span>)
 <span class="name">print</span>(echantillon.<span class="name">std</span>())            <span class="comment"># 0.8481444...  (ddof=0, le defaut de numpy)</span>
